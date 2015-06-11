@@ -1,7 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c9796df6-0f1e-4bb9-ac91-b24cfb000f22" name="Default" comment="" />
+    <list default="true" id="c9796df6-0f1e-4bb9-ac91-b24cfb000f22" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/gradle/wrapper/gradle-wrapper.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/mipmap-hdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/mipmap-mdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/mipmap-xhdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/mipmap-hdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/mipmap-mdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/mipmap-xhdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/AndroidManifest.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/AndroidManifest.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/androidTest/java/henryshangguan/com/myapplication/ApplicationTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/java/henryshangguan/com/myapplication/MainActivity.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/java/henryshangguan/com/myapplication/MainActivity.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/MyApplication.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/layout/activity_main.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/layout/activity_main.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/build.gradle" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/build.gradle" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/build.gradle" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/.idea/compiler.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/values/dimens.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/values-w820dp/dimens.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/gradle/wrapper/gradle-wrapper.properties" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/gradle.properties" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/.idea/gradle.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/gradlew.bat" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/gradlew" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/menu/menu_main.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/mobile.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/.idea/copyright/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/proguard-rules.pro" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/proguard-rules.pro" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/layout/rect_activity_main.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/layout/round_activity_main.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/settings.gradle" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/values/strings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/src/main/res/values/strings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/mobile/src/main/res/values/styles.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MyApplication/wear/wear.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="Electric-DeLorean-Project.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -186,9 +234,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959612" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959612" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
