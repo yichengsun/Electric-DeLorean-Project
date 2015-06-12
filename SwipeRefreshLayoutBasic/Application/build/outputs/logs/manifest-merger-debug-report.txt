@@ -1,6 +1,8 @@
 -- Merging decision tree log ---
 manifest
 ADDED from AndroidManifest.xml:20:1
+	xmlns:android
+		ADDED from AndroidManifest.xml:20:11
 	package
 		ADDED from AndroidManifest.xml:21:5
 	android:versionName
@@ -9,8 +11,6 @@ ADDED from AndroidManifest.xml:20:1
 		ADDED from AndroidManifest.xml:22:5
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0
-	xmlns:android
-		ADDED from AndroidManifest.xml:20:11
 application
 ADDED from AndroidManifest.xml:27:5
 MERGED from com.android.support:support-v4:21.0.2:16:5
