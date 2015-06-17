@@ -1,6 +1,16 @@
 <resources>
-    <string name="app_name">Test Application</string>
-
-    <string name="hello_world">Hello world! Yicheng Test</string>
+    <string name="app_name">Getting Location Updates</string>
     <string name="action_settings">Settings</string>
+
+    <string name="latitude_label">Latitude: </string>
+    <string name="longitude_label">Longitude: </string>
+
+    <string name="start_updates">Start updates</string>
+    <string name="stop_updates">Stop updates</string>
+
+    <string name="last_update_time_label">Last location update time: </string>
+
+    <string name="location_updated">Location updated</string>
+    <string name="no_location_detected">Location not found</string>
+
 </resources>
