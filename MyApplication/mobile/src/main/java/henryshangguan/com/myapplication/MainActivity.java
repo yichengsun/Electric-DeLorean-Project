@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class MainActivity extends ActionBarActivity implements StatsAdapter.Callbacks {
+public class MainActivity extends ActionBarActivity {
 
     private Button mStoreDataButton;
 
@@ -44,7 +44,7 @@ public class MainActivity extends ActionBarActivity implements StatsAdapter.Call
         }
 
         if (fragmentStats == null) {
-            fragmentStats = new StatsFragment();
+            fragmentStats = new StatsFragment2();
             fm.beginTransaction().add(R.id.statsFragmentContainer, fragmentStats).commit();
         }
         
@@ -92,18 +92,18 @@ public class MainActivity extends ActionBarActivity implements StatsAdapter.Call
 
         return super.onOptionsItemSelected(item);
     }
-
-    public void onStatSelected(Statistic statistic) {
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-
-        Fragment oldFragment = fm.findFragmentById(R.id.mapFragmentContainer);
-        Fragment newFragment = DetailFragment.newInstance(statistic.getId());
-        Log.d("stat click", "STAT CLICKED");
-        // NEED TO ADD STORE MAP
-
-        ft.add(R.id.mapFragmentContainer, newFragment);
-        ft.commit();
-
-    }
+//
+//    public void onStatSelected(Statistic statistic) {
+//        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+//        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+//
+//        Fragment oldFragment = fm.findFragmentById(R.id.mapFragmentContainer);
+//        Fragment newFragment = DetailFragment.newInstance(statistic.getId());
+//        Log.d("stat click", "STAT CLICKED");
+//        // NEED TO ADD STORE MAP
+//
+//        ft.add(R.id.mapFragmentContainer, newFragment);
+//        ft.commit();
+//
+//    }
 }

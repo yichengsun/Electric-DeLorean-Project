@@ -13,7 +13,7 @@
         android:orientation="horizontal"
         android:id="@+id/mapFragmentContainer"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
+        android:layout_weight="0.8"
         android:layout_width="0dp">
     </FrameLayout>
 
@@ -21,7 +21,7 @@
         android:orientation="horizontal"
         android:id="@+id/statsFragmentContainer"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
+        android:layout_weight="0.2"
         android:layout_width="0dp">
     </FrameLayout>
 </LinearLayout>
