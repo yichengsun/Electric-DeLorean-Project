@@ -24,4 +24,12 @@ dependencies {
     wearApp project(':wear')
     compile 'com.android.support:appcompat-v7:22.+'
     compile 'com.google.android.gms:play-services:+'
+    // Parse dependencies
+    compile 'com.parse.bolts:bolts-android:1.+'
+    compile fileTree(dir: 'libs', include: 'Parse-1.9.2.jar')
+    // RecyclerView dependencies
+    compile 'com.android.support:recyclerview-v7:22.0.0'
+    // CardView dependencies
+    compile 'com.android.support:cardview-v7:22.0.0'
+    compile 'com.android.support:recyclerview-v7:22.0.0'
 }
