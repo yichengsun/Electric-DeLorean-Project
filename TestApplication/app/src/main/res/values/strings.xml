@@ -8,7 +8,10 @@
     <string name="start_updates">Start updates</string>
     <string name="stop_updates">Stop updates</string>
 
-    <string name="last_update_time_label">Last location update time: </string>
+    <string name="store_data">Store Data</string>
+    <string name="data_saved">Data saved.</string>
+
+    <string name="last_update_time_label">Last update: </string>
 
     <string name="location_updated">Location updated</string>
     <string name="no_location_detected">Location not found</string>
