@@ -1,4 +1,6 @@
 package com.example.epic.testapplication;
+import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -39,12 +42,19 @@ public class MainActivity extends ActionBarActivity implements
 
     protected Button mStartUpdatesButton;
     protected Button mStopUpdatesButton;
-    protected TextView mLastUpdateTimeTextView;
+    protected TextView mCurrentUpdateTimeTextView;
     protected TextView mLatitudeTextView;
     protected TextView mLongitudeTextView;
 
     protected boolean mRequestingLocationUpdates;
-    protected String mLastUpdateTime;
+
+    protected CoordDBHelper mCoordDBHelper;
+    protected int mCurrentRouteId = 0;
+    protected double mCurrentLat = 0.0;
+    protected double mCurrentLng = 0.0;
+    protected double mCurrentAlt = 0.0;
+    protected Date mCurrentDate;
+    protected String mCurrentUpdateTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +66,30 @@ public class MainActivity extends ActionBarActivity implements
         mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
         mLatitudeTextView = (TextView) findViewById(R.id.latitude_text);
         mLongitudeTextView = (TextView) findViewById(R.id.longitude_text);
-        mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
+        mCurrentUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
 
+        mCoordDBHelper = new CoordDBHelper(this);
         mRequestingLocationUpdates = false;
-        mLastUpdateTime = "";
+        mCurrentUpdateTime = "";
         updateValuesFromBundle(savedInstanceState);
         buildGoogleApiClient();
         //TODO ensure google play services APK using isGooglePlayServicesAvailable()
     }
+
+//    protected void drawRoute() {
+//        List<LatLng> latLngs =
+//        PolylineOptions line = new PolylineOptions()
+//                .width(5)
+//                .color(Color.BLUE)
+//                .visible(true)
+//                .geodesic(true);
+//
+//        for (LatLng latlng : latLngs) {
+//            line.add(latLng);
+//        }
+//        getMap().addPolyline(line);
+//
+//    }
 
     protected synchronized void buildGoogleApiClient() {
         Log.d(TAG, "buildingGoogleApiClient called");
@@ -125,38 +151,12 @@ public class MainActivity extends ActionBarActivity implements
     private void updateUI() {
         Log.d(TAG, "updateUI called");
         if (mCurrentLocation != null) {
-            mLatitudeTextView.setText(String.valueOf(mCurrentLocation.getLatitude()));
-            mLongitudeTextView.setText(String.valueOf(mCurrentLocation.getLongitude()));
-            mLastUpdateTimeTextView.setText(String.valueOf(mLastUpdateTime));
-        }
-    }
+            mLatitudeTextView.setText(String.valueOf(mCurrentLat));
+            mLongitudeTextView.setText(String.valueOf(mCurrentLng));
+            mCurrentUpdateTimeTextView.setText(String.valueOf(mCurrentUpdateTime));
 
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
-        Log.d(TAG, "updateValuesFromBundle called");
-        if (savedInstanceState != null) {
-            // Update the value of mRequestingLocationUpdates from the Bundle, and
-            // make sure that the Start Updates and Stop Updates buttons are
-            // correctly enabled or disabled.
-            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean(
-                        REQUESTING_LOCATION_UPDATES_KEY);
-                setButtonsEnabledState();
-            }
-
-            // Update the value of mCurrentLocation from the Bundle and update the
-            // UI to show the correct latitude and longitude.
-            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
-                // Since LOCATION_KEY was found in the Bundle, we can be sure that
-                // mCurrentLocationis not null.
-                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
-            }
-
-            // Update the value of mLastUpdateTime from the Bundle and update the UI.
-            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
-                mLastUpdateTime = savedInstanceState.getString(
-                        LAST_UPDATED_TIME_STRING_KEY);
-            }
-            updateUI();
+            mCoordDBHelper.insertCoord(mCurrentRouteId, mCurrentLat, mCurrentLng, mCurrentAlt);
+            //TODO more textviews for alt,route, etc
         }
     }
 
@@ -164,7 +164,12 @@ public class MainActivity extends ActionBarActivity implements
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called");
         mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        mCurrentLat = mCurrentLocation.getLatitude();
+        mCurrentLng = mCurrentLocation.getLongitude();
+        mCurrentAlt = mCurrentLocation.getAltitude();
+        mCurrentDate = new Date();
+        mCurrentUpdateTime = DateFormat.getTimeInstance().format(mCurrentDate);
+
         updateUI();
         Toast.makeText(this, getResources().getString(R.string.location_updated),
                 Toast.LENGTH_SHORT).show();
@@ -177,7 +182,8 @@ public class MainActivity extends ActionBarActivity implements
         if (mCurrentLocation != null) {
             //TODO add accuracy, speed, time, altitude
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+            mCurrentDate = new Date();
+            mCurrentUpdateTime = DateFormat.getTimeInstance().format(mCurrentDate);
             updateUI();
         } else {
             Toast.makeText(this, getResources().getString(R.string.no_location_detected),
@@ -235,32 +241,41 @@ public class MainActivity extends ActionBarActivity implements
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState called");
+        //TODO figure this out
         savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY,
                 mRequestingLocationUpdates);
         savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
-        savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, mLastUpdateTime);
+        savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, mCurrentUpdateTime);
         super.onSaveInstanceState(savedInstanceState);
     }
-}
 
-/*    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        Log.d(TAG, "updateValuesFromBundle called");
+        if (savedInstanceState != null) {
+            // Update the value of mRequestingLocationUpdates from the Bundle, and
+            // make sure that the Start Updates and Stop Updates buttons are
+            // correctly enabled or disabled.
+            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean(
+                        REQUESTING_LOCATION_UPDATES_KEY);
+                setButtonsEnabledState();
+            }
+
+            // Update the value of mCurrentLocation from the Bundle and update the
+            // UI to show the correct latitude and longitude.
+            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
+                // Since LOCATION_KEY was found in the Bundle, we can be sure that
+                // mCurrentLocationis not null.
+                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+            }
+
+            // Update the value of mCurrentUpdateTime from the Bundle and update the UI.
+            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
+                mCurrentUpdateTime = savedInstanceState.getString(
+                        LAST_UPDATED_TIME_STRING_KEY);
+            }
+            updateUI();
+        }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
+}
