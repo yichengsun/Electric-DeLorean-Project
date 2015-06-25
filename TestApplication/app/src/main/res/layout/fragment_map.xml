@@ -10,11 +10,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"-->
+                  <!--android:id="@+id/map"-->
+                  <!--android:layout_width="fill_parent"-->
+                  <!--android:layout_height="300dp"-->
+                  <!--android:name="com.google.android.gms.maps.SupportMapFragment" />-->
+
+
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/map"
-                  android:layout_width="fill_parent"
-                  android:layout_height="300dp"
-                  android:name="com.google.android.gms.maps.SupportMapFragment" />
+            android:id="@+id/map"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:name="com.google.android.gms.maps.SupportMapFragment" />
 
         <!--<LinearLayout-->
             <!--android:orientation="horizontal"-->
