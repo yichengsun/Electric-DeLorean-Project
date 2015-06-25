@@ -57,9 +57,6 @@ public class MainActivity extends ActionBarActivity {
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "uSrtODrZBDyDwNPUXviACZ2QU3SiMWezzQ9v1Pl9",
                 "Ul60j3g3iqTRPAxgWZYGSB85RjPTOZAsaFMtMNhH");
-
-        CalculationsTask x = new CalculationsTask();
-        x.execute(4);
     }
 
     @Override
@@ -99,13 +96,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    // Provides data to populate stats screen (dummy data for now)
-    public static int provideData() {
-        Calendar c = Calendar.getInstance();
-        int seconds = c.get(Calendar.SECOND);
-        return seconds;
-    }
-
     protected void onResume() {
         super.onResume();
     }
@@ -135,7 +125,15 @@ public class MainActivity extends ActionBarActivity {
  * Old Code
  */
 
-//
+//    // Provides data to populate stats screen (dummy data for now)
+//    public static int provideData() {
+//        CalculationsTask x = new CalculationsTask();
+//        x.execute(4);
+//        Calendar c = Calendar.getInstance();
+//        int seconds = c.get(Calendar.SECOND);
+//        return seconds;
+//    }
+
 ////        // Start service to poll for battery data
 ////        Intent i = new Intent(this, PollService.class);
 ////        this.bindService();

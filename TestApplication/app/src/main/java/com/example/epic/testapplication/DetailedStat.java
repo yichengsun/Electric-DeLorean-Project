@@ -1,8 +1,9 @@
 package com.example.epic.testapplication;
 
 /**
- * Created by henryshangguan on 6/19/15.
+ * LEGACY CODE - NOT IN USE
  */
+
 public class DetailedStat {
     private String name;
     private int data;

@@ -24,10 +24,12 @@ import com.google.android.gms.cast.CastRemoteDisplayLocalService;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class StatsFragment extends Fragment {
+public class StatsFragment extends Fragment implements AsyncResponse {
     private TextView mBatteryData;
+    private TextView mMPGData;
     private Handler mHandler;
     private Runnable mRunnable;
+    private Integer[] mCurrentData;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class StatsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_stats, parent, false);
 
         mBatteryData = (TextView) v.findViewById(R.id.batteryData);
+        mMPGData = (TextView) v.findViewById(R.id.mpgData);
         mHandler = new Handler();
         mRunnable = new Runnable() {
             @Override
@@ -46,8 +49,10 @@ public class StatsFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mBatteryData.setText("" + MainActivity.provideData());
-                        mHandler.postDelayed(this, 1000);
+                        CalculationsTask calculate = new CalculationsTask();
+                        calculate.delegate = StatsFragment.this;
+                        calculate.execute(4);
+                        mHandler.postDelayed(this, 5000);
                     }
                 });
             }
@@ -55,6 +60,12 @@ public class StatsFragment extends Fragment {
         mHandler.post(mRunnable);
 
         return v;
+    }
+
+    public void processFinish(Integer[] output) {
+        mCurrentData = output;
+        mBatteryData.setText("" + mCurrentData[0]);
+        mMPGData.setText("" + mCurrentData[1]);
     }
 }
 

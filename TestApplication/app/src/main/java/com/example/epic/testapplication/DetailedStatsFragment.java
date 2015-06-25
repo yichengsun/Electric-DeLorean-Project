@@ -15,8 +15,9 @@ import android.widget.TextView;
 import java.util.UUID;
 
 /**
- * Created by henryshangguan on 6/18/15.
+ * LEGACY CODE - NOT IN USE
  */
+
 public class DetailedStatsFragment extends Fragment {
 
     private TextView mName;
