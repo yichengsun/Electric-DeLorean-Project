@@ -27,7 +27,16 @@ public class PollService extends Service  {
 
     @Override
     public IBinder onBind(Intent intent) {
-        //TODO continuous data pulling and storing to file
+        Runnable r = new Runnable() {
+            public void run() {
+                Log.i(TAG, "PollService running");
+                //TODO continuous data pulling and storing to file
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
+
         return mBinder;
     }
 }
@@ -39,14 +48,7 @@ public class PollService extends Service  {
 //    public int onStartCommand(Intent intent, int flags, int startId) {
 //        Log.d(TAG, "started PollService");
 //
-//        Runnable r = new Runnable() {
-//            public void run() {
-//                Log.i(TAG, "PollService running");
-//            }
-//        };
-//
-//        Thread t = new Thread(r);
-//        t.start();
+
 //
 //        //TODO new thread and polling data
 //        return Service.START_STICKY;
