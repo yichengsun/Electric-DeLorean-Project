@@ -79,18 +79,18 @@ public class MainActivity extends ActionBarActivity {
                 MainActivity.this.unbindService(mConnection);
                 mOnTrip = !mOnTrip;
                 return true;
-            case R.id.view_switch:
-                if (!mMapView) {
-                    MapFragment fragmentMap = new MapFragment();
-                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
-                    mMapView = true;
-                } else {
-                    StatsFragment fragmentStats = new StatsFragment();
-                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
-                    mMapView = false;
-                }
+//            case R.id.view_switch:
+//                if (!mMapView) {
+//                    MapFragment fragmentMap = new MapFragment();
+//                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+//                    mMapView = true;
+//                } else {
+//                    StatsFragment fragmentStats = new StatsFragment();
+//                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+//                    mMapView = false;
+//                }
             default:
                 return super.onOptionsItemSelected(item);
         }
