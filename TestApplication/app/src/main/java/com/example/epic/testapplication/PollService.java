@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -86,13 +87,6 @@ public class PollService extends Service implements
                 mGoogleApiClient, mLocationRequest, (LocationListener)this);
     }
 
-    //TODO goes with unbind
-//    protected void stopLocationUpdates() {
-//        Log.d(TAG, "stopLocationUpdates called");
-//        LocationServices.FusedLocationApi.removeLocationUpdates(
-//                mGoogleApiClient, this);
-//    }
-
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called");
@@ -141,22 +135,14 @@ public class PollService extends Service implements
         Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
-    //TODO unbind method
-//    @Override
-//    public void onStop() {
-//        Log.d(TAG, "onStop called");
-//        super.onStop();
-//        mGoogleApiClient.disconnect();
-//    }
-//
-
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "PollService running");
-        //TODO continuous data pulling and storing to file
+
         Runnable mainR = new Runnable() {
             @Override
             public void run() {
+                Looper.prepare();
                 mCoordDBHelper = new CoordDBHelper(PollService.this);
                 mRequestingLocationUpdates = true;
                 mLastUpdateTime = "";
@@ -176,10 +162,18 @@ public class PollService extends Service implements
             }
         };
 
-
         Thread t = new Thread(mainR);
         t.start();
 
         return mBinder;
+    }
+
+    public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "stopLocationUpdates called");
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+        mGoogleApiClient.disconnect();
+        // TODO GEOJSON FILE CREATION + PARSE UPLOAD
+        return false;
     }
 }
