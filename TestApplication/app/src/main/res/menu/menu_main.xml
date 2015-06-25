@@ -1,6 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <item android:id="@+id/trip_start"
+          android:title="@string/start_trip"
+          app:showAsAction="ifRoom" />
+    <item android:id="@+id/trip_stop"
+          android:title="@string/end_trip"
+          app:showAsAction="ifRoom" />
+    <item android:id="@+id/view_switch"
+          android:title="@string/switch_views"
+          app:showAsAction="ifRoom" />
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

@@ -49,6 +49,7 @@ public class MapFragment extends Fragment implements
     protected Button mStartUpdatesButton;
     protected Button mStopUpdatesButton;
     protected Button mStoreDataButton;
+
     protected TextView mLastUpdateTimeTextView;
     protected TextView mLatitudeTextView;
     protected TextView mLongitudeTextView;

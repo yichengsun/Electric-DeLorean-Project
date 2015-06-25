@@ -11,18 +11,12 @@
 
     <FrameLayout
         android:orientation="horizontal"
-        android:id="@+id/mapFragmentContainer"
+        android:id="@+id/mainFragmentContainer"
         android:layout_height="match_parent"
-        android:layout_weight="0.8"
-        android:layout_width="0dp">
+        android:layout_weight="0.9"
+        android:layout_width="0dp"
+        android:clickable="false">
     </FrameLayout>
 
-    <FrameLayout
-        android:orientation="horizontal"
-        android:id="@+id/statsFragmentContainer"
-        android:layout_height="match_parent"
-        android:layout_weight="0.2"
-        android:layout_width="0dp">
-    </FrameLayout>
 </LinearLayout>
 

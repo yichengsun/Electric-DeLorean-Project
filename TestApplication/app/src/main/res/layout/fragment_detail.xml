@@ -14,16 +14,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/detail1"
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textColor="@android:color/black"
-            android:textSize="90dp"
-            android:text="DETAIL"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="5dp"
+            android:background="@null"
+            android:id="@+id/closeButton"
+            android:src="@mipmap/icon_close"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/statName"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/statData"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/closeButton"
+            android:layout_alignEnd="@+id/closeButton"/>
 
 
     </RelativeLayout>
