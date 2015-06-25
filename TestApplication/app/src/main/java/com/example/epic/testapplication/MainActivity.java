@@ -119,10 +119,11 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void stopUpdatesButtonHandler(View view) {
-        Log.d(TAG, "stopUpdatesButtonHandler called");
+        Log.d(TAG, "stopUpdatesButtonHandler called" + mCoordDBHelper.getTableAsString());
         mRequestingLocationUpdates = false;
         setButtonsEnabledState();
         stopLocationUpdates();
+
     }
 
     protected void startLocationUpdates() {
@@ -166,6 +167,7 @@ public class MainActivity extends ActionBarActivity implements
         mCurrentLocation = location;
         mCurrentLat = mCurrentLocation.getLatitude();
         mCurrentLng = mCurrentLocation.getLongitude();
+        //TODO getAltitude returns 0.0 every time
         mCurrentAlt = mCurrentLocation.getAltitude();
         mCurrentDate = new Date();
         mCurrentUpdateTime = DateFormat.getTimeInstance().format(mCurrentDate);
