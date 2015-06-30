@@ -19,7 +19,13 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.SphericalUtil;
+import com.parse.Parse;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,7 +41,7 @@ public class PollService extends Service implements
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
 
-    public static final long UPDATE_INTERVAL = 10000;
+    public static final long UPDATE_INTERVAL = 9000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
 
     protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
@@ -52,9 +58,12 @@ public class PollService extends Service implements
     protected double mLastLat = 0.0;
     protected double mLastLng = 0.0;
     protected double mLastAlt = 0.0;
+    protected double mTimeElapsed = 0.0;
+    protected double mDistanceInterval = 0.0;
+    protected double mTotalDistance = 0.0;
     protected Date mLastDate;
     protected String mLastUpdateTime;
-
+    private long mStartTime;
 
     public class LocalBinder extends Binder {
         PollService getService() {
@@ -90,18 +99,39 @@ public class PollService extends Service implements
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called");
+        double zero = 0.0;
+        double mOldLat, mOldLng;
         mLastLocation = location;
+
+        if (Double.compare(zero, mLastLat) == 0 && Double.compare(zero, mLastLng) == 0)
+        {
+            mOldLat = mLastLocation.getLatitude();
+            mOldLng = mLastLocation.getLongitude();
+        } else {
+            mOldLat = mLastLat;
+            mOldLng = mLastLng;
+        }
+
         mLastLat = mLastLocation.getLatitude();
         mLastLng = mLastLocation.getLongitude();
+        mTimeElapsed = (System.nanoTime() - mStartTime) / 1000000000.0;
+        double interval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng);
+        if (Double.compare(interval, 1.0) == -1)
+            interval = 0;
+        Log.d(TAG, "distance = " + interval);
+        mDistanceInterval = interval;
+        mTotalDistance += interval;
+        Log.d(TAG, "total distance = " + mTotalDistance);
         //TODO getAltitude returns 0.0 every time
         mLastAlt = mLastLocation.getAltitude();
         mLastDate = new Date();
         mLastUpdateTime = DateFormat.getTimeInstance().format(mLastDate);
 
-        mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt);
+        mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt, mTimeElapsed, mDistanceInterval, mTotalDistance);
         //updateUI();
         Toast.makeText(this, getResources().getString(R.string.location_updated),
                 Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -135,9 +165,17 @@ public class PollService extends Service implements
         Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
+    // helper method to calculate distance between two points
+    private double distanceBetweenTwo(double prevLat, double prevLong, double newLat, double newLong) {
+        LatLng oldPoint = new LatLng(prevLat, prevLong);
+        LatLng newPoint = new LatLng(newLat, newLong);
+        return SphericalUtil.computeDistanceBetween(oldPoint, newPoint);
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "PollService running");
+        mStartTime = System.nanoTime();
 
         Runnable mainR = new Runnable() {
             @Override
@@ -173,7 +211,23 @@ public class PollService extends Service implements
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
-        // TODO GEOJSON FILE CREATION + PARSE UPLOAD
+
+        /** Parse initialization **/
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, "uSrtODrZBDyDwNPUXviACZ2QU3SiMWezzQ9v1Pl9",
+                "Ul60j3g3iqTRPAxgWZYGSB85RjPTOZAsaFMtMNhH");
+
+        String jsonFile = mCoordDBHelper.dataToJSON();
+
+        // Parse file-storing test code
+        byte[] translated = jsonFile.getBytes();
+        ParseFile stored = new ParseFile("route.json", translated);
+        stored.saveInBackground();
+
+        ParseObject FileObject = new ParseObject("DeLoreanFileObject");
+        FileObject.put("File", stored);
+        FileObject.saveInBackground();
+
         return false;
     }
 }

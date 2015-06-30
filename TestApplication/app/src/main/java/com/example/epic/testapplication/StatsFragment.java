@@ -2,11 +2,13 @@ package com.example.epic.testapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -27,6 +29,7 @@ import java.util.TimerTask;
 public class StatsFragment extends Fragment implements AsyncResponse {
     private TextView mBatteryData;
     private TextView mMPGData;
+    private TextView mDistanceData;
     private Handler mHandler;
     private Runnable mRunnable;
     private Integer[] mCurrentData;
@@ -42,6 +45,8 @@ public class StatsFragment extends Fragment implements AsyncResponse {
 
         mBatteryData = (TextView) v.findViewById(R.id.batteryData);
         mMPGData = (TextView) v.findViewById(R.id.mpgData);
+        mDistanceData = (TextView) v.findViewById(R.id.distanceTraveled);
+
         mHandler = new Handler();
         mRunnable = new Runnable() {
             @Override
@@ -49,15 +54,15 @@ public class StatsFragment extends Fragment implements AsyncResponse {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        CalculationsTask calculate = new CalculationsTask();
+                        CalculationsTask calculate = new CalculationsTask(getActivity());
                         calculate.delegate = StatsFragment.this;
                         calculate.execute(4);
-                        mHandler.postDelayed(this, 5000);
+                        mHandler.postDelayed(this, 10000);
                     }
                 });
             }
         };
-        mHandler.post(mRunnable);
+        mHandler.postDelayed(mRunnable, 2000);
 
         return v;
     }
@@ -66,6 +71,7 @@ public class StatsFragment extends Fragment implements AsyncResponse {
         mCurrentData = output;
         mBatteryData.setText("" + mCurrentData[0]);
         mMPGData.setText("" + mCurrentData[1]);
+        mDistanceData.setText("" + mCurrentData[2]);
     }
 }
 

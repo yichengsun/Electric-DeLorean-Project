@@ -40,7 +40,7 @@ public class MapFragment extends Fragment /*implements OnMapReadyCallback*/ {
     public static final LatLng BELFAST = new LatLng(54.5970, -5.9300);
     protected PolylineOptions polyline;
     protected GoogleMap mMap;
-    protected allLatLng
+    protected LatLng allLatLng;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class MapFragment extends Fragment /*implements OnMapReadyCallback*/ {
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(BELFAST, 16));
 
-        getAllLatLng();
+        //getAllLatLng();
 
         polyline = new PolylineOptions()
                 .add(BELFAST, new LatLng(55, -6))
