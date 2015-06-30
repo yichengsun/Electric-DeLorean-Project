@@ -35,9 +35,6 @@ import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 
-import java.util.Calendar;
-import java.util.Date;
-
 public class MainActivity extends ActionBarActivity {
     public static PollService mService;
     private boolean mOnTrip;

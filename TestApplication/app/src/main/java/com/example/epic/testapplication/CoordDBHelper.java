@@ -3,9 +3,12 @@ package com.example.epic.testapplication;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Created by Yicheng on 6/22/2015.
@@ -91,5 +94,13 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         }
 
         return tableString;
+    }
+
+    public LatLng getAllLatLng() {
+        Cursor cur = mDB.query(TABLE_COORD,
+                new String[] { COORD_LAT, COORD_LNG},
+                null, null, null, null, null);
+        LatLng latlng = new LatLng(cur.getDouble(0), cur.getDouble(1));
+        return  latlng;
     }
 }
