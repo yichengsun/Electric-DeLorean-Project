@@ -42,6 +42,8 @@ public class MainActivity extends ActionBarActivity {
     public static PollService mService;
     private boolean mOnTrip;
     private boolean mMapView;
+    private long mStartTime;
+    private long mEndTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +54,6 @@ public class MainActivity extends ActionBarActivity {
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         android.support.v4.app.Fragment fragmentStats = new StatsFragment();
         fm.beginTransaction().add(R.id.mainFragmentContainer, fragmentStats).commit();
-
-        /** Parse initialization **/
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "uSrtODrZBDyDwNPUXviACZ2QU3SiMWezzQ9v1Pl9",
-                "Ul60j3g3iqTRPAxgWZYGSB85RjPTOZAsaFMtMNhH");
     }
 
     @Override
@@ -73,10 +70,12 @@ public class MainActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.trip_start:
                 bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+                mStartTime = System.nanoTime();
                 mOnTrip = !mOnTrip;
                 return true;
             case R.id.trip_stop:
                 MainActivity.this.unbindService(mConnection);
+                mEndTime = System.nanoTime();
                 mOnTrip = !mOnTrip;
                 return true;
             case R.id.view_switch:
@@ -94,14 +93,6 @@ public class MainActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    protected void onResume() {
-        super.onResume();
-    }
-
-    protected void onPause() {
-        super.onPause();
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.example.epic.testapplication;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -8,8 +10,12 @@ import android.util.Log;
  */
 public class CalculationsTask extends AsyncTask<Integer, Void, Integer[]> {
     public AsyncResponse delegate = null;
-
     private static final String TAG = "CalculationsTask";
+    private Context c;
+
+    public CalculationsTask(Context c) {
+        this.c = c;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -25,14 +31,20 @@ public class CalculationsTask extends AsyncTask<Integer, Void, Integer[]> {
 
     protected Integer[] doInBackground(Integer... ints) {
         Log.v(TAG, "doing calculations for CalculationsTask");
-        //dummy calculation
+        CoordDBHelper mCoordDBHelper = new CoordDBHelper(c);
+        //dummy calculations
+        // Battery Level
         double x = 7 * Math.random();
+        // Avg. MPG
         double y = 7 * Math.random();
-        return new Integer[]{(int)x, (int)y};
+        // Distance Traveled
+        double z = mCoordDBHelper.getDistance();
+        return new Integer[]{(int)x, (int)y, (int)z};
     }
 
     protected void onPostExecute(Integer[] result) {
         Log.v(TAG, "finished CalculationsTask");
         delegate.processFinish(result);
     }
+
 }

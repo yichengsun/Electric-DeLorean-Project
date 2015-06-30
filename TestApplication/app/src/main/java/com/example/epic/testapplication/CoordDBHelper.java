@@ -7,6 +7,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.github.filosganga.geogson.gson.GeometryAdapterFactory;
+import com.github.filosganga.geogson.model.Coordinates;
+import com.github.filosganga.geogson.model.positions.SinglePosition;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.maps.android.geometry.Point;
+
+import org.json.JSONObject;
+
 /**
  * Created by Yicheng on 6/22/2015.
  */
@@ -21,8 +30,12 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     public static final String COORD_LAT = "lat";
     public static final String COORD_LNG = "lng";
     public static final String COORD_ALT = "alt";
+    public static final String COORD_TIME_ELPSD = "time_elapsed";
+    public static final String COORD_DIST_DIFF = "distance_interval";
+    public static final String COORD_DIST_TOTAL = "cumulative_distance_traveled";
     private static final String TABLE_COORD = "coordinates";
-    private static final String[] COLUMNS = {COORD_ID,COORD_ROUTE,COORD_LAT,COORD_LNG,COORD_ALT};
+    private static final String[] COLUMNS = {COORD_ID,COORD_ROUTE,COORD_LAT,COORD_LNG,COORD_ALT,
+            COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL};
     private SQLiteDatabase mDB;
 
     public CoordDBHelper(Context context) {
@@ -41,25 +54,31 @@ public class CoordDBHelper extends SQLiteOpenHelper{
                 COORD_ROUTE + " integer , " +
                 COORD_LAT + " real , " +
                 COORD_LNG + " real , " +
-                COORD_ALT + " real " +
+                COORD_ALT + " real , " +
+                COORD_TIME_ELPSD + " real , " +
+                COORD_DIST_DIFF + " real , " +
+                COORD_DIST_TOTAL + " real " +
                 " ) ";
         db.execSQL(sql);
     }
 
-    public long insertCoord(int route, double lat, double lng, double alt) {
-        Log.d(TAG, "Coord insert " + route + ", " + lat + ", " + lng  + ", " + alt);
+    public long insertCoord(int route, double lat, double lng, double alt, double time, double diff, double dist) {
+        Log.d(TAG, "Coord insert " + route + ", " + lat + ", " + lng  + ", " + alt + ", " + time + ", " + diff + ", " + dist);
         ContentValues cv = new ContentValues();
         cv.put(COORD_ROUTE, route);
         cv.put(COORD_LAT, lat);
         cv.put(COORD_LNG, lng);
         cv.put(COORD_ALT, alt);
+        cv.put(COORD_TIME_ELPSD, time);
+        cv.put(COORD_DIST_DIFF, diff);
+        cv.put(COORD_DIST_TOTAL, dist);
         return mDB.insert(TABLE_COORD, null, cv);
     }
 
     //deletes all coordinates from table
     public int del() {
         Log.d(TAG, "Coord delete called");
-        int cnt = mDB.delete(TABLE_COORD, null, null);
+        int cnt = mDB.delete(TABLE_COORD, "1", null);
         return cnt;
     }
 
@@ -68,6 +87,60 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         Log.d(TAG, "Coord getAllData called");
         return mDB.query(TABLE_COORD, COLUMNS, null, null, null, null, null);
     }
+
+    // returns latest cumulative distance info
+    public double getDistance() {
+        Cursor cursor = getAllData();
+        if (cursor.getCount() > 0) {
+            cursor.moveToLast();
+            return cursor.getDouble(7);
+        }
+        return 0;
+    }
+
+    // Converts database to JSON
+    public String dataToJSON() {
+        Log.d(TAG, "Coord dataToJSON called");
+        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new GeometryAdapterFactory()).create();
+
+        Cursor cursor = getAllData();
+        DataPoint[] points = new DataPoint[cursor.getCount()];
+        cursor.moveToFirst();
+        int i = 0;
+
+        while (!cursor.isAfterLast()) {
+            DataPoint point = new DataPoint(cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3),
+                    cursor.getDouble(4), cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7));
+            points[i++] = point;
+            cursor.moveToNext();
+        }
+
+        String json = gson.toJson(points);
+        del();
+        return json;
+    }
+//
+//    // Converts route (coordinates only) to geoJSON - not quite functional
+//    public String routeToJSON() {
+//        Log.d(TAG, "Coord routeToJSON called");
+//        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new GeometryAdapterFactory()).create();
+//
+//        Cursor cursor = getAllData();
+//        SinglePosition[] points = new SinglePosition[cursor.getCount()];
+//        cursor.moveToFirst();
+//        int i = 0;
+//
+//        while (!cursor.isAfterLast()) {
+//            Coordinates xy = Coordinates.of(cursor.getDouble(2), cursor.getDouble(3));
+//            SinglePosition x = new SinglePosition(xy);
+//            points[i++] = x;
+//            cursor.moveToNext();
+//        }
+//
+//        String json = gson.toJson(points);
+//        del();
+//        return json;
+//    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
