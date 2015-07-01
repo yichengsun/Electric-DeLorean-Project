@@ -70,6 +70,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent i = new Intent(MainActivity.this, PollService.class);
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         switch (item.getItemId()) {
             case R.id.trip_start:
                 Log.d(TAG, "Main trip_start called");
@@ -78,7 +79,6 @@ public class MainActivity extends ActionBarActivity {
                 mOnTrip = !mOnTrip;
                 if (!mMapView) {
                     StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
-                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
                 }
                 return true;
@@ -89,27 +89,23 @@ public class MainActivity extends ActionBarActivity {
                 mOnTrip = !mOnTrip;
                 if (!mMapView) {
                     StatsFragment fragmentStats = new StatsFragment();
-                    android.support.v4.app.FragmentManager fm1 = getSupportFragmentManager();
-                    fm1.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
                 }
                 return true;
             case R.id.view_switch:
                 if (!mMapView) {
                     Log.d(TAG, "Main map_fragment called");
                     MapFragment fragmentMap = new MapFragment();
-                    android.support.v4.app.FragmentManager fm2 = getSupportFragmentManager();
-                    fm2.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                     mMapView = true;
                 } else {
                     Log.d(TAG, "Main stats_fragment called");
                     if (!mOnTrip) {
                         StatsFragment fragmentStats2 = new StatsFragment();
-                        android.support.v4.app.FragmentManager fm3 = getSupportFragmentManager();
-                        fm3.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats2).commit();
+                        fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats2).commit();
                     } else {
                         StatsFragmentTrip tripFragmentStats = new StatsFragmentTrip();
-                        android.support.v4.app.FragmentManager fm3 = getSupportFragmentManager();
-                        fm3.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
+                        fm.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
                     }
                     mMapView = false;
                 }
