@@ -2,6 +2,7 @@ package com.example.epic.testapplication;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
@@ -176,12 +177,12 @@ public class PollService extends Service implements
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "PollService running");
         mStartTime = System.nanoTime();
+        mCoordDBHelper = new CoordDBHelper(PollService.this);
 
         Runnable mainR = new Runnable() {
             @Override
             public void run() {
                 Looper.prepare();
-                mCoordDBHelper = new CoordDBHelper(PollService.this);
                 mRequestingLocationUpdates = true;
                 mLastUpdateTime = "";
                 buildGoogleApiClient();
@@ -203,6 +204,11 @@ public class PollService extends Service implements
         Thread t = new Thread(mainR);
         t.start();
 
+        Cursor cursor = mCoordDBHelper.getAllData();
+        if (cursor.getCount() > 0) {
+            cursor.moveToLast();
+            mLastRouteId = cursor.getInt(1) + 1;
+        }
         return mBinder;
     }
 

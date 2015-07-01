@@ -131,7 +131,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         }
 
         String json = gson.toJson(points);
-        del();
+        //del();
         return json;
     }
 //
