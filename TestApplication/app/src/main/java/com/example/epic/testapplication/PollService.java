@@ -1,6 +1,5 @@
 package com.example.epic.testapplication;
 
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -20,14 +18,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import android.os.Handler;
 

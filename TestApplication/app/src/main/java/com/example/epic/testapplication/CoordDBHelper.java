@@ -171,10 +171,14 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     }
 
     public LatLng getAllLatLng() {
-        Cursor cur = mDB.query(TABLE_COORD,
-                new String[] { COORD_LAT, COORD_LNG},
-                null, null, null, null, null);
-        LatLng latlng = new LatLng(cur.getDouble(0), cur.getDouble(1));
+        Log.d(TAG, "getTableAsString called");
+//        Cursor cur = mDB.query(TABLE_COORD,
+//                new String[] { COORD_LAT, COORD_LNG},
+//                null, null, null, null, null, null);
+//
+        Cursor cur = getAllData();
+        cur.moveToFirst();
+        LatLng latlng = new LatLng(cur.getDouble(1), cur.getDouble(2));
         return  latlng;
     }
 }
