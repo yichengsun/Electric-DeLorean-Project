@@ -218,7 +218,7 @@ public class PollService extends Service implements
                 mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
 
-        String jsonFile = mCoordDBHelper.dataToJSON();
+        String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
 
         // Parse file-storing test code
         byte[] translated = jsonFile.getBytes();
