@@ -80,8 +80,12 @@ public class MainActivity extends ActionBarActivity {
                 if (!mMapView) {
                     StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
+                } else {
+                    MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
                 }
                 return true;
+
             case R.id.trip_stop:
                 Log.d(TAG, "Main trip_stop called");
                 MainActivity.this.unbindService(mConnection);
@@ -90,25 +94,32 @@ public class MainActivity extends ActionBarActivity {
                 if (!mMapView) {
                     StatsFragment fragmentStats = new StatsFragment();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+                } else {
+                    MapFragment fragmentMap = new MapFragment();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                 }
                 return true;
+
             case R.id.view_switch:
-                if (!mMapView) {
+                if (!mMapView && !mOnTrip) {
                     Log.d(TAG, "Main map_fragment called");
                     MapFragment fragmentMap = new MapFragment();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                     mMapView = true;
+                } else if (!mMapView && mOnTrip) {
+                    MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
+                    mMapView = true;
+                } else if (mMapView && !mOnTrip) {
+                    StatsFragment fragmentStats2 = new StatsFragment();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats2).commit();
+                    mMapView = false;
                 } else {
-                    Log.d(TAG, "Main stats_fragment called");
-                    if (!mOnTrip) {
-                        StatsFragment fragmentStats2 = new StatsFragment();
-                        fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats2).commit();
-                    } else {
-                        StatsFragmentTrip tripFragmentStats = new StatsFragmentTrip();
-                        fm.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
-                    }
+                    StatsFragmentTrip tripFragmentStats = new StatsFragmentTrip();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
                     mMapView = false;
                 }
+
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -116,7 +116,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     public String dataToJSON() {
         Log.d(TAG, "Coord dataToJSON called");
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new GeometryAdapterFactory()).create();
-
+        //TODO only convert most recent route
         Cursor cursor = getAllData();
         DataPoint[] points = new DataPoint[cursor.getCount()];
         cursor.moveToFirst();
@@ -131,7 +131,6 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         }
 
         String json = gson.toJson(points);
-        //del();
         return json;
     }
 //
