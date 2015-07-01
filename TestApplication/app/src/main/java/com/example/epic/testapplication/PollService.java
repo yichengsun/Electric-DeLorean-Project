@@ -57,6 +57,9 @@ public class PollService extends Service implements
     protected double mTimeElapsed = 0.0;
     protected double mDistanceInterval = 0.0;
     protected double mTotalDistance = 0.0;
+    protected double mBatteryLevel = 0.0;
+    protected double mMPG = 0.0;
+    protected double mVelocity = 0.0;
     protected Date mLastDate;
     protected String mLastUpdateTime;
     private long mStartTime;
@@ -117,13 +120,16 @@ public class PollService extends Service implements
         //Log.d(TAG, "distance = " + interval);
         mDistanceInterval = interval;
         mTotalDistance += interval;
-        //Log.d(TAG, "total distance = " + mTotalDistance);
+        mVelocity = mDistanceInterval/mTimeElapsed;
         //TODO getAltitude returns 0.0 every time
         mLastAlt = mLastLocation.getAltitude();
         mLastDate = new Date();
         mLastUpdateTime = DateFormat.getTimeInstance().format(mLastDate);
+        double[] stats = MainActivity.getBatteryData();
+        mBatteryLevel = stats[0];
+        mMPG = stats[1];
 
-        mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt, mTimeElapsed, mDistanceInterval, mTotalDistance);
+        mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt, mTimeElapsed, mDistanceInterval, mTotalDistance, mBatteryLevel, mMPG, mVelocity);
         Toast.makeText(this, getResources().getString(R.string.location_updated),
                 Toast.LENGTH_SHORT).show();
     }
