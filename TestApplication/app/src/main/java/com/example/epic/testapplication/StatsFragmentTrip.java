@@ -82,8 +82,8 @@ public class StatsFragmentTrip extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        mHandler.removeCallbacksAndMessages(mRunnable);
+    public void onPause() {
+        mHandler.removeCallbacksAndMessages(null);
         super.onPause();
     }
 
