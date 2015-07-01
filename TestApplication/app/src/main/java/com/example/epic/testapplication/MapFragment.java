@@ -54,27 +54,18 @@ public class MapFragment extends Fragment /*implements OnMapReadyCallback*/ {
         mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
                 .getMap();
         mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
 
 
 
-        Bitmap car_full_bitmap = BitmapFactory.decodeResource(
+        final Bitmap car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.delorean_transparent);
-        Bitmap car_half_bitmap = Bitmap.createScaledBitmap(
+        final Bitmap car_half_bitmap = Bitmap.createScaledBitmap(
                 car_full_bitmap, car_full_bitmap.getWidth() * 2 / 3, car_full_bitmap.getHeight() * 2 / 3, false);
 
 
-        Marker delorean = mMap.addMarker(new MarkerOptions()
-                .position(BELFAST)
-                .title("DeLorean DMC-12")
-                .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(BELFAST, 16));
-
-
         mCoordDBHelper = new CoordDBHelper(getActivity());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
 
         mHandler = new Handler();
         mRunnable = new Runnable() {
@@ -83,16 +74,24 @@ public class MapFragment extends Fragment /*implements OnMapReadyCallback*/ {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        allLatLng = mCoordDBHelper.getAllLatLng();
+                        mMap.clear();
+                        Marker delorean = mMap.addMarker(new MarkerOptions()
+                                .position(mCoordDBHelper.getLastLatLng())
+                                .title("DeLorean DMC-12")
+                                .snippet("Roads? Where we're going, we don't need roads.")
+                                .draggable(true)
+                                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
 
+                        allLatLng = mCoordDBHelper.getAllLatLng();
                         polyline = new PolylineOptions()
                                 .addAll(allLatLng)
                                 .width(20)
                                 .color(Color.BLUE)
                                 .geodesic(false)
                                 .zIndex(1);
-
                         mMap.addPolyline(polyline);
+
+
                         mHandler.postDelayed(this, 1000);
                     }
                 });

@@ -211,4 +211,11 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         }
         return latLngArrayList;
     }
+
+    public LatLng getLastLatLng() {
+        Log.d(TAG, "getLastLatLng called");
+        Cursor cur = getAllData();
+        cur.moveToLast();
+        return new LatLng(cur.getDouble(2), cur.getDouble(3));
+    }
 }
