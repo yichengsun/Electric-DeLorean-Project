@@ -208,11 +208,6 @@ public class PollService extends Service implements
                 mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
 
-        /** Parse initialization **/
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "uSrtODrZBDyDwNPUXviACZ2QU3SiMWezzQ9v1Pl9",
-                "Ul60j3g3iqTRPAxgWZYGSB85RjPTOZAsaFMtMNhH");
-
         String jsonFile = mCoordDBHelper.dataToJSON();
 
         // Parse file-storing test code

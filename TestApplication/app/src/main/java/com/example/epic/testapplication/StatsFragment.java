@@ -56,7 +56,7 @@ public class StatsFragment extends Fragment implements AsyncResponse {
                     public void run() {
                         CalculationsTask calculate = new CalculationsTask(getActivity());
                         calculate.delegate = StatsFragment.this;
-                        calculate.execute(4);
+                        calculate.execute(4); // any int is fine
                         mHandler.postDelayed(this, 10000);
                     }
                 });
