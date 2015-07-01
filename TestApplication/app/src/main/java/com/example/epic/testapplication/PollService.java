@@ -37,7 +37,7 @@ public class PollService extends Service implements
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
 
-    public static final long UPDATE_INTERVAL = 9000;
+    public static final long UPDATE_INTERVAL = 1000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
 
     protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
