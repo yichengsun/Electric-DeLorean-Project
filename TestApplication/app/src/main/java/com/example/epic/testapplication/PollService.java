@@ -117,8 +117,8 @@ public class PollService extends Service implements
         mLastLng = mLastLocation.getLongitude();
         mTimeElapsed = (System.nanoTime() - mStartTime) / 1000000000.0;
         double interval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng);
-        if (Double.compare(interval, 1.0) == -1)
-            interval = 0;
+//        if (Double.compare(interval, 1.0) == -1)
+//            interval = 0;
         mDistanceInterval = interval;
         mTotalDistance += interval;
         mVelocity = (mDistanceInterval/mTimeElapsed) * MPS_TO_MPH;
