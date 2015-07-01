@@ -127,7 +127,8 @@ public class CoordDBHelper extends SQLiteOpenHelper{
 
         while (!cursor.isAfterLast()) {
             DataPoint point = new DataPoint(cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3),
-                    cursor.getDouble(4), cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7));
+                    cursor.getDouble(4), cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7),
+                    cursor.getDouble(8), cursor.getDouble(9), cursor.getDouble(10));
             points[i++] = point;
             cursor.moveToNext();
         }
