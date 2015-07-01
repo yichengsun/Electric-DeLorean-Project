@@ -56,10 +56,10 @@ public class MapFragment extends Fragment implements
     protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
 
-    public final Bitmap car_full_bitmap = BitmapFactory.decodeResource(
-            getResources(), R.drawable.delorean_transparent);
-    public final Bitmap car_half_bitmap = Bitmap.createScaledBitmap(
-            car_full_bitmap, car_full_bitmap.getWidth() * 2 / 3, car_full_bitmap.getHeight() * 2 / 3, false);
+//    public final Bitmap car_full_bitmap = BitmapFactory.decodeResource(
+//            getResources(), R.drawable.delorean_transparent);
+//    public final Bitmap car_half_bitmap = Bitmap.createScaledBitmap(
+//            car_full_bitmap, car_full_bitmap.getWidth() * 2 / 3, car_full_bitmap.getHeight() * 2 / 3, false);
 
 
     @Override
@@ -118,8 +118,8 @@ public class MapFragment extends Fragment implements
                 .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+                .draggable(true));
+//                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
     }
 
     @Override
@@ -134,15 +134,23 @@ public class MapFragment extends Fragment implements
 
         buildGoogleApiClient();
         mGoogleApiClient.connect();
-        startLocationUpdates();
+        final Handler mHandler = new Handler();
+        Runnable mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                startLocationUpdates();
+            }
+        };
+        mHandler.postDelayed(mRunnable, 100);
+
 
         mMap.clear();
         Marker delorean = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+                .draggable(true));
+//                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
 
 //        mCoordDBHelper = new CoordDBHelper(getActivity());
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
