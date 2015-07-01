@@ -1,4 +1,5 @@
 package com.example.epic.testapplication;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import android.support.v4.app.Fragment;
 
+import java.util.List;
+
 
 public class MapFragment extends Fragment /*implements OnMapReadyCallback*/ {
 
@@ -30,12 +34,16 @@ public class MapFragment extends Fragment /*implements OnMapReadyCallback*/ {
     public static final LatLng BELFAST = new LatLng(54.5970, -5.9300);
     protected PolylineOptions polyline;
     protected GoogleMap mMap;
-    protected LatLng allLatLng;
+    protected List<LatLng> allLatLng;
     protected CoordDBHelper mCoordDBHelper;
+    private Handler mHandler;
+    private Activity mActivity;
+    private Runnable mRunnable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "Map onCreate called");
+        mActivity = getActivity();
         super.onCreate(savedInstanceState);
     }
 
@@ -65,17 +73,32 @@ public class MapFragment extends Fragment /*implements OnMapReadyCallback*/ {
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(BELFAST, 16));
 
-//        polyline = new PolylineOptions()
-//                .add(BELFAST, new LatLng(55, -6))
-//                .width(25)
-//                .color(Color.BLUE)
-//                .geodesic(true)
-//                .zIndex(1);
-//
-//        mCoordDBHelper = new CoordDBHelper(getActivity());
-//        allLatLng = mCoordDBHelper.getAllLatLng();
-//
-//        mMap.addPolyline(polyline);
+
+        mCoordDBHelper = new CoordDBHelper(getActivity());
+
+        mHandler = new Handler();
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        allLatLng = mCoordDBHelper.getAllLatLng();
+
+                        polyline = new PolylineOptions()
+                                .addAll(allLatLng)
+                                .width(20)
+                                .color(Color.BLUE)
+                                .geodesic(false)
+                                .zIndex(1);
+
+                        mMap.addPolyline(polyline);
+                        mHandler.postDelayed(this, 1000);
+                    }
+                });
+            }
+        };
+        mHandler.post(mRunnable);
 
         return v;
     }

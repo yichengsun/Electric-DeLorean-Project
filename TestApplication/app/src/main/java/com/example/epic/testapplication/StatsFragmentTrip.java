@@ -66,7 +66,7 @@ public class StatsFragmentTrip extends Fragment {
                         Cursor cursor = mCoordDBHelper.getAllData();
                         if (cursor.getCount() > 0) {
                             cursor.moveToLast();
-                            mBatteryData.setText("g" + cursor.getDouble(8));
+                            mBatteryData.setText("" + cursor.getDouble(8));
                             mDistanceData.setText("" + cursor.getDouble(7));
                             mMPGData.setText("" + "" + cursor.getDouble(9));
                             mVelocityData.setText("" + "" + cursor.getDouble(10));

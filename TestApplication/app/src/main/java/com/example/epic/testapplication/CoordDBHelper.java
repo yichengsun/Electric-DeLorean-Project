@@ -19,6 +19,9 @@ import com.google.maps.android.geometry.Point;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Created by Yicheng on 6/22/2015.
@@ -180,15 +183,31 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         return tableString;
     }
 
-    public LatLng getAllLatLng() {
-        Log.d(TAG, "getTableAsString called");
+    public List<LatLng> getAllLatLng() {
+        Log.d(TAG, "getAllLatLng called");
+        List latLngArrayList = null;
+        Cursor cur = null;
+
+        try {
 //        Cursor cur = mDB.query(TABLE_COORD,
-//                new String[] { COORD_LAT, COORD_LNG},
-//                null, null, null, null, null, null);
-//
-        Cursor cur = getAllData();
-        cur.moveToFirst();
-        LatLng latlng = new LatLng(cur.getDouble(1), cur.getDouble(2));
-        return  latlng;
+//                new String[]{COORD_LAT, COORD_LNG},
+//                null, null, null, null, null);
+            latLngArrayList = new ArrayList<LatLng>();
+            cur = getAllData();
+            while (cur.moveToNext()) {
+                LatLng latLng = new LatLng(cur.getDouble(2), cur.getDouble(3));
+                latLngArrayList.add(latLng);
+                Log.d(TAG, latLng.toString());
+
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getAllLatLng error: ", e);
+        } finally {
+            if (cur != null) {
+                cur.close();
+                Log.d(TAG, "cur!=null");
+            }
+        }
+        return latLngArrayList;
     }
 }
