@@ -75,7 +75,7 @@ public class StatsFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
+    public void onPause() {
         mHandler.removeCallbacksAndMessages(null);
         super.onPause();
     }
