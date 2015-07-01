@@ -34,6 +34,7 @@ public class PollService extends Service implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener  {
     //TAG
     private static final String TAG = "PollService";
+    private static final double MPS_TO_MPH = 2.23693629;
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
 
@@ -117,10 +118,9 @@ public class PollService extends Service implements
         double interval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng);
         if (Double.compare(interval, 1.0) == -1)
             interval = 0;
-        //Log.d(TAG, "distance = " + interval);
         mDistanceInterval = interval;
         mTotalDistance += interval;
-        mVelocity = mDistanceInterval/mTimeElapsed;
+        mVelocity = (mDistanceInterval/mTimeElapsed) * MPS_TO_MPH;
         //TODO getAltitude returns 0.0 every time
         mLastAlt = mLastLocation.getAltitude();
         mLastDate = new Date();

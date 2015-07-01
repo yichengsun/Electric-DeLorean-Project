@@ -66,7 +66,7 @@ public class StatsFragmentTrip extends Fragment {
                         Cursor cursor = mCoordDBHelper.getAllData();
                         if (cursor.getCount() > 0) {
                             cursor.moveToLast();
-                            mBatteryData.setText("g" + cursor.getDouble(8));
+                            mBatteryData.setText("" + cursor.getDouble(8));
                             mDistanceData.setText("" + cursor.getDouble(7));
                             mMPGData.setText("" + "" + cursor.getDouble(9));
                             mVelocityData.setText("" + "" + cursor.getDouble(10));
@@ -76,9 +76,21 @@ public class StatsFragmentTrip extends Fragment {
                 });
             }
         };
-        mHandler.postDelayed(mRunnable, 5000);
+        mHandler.postDelayed(mRunnable, 1000);
 
         return v;
+    }
+
+    @Override
+    public void onStop() {
+        mHandler.removeCallbacksAndMessages(mRunnable);
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        mHandler.postDelayed(mRunnable, 1000);
+        super.onResume();
     }
 }
 
