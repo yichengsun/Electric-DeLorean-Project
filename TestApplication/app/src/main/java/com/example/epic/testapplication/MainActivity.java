@@ -76,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
                 Log.d(TAG, "Main trip_start called");
                 bindService(i, mConnection, Context.BIND_AUTO_CREATE);
                 mStartTime = System.nanoTime();
-                mOnTrip = !mOnTrip;
+                mOnTrip = true;
                 if (!mMapView) {
                     StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
@@ -90,21 +90,24 @@ public class MainActivity extends ActionBarActivity {
                 Log.d(TAG, "Main trip_stop called");
                 MainActivity.this.unbindService(mConnection);
                 mEndTime = System.nanoTime();
-                mOnTrip = !mOnTrip;
+                mOnTrip = false;
                 if (!mMapView) {
                     StatsFragment fragmentStats = new StatsFragment();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
-                } else {
-                    MapFragment fragmentMap = new MapFragment();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                 }
+//                else {
+//                    MapFragment fragmentMap = new MapFragment();
+//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+//                }
                 return true;
 
             case R.id.view_switch:
                 if (!mMapView && !mOnTrip) {
                     Log.d(TAG, "Main map_fragment called");
-                    MapFragment fragmentMap = new MapFragment();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+//                    MapFragment fragmentMap = new MapFragment();
+//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+                    MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
                     mMapView = true;
                 } else if (!mMapView && mOnTrip) {
                     MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
