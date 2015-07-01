@@ -37,9 +37,12 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     public static final String COORD_TIME_ELPSD = "time_elapsed";
     public static final String COORD_DIST_DIFF = "distance_interval";
     public static final String COORD_DIST_TOTAL = "cumulative_distance_traveled";
+    public static final String COORD_BATT = "battery_level";
+    public static final String COORD_MPG = "average_mpg";
+    public static final String COORD_VEL = "velocity";
     private static final String TABLE_COORD = "coordinates";
     private static final String[] COLUMNS = {COORD_ID,COORD_ROUTE,COORD_LAT,COORD_LNG,COORD_ALT,
-            COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL};
+            COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL,COORD_BATT,COORD_MPG, COORD_VEL};
     private SQLiteDatabase mDB;
 
     public CoordDBHelper(Context context) {
@@ -61,13 +64,16 @@ public class CoordDBHelper extends SQLiteOpenHelper{
                 COORD_ALT + " real , " +
                 COORD_TIME_ELPSD + " real , " +
                 COORD_DIST_DIFF + " real , " +
-                COORD_DIST_TOTAL + " real " +
+                COORD_DIST_TOTAL + " real ," +
+                COORD_BATT + " real , " +
+                COORD_MPG + " real, " +
+                COORD_VEL + " real " +
                 " ) ";
         db.execSQL(sql);
     }
 
-    public long insertCoord(int route, double lat, double lng, double alt, double time, double diff, double dist) {
-        Log.d(TAG, "Coord insert " + route + ", " + lat + ", " + lng  + ", " + alt + ", " + time + ", " + diff + ", " + dist);
+    public long insertCoord(int route, double lat, double lng, double alt, double time, double diff, double dist, double batt, double mpg, double vel) {
+        Log.d(TAG, "Coord insert " + route + ", " + lat + ", " + lng  + ", " + alt + ", " + time + ", " + diff + ", " + dist + ", " + batt + ", " + mpg + ", " + vel);
         ContentValues cv = new ContentValues();
         cv.put(COORD_ROUTE, route);
         cv.put(COORD_LAT, lat);
@@ -76,6 +82,9 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         cv.put(COORD_TIME_ELPSD, time);
         cv.put(COORD_DIST_DIFF, diff);
         cv.put(COORD_DIST_TOTAL, dist);
+        cv.put(COORD_BATT, batt);
+        cv.put(COORD_MPG, mpg);
+        cv.put(COORD_VEL, vel);
         return mDB.insert(TABLE_COORD, null, cv);
     }
 

@@ -24,32 +24,36 @@ import android.widget.TextView;
 
 import com.google.android.gms.cast.CastRemoteDisplayLocalService;
 
+import org.w3c.dom.Text;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class StatsFragment extends Fragment {
+public class StatsFragmentTrip extends Fragment {
     private TextView mBatteryData;
-    private TextView mDistToEmptyData;
+    private TextView mMPGData;
+    private TextView mDistanceData;
+    private TextView mVelocityData;
     private Handler mHandler;
     private Runnable mRunnable;
-    private static double[] mCurrentData;
     private Activity mActivity;
-    private double mBatteryLevel;
     private CoordDBHelper mCoordDBHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
-        mBatteryLevel = 100.0;
+        mCoordDBHelper = new CoordDBHelper(mActivity);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_stats, parent, false);
+        View v = inflater.inflate(R.layout.fragment_stats_trip, parent, false);
 
-        mBatteryData = (TextView) v.findViewById(R.id.batteryData);
-        mDistToEmptyData = (TextView) v.findViewById(R.id.distToEmpty);
+        mBatteryData = (TextView) v.findViewById(R.id.batteryDataTrip);
+        mMPGData = (TextView) v.findViewById(R.id.mpgData);
+        mDistanceData = (TextView) v.findViewById(R.id.distanceTraveled);
+        mVelocityData = (TextView) v.findViewById(R.id.velocityData);
 
         mHandler = new Handler();
         mRunnable = new Runnable() {
@@ -58,33 +62,25 @@ public class StatsFragment extends Fragment {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mBatteryData.setText("" + MainActivity.getBatteryData()[0]);
-                        mDistToEmptyData.setText("" + MainActivity.getBatteryData()[1]);
-                        mHandler.postDelayed(this, 1000);
+                        Cursor cursor = mCoordDBHelper.getAllData();
+                        cursor.moveToLast();
+                        mBatteryData.setText("" + cursor.getDouble(8));
+                        mDistanceData.setText("" + cursor.getDouble(7));
+                        mMPGData.setText("" + "" + cursor.getDouble(9));
+                        mVelocityData.setText("" + "" + cursor.getDouble(10));
 
+                        mHandler.postDelayed(this, 1000);
                     }
                 });
             }
         };
-        mHandler.postDelayed(mRunnable, 2000);
+        mHandler.postDelayed(mRunnable, 5000);
 
         return v;
     }
 }
 
-    /** Old Code **/
-//                        CalculationsTask calculate = new CalculationsTask(mActivity);
-//                        calculate.delegate = StatsFragment.this;
-//                        calculate.execute(mBatteryLevel);
-//                        mBatteryLevel -= 0.01;
-
-//    public void processFinish(double[] output) {
-//        mCurrentData = output;
-//        mBatteryData.setText("" + mCurrentData[0]);
-//        mDistanceData.setText("" + mCurrentData[1]);
-//        mMPGData.setText("" + mCurrentData[2]);
-//
-//    }
+/** Old Code **/
 
 //        mCardView3.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -118,7 +114,7 @@ public class StatsFragment extends Fragment {
 //            Fragment oldFragment = fm.findFragmentById(R.id.mapFragmentContainer);
 //            ft.remove(oldFragment);
 //        }
-        //ft.add(R.id.mapFragmentContainer, newFragment).commit();
+//ft.add(R.id.mapFragmentContainer, newFragment).commit();
 
 //        if(fm.getBackStackEntryCount() == 0) {
 //            int backstackCount = fm.getBackStackEntryCount();

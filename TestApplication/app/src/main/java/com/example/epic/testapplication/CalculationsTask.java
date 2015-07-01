@@ -1,6 +1,7 @@
 package com.example.epic.testapplication;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -8,7 +9,7 @@ import android.util.Log;
 /**
  * Created by henryshangguan on 6/25/15.
  */
-public class CalculationsTask extends AsyncTask<Integer, Void, Integer[]> {
+public class CalculationsTask extends AsyncTask<Double, Void, Double[]> {
     public AsyncResponse delegate = null;
     private static final String TAG = "CalculationsTask";
     private Context c;
@@ -29,20 +30,23 @@ public class CalculationsTask extends AsyncTask<Integer, Void, Integer[]> {
         super.onProgressUpdate(values);
     }
 
-    protected Integer[] doInBackground(Integer... ints) {
+    protected Double[] doInBackground(Double... doubles) {
         Log.v(TAG, "doing calculations for CalculationsTask");
         CoordDBHelper mCoordDBHelper = new CoordDBHelper(c);
+        Cursor cursor = mCoordDBHelper.getAllData();
+        cursor.moveToLast();
         //dummy calculations
         // Battery Level
-        double x = 7 * Math.random();
-        // Avg. MPG
-        double y = 7 * Math.random();
+        double x = cursor.getDouble(8);
         // Distance Traveled
-        double z = mCoordDBHelper.getDistance();
-        return new Integer[]{(int)x, (int)y, (int)z};
+        double y = cursor.getDouble(7);
+        // Avg. MPG
+        double z = cursor.getDouble(9);
+
+        return new Double[]{x, y, z};
     }
 
-    protected void onPostExecute(Integer[] result) {
+    protected void onPostExecute(double[] result) {
         Log.v(TAG, "finished CalculationsTask");
         delegate.processFinish(result);
     }

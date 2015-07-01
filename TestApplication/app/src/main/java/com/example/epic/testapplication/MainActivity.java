@@ -42,6 +42,9 @@ public class MainActivity extends ActionBarActivity {
     private long mStartTime;
     private long mEndTime;
 
+    //dummy variable
+    private static double mCalculatedBatteryLevel = 100.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,27 +72,48 @@ public class MainActivity extends ActionBarActivity {
                 bindService(i, mConnection, Context.BIND_AUTO_CREATE);
                 mStartTime = System.nanoTime();
                 mOnTrip = !mOnTrip;
+                if (!mMapView) {
+                    StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
+                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
+                }
                 return true;
             case R.id.trip_stop:
                 MainActivity.this.unbindService(mConnection);
                 mEndTime = System.nanoTime();
                 mOnTrip = !mOnTrip;
+                if (!mMapView) {
+                    StatsFragment fragmentStats = new StatsFragment();
+                    android.support.v4.app.FragmentManager fm1 = getSupportFragmentManager();
+                    fm1.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+                }
                 return true;
             case R.id.view_switch:
                 if (!mMapView) {
                     MapFragment fragmentMap = new MapFragment();
-                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+                    android.support.v4.app.FragmentManager fm2 = getSupportFragmentManager();
+                    fm2.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                     mMapView = true;
                 } else {
-                    StatsFragment fragmentStats = new StatsFragment();
-                    android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+                    if (!mOnTrip) {
+                        StatsFragment fragmentStats2 = new StatsFragment();
+                        android.support.v4.app.FragmentManager fm3 = getSupportFragmentManager();
+                        fm3.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats2).commit();
+                    } else {
+                        StatsFragmentTrip tripFragmentStats = new StatsFragmentTrip();
+                        android.support.v4.app.FragmentManager fm3 = getSupportFragmentManager();
+                        fm3.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
+                    }
                     mMapView = false;
                 }
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public static double[] getBatteryData() {
+        mCalculatedBatteryLevel -= 0.01;
+        return new double[]{mCalculatedBatteryLevel, 0.0};
     }
 
     /**
