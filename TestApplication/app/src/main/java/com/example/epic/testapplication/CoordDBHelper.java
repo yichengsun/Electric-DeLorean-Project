@@ -116,14 +116,14 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         Cursor cursor = getAllData();
         ArrayList points = new ArrayList<DataPoint>();
         //DataPoint[] points = new DataPoint[cursor.getCount()];
-        cursor.moveToLast();
+        cursor.moveToFirst();
 
-        while (cursor.getInt(1) == routeNum) {
-            cursor.moveToPrevious();
-        }
+//        while (cursor.getInt(1) == routeNum) {
+//            cursor.moveToPrevious();
+//        }
 
         int i = 0;
-        cursor.moveToNext();
+//        cursor.moveToNext();
         while (!cursor.isAfterLast()) {
             DataPoint point = new DataPoint(cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3),
                     cursor.getDouble(4), cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7),
