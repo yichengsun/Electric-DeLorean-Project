@@ -73,6 +73,18 @@ public class StatsFragment extends Fragment {
 
         return v;
     }
+
+    @Override
+    public void onStop() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        mHandler.postDelayed(mRunnable, 1000);
+        super.onResume();
+    }
 }
 
     /** Old Code **/
