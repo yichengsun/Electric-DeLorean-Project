@@ -42,6 +42,8 @@ public class MapFragment extends Fragment implements
 
     protected static final String TAG = "MapFragment";
     public static final LatLng BELFAST = new LatLng(54.5970, -5.9300);
+    public static  Bitmap car_full_bitmap;
+    public static Bitmap car_half_bitmap;
     protected GoogleMap mMap;
     protected List<LatLng> mAllLatLng;
     protected CoordDBHelper mCoordDBHelper;
@@ -55,12 +57,6 @@ public class MapFragment extends Fragment implements
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
-
-//    public final Bitmap car_full_bitmap = BitmapFactory.decodeResource(
-//            getResources(), R.drawable.delorean_transparent);
-//    public final Bitmap car_half_bitmap = Bitmap.createScaledBitmap(
-//            car_full_bitmap, car_full_bitmap.getWidth() * 2 / 3, car_full_bitmap.getHeight() * 2 / 3, false);
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,6 +127,10 @@ public class MapFragment extends Fragment implements
         mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         //mMap.setMyLocationEnabled(true);
 
+        car_full_bitmap = BitmapFactory.decodeResource(
+                getResources(), R.drawable.delorean_transparent);
+        car_half_bitmap = Bitmap.createScaledBitmap(
+                car_full_bitmap, car_full_bitmap.getWidth() * 2 / 3, car_full_bitmap.getHeight() * 2 / 3, false);
 
         buildGoogleApiClient();
         mGoogleApiClient.connect();
