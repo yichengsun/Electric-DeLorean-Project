@@ -33,12 +33,12 @@ public class StatsFragment extends Fragment implements AsyncResponse {
     private Handler mHandler;
     private Runnable mRunnable;
     private Integer[] mCurrentData;
-    public Context mContext;
+    public Activity mActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getActivity();
+        mActivity = getActivity();
     }
 
     @Override
@@ -53,10 +53,10 @@ public class StatsFragment extends Fragment implements AsyncResponse {
         mRunnable = new Runnable() {
             @Override
             public void run() {
-                getActivity().runOnUiThread(new Runnable() {
+                mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        CalculationsTask calculate = new CalculationsTask(mContext);
+                        CalculationsTask calculate = new CalculationsTask(mActivity);
                         calculate.delegate = StatsFragment.this;
                         calculate.execute(4); // any int is fine
                         mHandler.postDelayed(this, 10000);
