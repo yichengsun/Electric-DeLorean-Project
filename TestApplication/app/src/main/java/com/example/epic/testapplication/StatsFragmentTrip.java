@@ -62,13 +62,15 @@ public class StatsFragmentTrip extends Fragment {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.d("statsfragmenttrip", "running");
                         Cursor cursor = mCoordDBHelper.getAllData();
-                        cursor.moveToLast();
-                        mBatteryData.setText("" + cursor.getDouble(8));
-                        mDistanceData.setText("" + cursor.getDouble(7));
-                        mMPGData.setText("" + "" + cursor.getDouble(9));
-                        mVelocityData.setText("" + "" + cursor.getDouble(10));
-
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToLast();
+                            mBatteryData.setText("g" + cursor.getDouble(8));
+                            mDistanceData.setText("" + cursor.getDouble(7));
+                            mMPGData.setText("" + "" + cursor.getDouble(9));
+                            mVelocityData.setText("" + "" + cursor.getDouble(10));
+                        }
                         mHandler.postDelayed(this, 1000);
                     }
                 });
