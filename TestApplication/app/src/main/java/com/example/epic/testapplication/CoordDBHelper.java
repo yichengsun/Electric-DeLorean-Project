@@ -14,11 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.List;
-
-=======
->>>>>>> bf066fb3fb6cdb5da72f0b0a14475c6ae9038f62
 
 /**
  * Created by Yicheng on 6/22/2015.
