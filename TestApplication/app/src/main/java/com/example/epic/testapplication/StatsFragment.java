@@ -27,6 +27,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class StatsFragment extends Fragment implements AsyncResponse {
+    private static final String TAG = "StatsFragment";
     private TextView mBatteryData;
     private TextView mMPGData;
     private TextView mDistanceData;
@@ -37,12 +38,14 @@ public class StatsFragment extends Fragment implements AsyncResponse {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Stats onCreate called");
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        Log.d(TAG, "Stats onCreateView called");
         View v = inflater.inflate(R.layout.fragment_stats, parent, false);
 
         mBatteryData = (TextView) v.findViewById(R.id.batteryData);
@@ -59,17 +62,19 @@ public class StatsFragment extends Fragment implements AsyncResponse {
                         CalculationsTask calculate = new CalculationsTask(mActivity);
                         calculate.delegate = StatsFragment.this;
                         calculate.execute(4); // any int is fine
-                        mHandler.postDelayed(this, 10000);
+                        mHandler.postDelayed(this, 1000);
                     }
                 });
             }
         };
+        //delay in starting
         mHandler.postDelayed(mRunnable, 2000);
 
         return v;
     }
 
     public void processFinish(Integer[] output) {
+        Log.d(TAG, "Stats processFinish called");
         mCurrentData = output;
         mBatteryData.setText("" + mCurrentData[0]);
         mMPGData.setText("" + mCurrentData[1]);

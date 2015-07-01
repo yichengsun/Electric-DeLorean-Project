@@ -114,20 +114,18 @@ public class PollService extends Service implements
         double interval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng);
         if (Double.compare(interval, 1.0) == -1)
             interval = 0;
-        Log.d(TAG, "distance = " + interval);
+        //Log.d(TAG, "distance = " + interval);
         mDistanceInterval = interval;
         mTotalDistance += interval;
-        Log.d(TAG, "total distance = " + mTotalDistance);
+        //Log.d(TAG, "total distance = " + mTotalDistance);
         //TODO getAltitude returns 0.0 every time
         mLastAlt = mLastLocation.getAltitude();
         mLastDate = new Date();
         mLastUpdateTime = DateFormat.getTimeInstance().format(mLastDate);
 
         mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt, mTimeElapsed, mDistanceInterval, mTotalDistance);
-        //updateUI();
         Toast.makeText(this, getResources().getString(R.string.location_updated),
                 Toast.LENGTH_SHORT).show();
-
     }
 
     @Override

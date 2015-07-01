@@ -19,18 +19,18 @@ public class CalculationsTask extends AsyncTask<Integer, Void, Integer[]> {
 
     @Override
     protected void onPreExecute() {
-        Log.v(TAG, "starting CalculationsTask");
+        Log.d(TAG, "starting CalculationsTask");
         super.onPreExecute();
     }
 
     @Override
     protected void onProgressUpdate(Void... values) {
-        Log.v(TAG, "reporting back from CalculationsTask");
+        Log.d(TAG, "reporting back from CalculationsTask");
         super.onProgressUpdate(values);
     }
 
     protected Integer[] doInBackground(Integer... ints) {
-        Log.v(TAG, "doing calculations for CalculationsTask");
+        Log.d(TAG, "doing calculations for CalculationsTask");
         CoordDBHelper mCoordDBHelper = new CoordDBHelper(c);
         //dummy calculations
         // Battery Level
@@ -43,7 +43,7 @@ public class CalculationsTask extends AsyncTask<Integer, Void, Integer[]> {
     }
 
     protected void onPostExecute(Integer[] result) {
-        Log.v(TAG, "finished CalculationsTask");
+        Log.d(TAG, "finished CalculationsTask");
         delegate.processFinish(result);
     }
 

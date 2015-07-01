@@ -88,12 +88,13 @@ public class CoordDBHelper extends SQLiteOpenHelper{
 
     //returns all coordinates from table
     public Cursor getAllData() {
-        Log.d(TAG, "Coord getAllData called");
+        //Log.d(TAG, "Coord getAllData called");
         return mDB.query(TABLE_COORD, COLUMNS, null, null, null, null, null);
     }
 
     // returns latest cumulative distance info
     public double getDistance() {
+        Log.d(TAG, "Coord getDistance called");
         Cursor cursor = getAllData();
         if (cursor.getCount() > 0) {
             cursor.moveToLast();

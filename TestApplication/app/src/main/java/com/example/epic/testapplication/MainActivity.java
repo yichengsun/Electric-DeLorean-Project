@@ -36,6 +36,7 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 public class MainActivity extends ActionBarActivity {
+    private static final String TAG = "MainActivity";
     public static PollService mService;
     private boolean mOnTrip;
     private boolean mMapView;
@@ -44,6 +45,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Main onCreate called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("Electric DeLorean Tracker");
@@ -55,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "Main onCreateOptionsMenu called");
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
@@ -66,22 +69,26 @@ public class MainActivity extends ActionBarActivity {
         Intent i = new Intent(MainActivity.this, PollService.class);
         switch (item.getItemId()) {
             case R.id.trip_start:
+                Log.d(TAG, "Main trip_start called");
                 bindService(i, mConnection, Context.BIND_AUTO_CREATE);
                 mStartTime = System.nanoTime();
                 mOnTrip = !mOnTrip;
                 return true;
             case R.id.trip_stop:
+                Log.d(TAG, "Main trip_stop called");
                 MainActivity.this.unbindService(mConnection);
                 mEndTime = System.nanoTime();
                 mOnTrip = !mOnTrip;
                 return true;
             case R.id.view_switch:
                 if (!mMapView) {
+                    Log.d(TAG, "Main map_fragment called");
                     MapFragment fragmentMap = new MapFragment();
                     android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                     mMapView = true;
                 } else {
+                    Log.d(TAG, "Main stats_fragment called");
                     StatsFragment fragmentStats = new StatsFragment();
                     android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
@@ -99,12 +106,14 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d(TAG, "Main onServiceConnected called");
             PollService.LocalBinder binder = (PollService.LocalBinder) service;
             mService = binder.getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(TAG, "Main onServiceDisconnected called");
         }
     };
 }
