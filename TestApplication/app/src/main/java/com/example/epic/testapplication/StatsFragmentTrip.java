@@ -1,33 +1,15 @@
 package com.example.epic.testapplication;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.google.android.gms.cast.CastRemoteDisplayLocalService;
-
-import org.w3c.dom.Text;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class StatsFragmentTrip extends Fragment {
     private TextView mBatteryData;

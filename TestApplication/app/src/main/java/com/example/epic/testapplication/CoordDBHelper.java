@@ -3,7 +3,6 @@ package com.example.epic.testapplication;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -11,17 +10,15 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.github.filosganga.geogson.gson.GeometryAdapterFactory;
-import com.github.filosganga.geogson.model.Coordinates;
-import com.github.filosganga.geogson.model.positions.SinglePosition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.maps.android.geometry.Point;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.List;
 
+=======
+>>>>>>> bf066fb3fb6cdb5da72f0b0a14475c6ae9038f62
 
 /**
  * Created by Yicheng on 6/22/2015.
@@ -116,20 +113,26 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     }
 
     // Converts database to JSON
-    public String dataToJSON() {
+    public String dataToJSON(int routeNum) {
         Log.d(TAG, "Coord dataToJSON called");
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new GeometryAdapterFactory()).create();
         //TODO only convert most recent route
         Cursor cursor = getAllData();
-        DataPoint[] points = new DataPoint[cursor.getCount()];
-        cursor.moveToFirst();
-        int i = 0;
+        ArrayList points = new ArrayList<DataPoint>();
+        //DataPoint[] points = new DataPoint[cursor.getCount()];
+        cursor.moveToLast();
 
+        while (cursor.getInt(1) == routeNum) {
+            cursor.moveToPrevious();
+        }
+
+        int i = 0;
+        cursor.moveToNext();
         while (!cursor.isAfterLast()) {
             DataPoint point = new DataPoint(cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3),
                     cursor.getDouble(4), cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7),
                     cursor.getDouble(8), cursor.getDouble(9), cursor.getDouble(10));
-            points[i++] = point;
+            points.add(point);
             cursor.moveToNext();
         }
 

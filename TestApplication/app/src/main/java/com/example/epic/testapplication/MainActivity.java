@@ -119,7 +119,6 @@ public class MainActivity extends ActionBarActivity {
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
                     mMapView = false;
                 }
-
             default:
                 return super.onOptionsItemSelected(item);
         }
