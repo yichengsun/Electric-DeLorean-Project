@@ -1,9 +1,15 @@
 package com.example.epic.testapplication;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -220,16 +226,37 @@ public class PollService extends Service implements
         mGoogleApiClient.disconnect();
 
         String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
-
         // Parse file-storing test code
-        byte[] translated = jsonFile.getBytes();
-        ParseFile stored = new ParseFile("route.json", translated);
-        stored.saveInBackground();
+        final byte[] translated = jsonFile.getBytes();
 
-        ParseObject FileObject = new ParseObject("DeLoreanFileObject");
-        FileObject.put("File", stored);
-        FileObject.saveInBackground();
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
+        if (mWifi.isConnected()) {
+            ParseFile stored = new ParseFile("route.json", translated);
+            stored.saveInBackground();
+
+            ParseObject FileObject = new ParseObject("DeLoreanFileObject");
+            FileObject.put("route.json", translated);
+            FileObject.saveInBackground();
+        } else {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    final String action = intent.getAction();
+                    if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+                        if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)){
+                            ParseObject FileObject = new ParseObject("DeLoreanFileObject");
+                            FileObject.put("route.json", translated);
+                            FileObject.saveEventually();
+                        }
+                    }
+                }
+            };
+            registerReceiver(broadcastReceiver, intentFilter);
+        }
         return false;
     }
 }

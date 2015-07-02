@@ -51,7 +51,7 @@ public class StatsFragmentTrip extends Fragment {
                             mBatteryData.setText("" + cursor.getDouble(8));
                             mDistanceData.setText("" + cursor.getDouble(7));
                             mMPGData.setText("" + "" + cursor.getDouble(9));
-                            mVelocityData.setText("" + "" + cursor.getDouble(10));
+                            mVelocityData.setText("" + cursor.getDouble(10));
                         }
                         mHandler.postDelayed(this, 1000);
                     }
