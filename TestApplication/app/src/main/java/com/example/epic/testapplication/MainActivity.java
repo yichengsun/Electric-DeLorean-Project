@@ -104,10 +104,10 @@ public class MainActivity extends ActionBarActivity {
             case R.id.view_switch:
                 if (!mMapView && !mOnTrip) {
                     Log.d(TAG, "Main map_fragment called");
-//                    MapFragment fragmentMap = new MapFragment();
-//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
-                    MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
+                    MapFragment fragmentMap = new MapFragment();
+                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+//                    MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
+//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
                     mMapView = true;
                 } else if (!mMapView && mOnTrip) {
                     MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();

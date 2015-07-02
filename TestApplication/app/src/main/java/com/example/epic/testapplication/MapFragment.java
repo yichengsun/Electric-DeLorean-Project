@@ -49,6 +49,7 @@ public class MapFragment extends Fragment implements
     private Handler mHandler;
     private Activity mActivity;
     private Runnable mRunnable;
+    private Marker delorean;
 
     public static final long UPDATE_INTERVAL = 1000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
@@ -66,9 +67,10 @@ public class MapFragment extends Fragment implements
 
     protected synchronized void buildGoogleApiClient() {
         Log.d(TAG, "buildingGoogleApiClient called");
+
         mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
-                .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) this)
-                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
         createLocationRequest();
@@ -85,13 +87,27 @@ public class MapFragment extends Fragment implements
     protected void startLocationUpdates() {
         Log.d(TAG, "startLocationUpdates called");
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, (LocationListener) this);
+                mGoogleApiClient, mLocationRequest, this);
     }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d(TAG, "onConnected called");
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            startLocationUpdates();
+//            startLocationUpdates();
+        delorean = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                .title("DeLorean DMC-12")
+                .snippet("Roads? Where we're going, we don't need roads.")
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
+
     }
 
     @Override
@@ -107,14 +123,15 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged called");
-        mMap.clear();
-        Marker delorean = mMap.addMarker(new MarkerOptions()
+        Log.d(TAG, "onLocationChanged called: " + mLastLocation.toString());
+        delorean.remove();
+        delorean = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true));
-//                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+        Toast.makeText(mActivity, "location updated", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -134,21 +151,13 @@ public class MapFragment extends Fragment implements
         buildGoogleApiClient();
         mGoogleApiClient.connect();
         final Handler mHandler = new Handler();
-        Runnable mRunnable = new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 startLocationUpdates();
             }
-        };
-        mHandler.postDelayed(mRunnable, 100);
+        }, 100);
 
-
-        mMap.clear();
-        Marker delorean = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
-                .title("DeLorean DMC-12")
-                .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true));
 //                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
 
 //        mCoordDBHelper = new CoordDBHelper(getActivity());
@@ -174,10 +183,7 @@ public class MapFragment extends Fragment implements
 //            }
 //        };
 //        mHandler.postDelayed(mRunnable,5000);
-
         return v;
-
-
     }
 
 //    @Override
