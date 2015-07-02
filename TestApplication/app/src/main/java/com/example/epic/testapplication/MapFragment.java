@@ -150,7 +150,7 @@ public class MapFragment extends Fragment implements
 
         buildGoogleApiClient();
         mGoogleApiClient.connect();
-        final Handler mHandler = new Handler();
+        mHandler = new Handler();
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -186,17 +186,18 @@ public class MapFragment extends Fragment implements
         return v;
     }
 
-//    @Override
-//    public void onPause() {
-//        mHandler.removeCallbacksAndMessages(null);
-//        super.onPause();
-//    }
-//
-//    @Override
-//    public void onResume() {
-//        mHandler.postDelayed(mRunnable, 1000);
-//        super.onResume();
-//    }
+    @Override
+    public void onPause() {
+        mHandler.removeCallbacksAndMessages(null);
+        stopLocationUpdates();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        mHandler.postDelayed(mRunnable, 1000);
+        super.onResume();
+    }
 
 //    private void updateUI() {
 //        Log.d(TAG, "updateUI called");
