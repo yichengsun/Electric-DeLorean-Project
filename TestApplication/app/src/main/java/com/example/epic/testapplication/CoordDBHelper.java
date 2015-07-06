@@ -108,23 +108,26 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         return 0;
     }
 
+    // returns database
+    public SQLiteDatabase getDB() {
+        return mDB;
+    }
+
     // Converts database to JSON
     public String dataToJSON(int routeNum) {
         Log.d(TAG, "Coord dataToJSON called");
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new GeometryAdapterFactory()).create();
-        //TODO only convert most recent route
         Cursor cursor = getAllData();
         ArrayList points = new ArrayList<DataPoint>();
-        //DataPoint[] points = new DataPoint[cursor.getCount()];
-        cursor.moveToFirst();
+        cursor.moveToLast();
 
-//        while (cursor.getInt(1) == routeNum) {
-//            cursor.moveToPrevious();
-//        }
+        while (!cursor.isBeforeFirst() && cursor.getInt(1) >= routeNum) {
+            cursor.moveToPrevious();
+        }
 
         int i = 0;
-//        cursor.moveToNext();
-        while (!cursor.isAfterLast()) {
+        cursor.moveToNext();
+        while (!cursor.isAfterLast() && cursor.getInt(1) == routeNum) {
             DataPoint point = new DataPoint(cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3),
                     cursor.getDouble(4), cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7),
                     cursor.getDouble(8), cursor.getDouble(9), cursor.getDouble(10));
@@ -133,6 +136,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         }
 
         String json = gson.toJson(points);
+
         return json;
     }
 //

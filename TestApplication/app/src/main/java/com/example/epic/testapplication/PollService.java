@@ -59,6 +59,7 @@ public class PollService extends Service implements
     protected boolean mRequestingLocationUpdates;
 
     protected CoordDBHelper mCoordDBHelper;
+    protected RouteDBHelper mRouteDBHelper;
     protected int mLastRouteId = 0;
     protected double mLastLat = 0.0;
     protected double mLastLng = 0.0;
@@ -185,6 +186,7 @@ public class PollService extends Service implements
         Log.i(TAG, "PollService running");
         mStartTime = System.nanoTime();
         mCoordDBHelper = new CoordDBHelper(PollService.this);
+        mRouteDBHelper = new RouteDBHelper(PollService.this);
 
         Runnable mainR = new Runnable() {
             @Override
@@ -216,6 +218,8 @@ public class PollService extends Service implements
             cursor.moveToLast();
             mLastRouteId = cursor.getInt(1) + 1;
         }
+        Route route = new Route(mLastRouteId);
+        mRouteDBHelper.insertRoute(route);
         return mBinder;
     }
 
@@ -225,37 +229,20 @@ public class PollService extends Service implements
                 mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
 
-        String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
-        // Parse file-storing test code
-        final byte[] translated = jsonFile.getBytes();
-
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         if (mWifi.isConnected()) {
+            String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
+            final byte[] translated = jsonFile.getBytes();
             ParseFile stored = new ParseFile("route.json", translated);
             stored.saveInBackground();
 
-            ParseObject FileObject = new ParseObject("DeLoreanFileObject");
-            FileObject.put("route.json", translated);
-            FileObject.saveInBackground();
-        } else {
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    final String action = intent.getAction();
-                    if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
-                        if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)){
-                            ParseObject FileObject = new ParseObject("DeLoreanFileObject");
-                            FileObject.put("route.json", translated);
-                            FileObject.saveEventually();
-                        }
-                    }
-                }
-            };
-            registerReceiver(broadcastReceiver, intentFilter);
+            ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
+            DeLoreanRouteObject.put("File", stored);
+            DeLoreanRouteObject.saveInBackground();
+
+            mRouteDBHelper.updateUploaded(mLastRouteId);
         }
         return false;
     }
