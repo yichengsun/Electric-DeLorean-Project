@@ -61,7 +61,7 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
         final Bitmap car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.delorean_transparent);
         final Bitmap car_half_bitmap = Bitmap.createScaledBitmap(
-                car_full_bitmap, car_full_bitmap.getWidth() * 2 / 3, car_full_bitmap.getHeight() * 2 / 3, false);
+                car_full_bitmap, car_full_bitmap.getWidth() /2, car_full_bitmap.getHeight() /2, false);
 
 
         mCoordDBHelper = new CoordDBHelper(getActivity());

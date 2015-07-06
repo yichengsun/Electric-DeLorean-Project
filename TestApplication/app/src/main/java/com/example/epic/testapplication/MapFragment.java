@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
@@ -138,15 +139,19 @@ public class MapFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "Map onCreateView called");
         View v = inflater.inflate(R.layout.fragment_map, parent, false);
+
         mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
                 .getMap();
-        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
+                new OSMTileProvider(getResources().getAssets())));
+
         //mMap.setMyLocationEnabled(true);
 
         car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.delorean_transparent);
         car_half_bitmap = Bitmap.createScaledBitmap(
-                car_full_bitmap, car_full_bitmap.getWidth() * 2 / 3, car_full_bitmap.getHeight() * 2 / 3, false);
+                car_full_bitmap, car_full_bitmap.getWidth()/2, car_full_bitmap.getHeight()/2, false);
 
         buildGoogleApiClient();
         mGoogleApiClient.connect();
