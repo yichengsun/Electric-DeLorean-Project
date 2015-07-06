@@ -19,7 +19,7 @@ public class OSMTileProvider implements TileProvider {
 
     private AssetManager mAssets;
 
-    public CustomMapTileProvider(AssetManager assets) {
+    public OSMTileProvider(AssetManager assets) {
         mAssets = assets;
     }
 
