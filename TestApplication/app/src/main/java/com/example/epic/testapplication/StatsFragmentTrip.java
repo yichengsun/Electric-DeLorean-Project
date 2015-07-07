@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
 public class StatsFragmentTrip extends Fragment {
     private TextView mBatteryData;
     private TextView mMPGData;
@@ -48,10 +50,10 @@ public class StatsFragmentTrip extends Fragment {
                         Cursor cursor = mCoordDBHelper.getAllData();
                         if (cursor.getCount() > 0) {
                             cursor.moveToLast();
-                            mBatteryData.setText("" + cursor.getDouble(8));
-                            mDistanceData.setText("" + cursor.getDouble(7));
-                            mMPGData.setText("" + "" + cursor.getDouble(9));
-                            mVelocityData.setText("" + cursor.getDouble(10));
+                            mBatteryData.setText(new DecimalFormat("##.##").format(cursor.getDouble(8)));
+                            mDistanceData.setText(new DecimalFormat("##.##").format(cursor.getDouble(7)));
+                            mMPGData.setText(new DecimalFormat("##.##").format(cursor.getDouble(9)));
+                            mVelocityData.setText(new DecimalFormat("##.##").format(cursor.getDouble(10)));
                         }
                         mHandler.postDelayed(this, 1000);
                     }
