@@ -29,8 +29,7 @@ import android.support.v4.app.Fragment;
 import java.util.List;
 
 
-public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ {
-
+public class MapFragmentTrip extends Fragment {
     protected static final String TAG = "MapFragmentTrip";
     public static final LatLng BELFAST = new LatLng(54.5970, -5.9300);
     protected PolylineOptions mPolyline;
@@ -62,7 +61,6 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
 
-
         car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.delorean_transparent);
         car_half_bitmap = Bitmap.createScaledBitmap(
@@ -70,13 +68,13 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
 
 
         mCoordDBHelper = new CoordDBHelper(getActivity());
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
 
         delorean = mMap.addMarker(new MarkerOptions()
                 .position(mCoordDBHelper.getLastLatLng())
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true)
+                .visible(true)
                 .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
 
         mHandler = new Handler();
@@ -103,10 +101,7 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
             }
         };
         mHandler.post(mRunnable);
-
         return v;
-
-
     }
 
     @Override
@@ -120,16 +115,4 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
         mHandler.postDelayed(mRunnable, 1000);
         super.onResume();
     }
-
-//    private void updateUI() {
-//        Log.d(TAG, "updateUI called");
-//        if (mLastLocation != null) {
-//            mLatitudeTextView.setText(String.valueOf(mLastLat));
-//            mLongitudeTextView.setText(String.valueOf(mLastLng));
-//            mLastUpdateTimeTextView.setText(String.valueOf(mLastUpdateTime));
-//
-//            mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt);
-//            //TODO more textviews for alt,route, etc
-//        }
-//    }
 }

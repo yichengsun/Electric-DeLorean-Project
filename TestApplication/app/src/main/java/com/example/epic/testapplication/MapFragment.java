@@ -1,9 +1,7 @@
 package com.example.epic.testapplication;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -26,16 +24,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
-
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
-
 
 public class MapFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener /*implements OnMapReadyCallback*/ {
@@ -45,8 +37,6 @@ public class MapFragment extends Fragment implements
     public static  Bitmap car_full_bitmap;
     public static Bitmap car_half_bitmap;
     protected GoogleMap mMap;
-    protected List<LatLng> mAllLatLng;
-    protected CoordDBHelper mCoordDBHelper;
     private Handler mHandler;
     private Activity mActivity;
     private Runnable mRunnable;
@@ -126,7 +116,7 @@ public class MapFragment extends Fragment implements
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called: " + mLastLocation.toString());
         delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-
+        delorean.setVisible(true);
         Toast.makeText(mActivity, "location updated", Toast.LENGTH_SHORT).show();
     }
 
@@ -140,8 +130,6 @@ public class MapFragment extends Fragment implements
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
-
-        //mMap.setMyLocationEnabled(true);
 
         car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.delorean_transparent);
@@ -159,38 +147,12 @@ public class MapFragment extends Fragment implements
         }, 100);
 
         delorean = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                .position(BELFAST)
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true)
+                .visible(false)
                 .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
         //TODO figure out how to set minimum zoom and maximum zoom
-
-//                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
-
-//        mCoordDBHelper = new CoordDBHelper(getActivity());
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
-
-//        mHandler = new Handler();
-//        mRunnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                mActivity.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mMap.clear();
-//                        Marker delorean = mMap.addMarker(new MarkerOptions()
-//                                .position()
-//                                .title("DeLorean DMC-12")
-//                                .snippet("Roads? Where we're going, we don't need roads.")
-//                                .draggable(true)
-//                                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
-//                        mHandler.postDelayed(this, 1000);
-//                    }
-//                });
-//            }
-//        };
-//        mHandler.postDelayed(mRunnable,5000);
         return v;
     }
 
@@ -208,16 +170,4 @@ public class MapFragment extends Fragment implements
         mHandler.postDelayed(mRunnable, 1000);
         super.onResume();
     }
-
-//    private void updateUI() {
-//        Log.d(TAG, "updateUI called");
-//        if (mLastLocation != null) {
-//            mLatitudeTextView.setText(String.valueOf(mLastLat));
-//            mLongitudeTextView.setText(String.valueOf(mLastLng));
-//            mLastUpdateTimeTextView.setText(String.valueOf(mLastUpdateTime));
-//
-//            mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt);
-//            //TODO more textviews for alt,route, etc
-//        }
-//    }
 }
