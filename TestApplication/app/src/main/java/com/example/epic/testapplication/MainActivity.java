@@ -40,8 +40,6 @@ public class MainActivity extends ActionBarActivity {
     public static PollService mService;
     private boolean mOnTrip;
     private boolean mMapView;
-    private long mStartTime;
-    private long mEndTime;
 
     //dummy variable
     private static double mCalculatedBatteryLevel = 100.0;
@@ -76,7 +74,6 @@ public class MainActivity extends ActionBarActivity {
                 Log.d(TAG, "Main trip_start called");
                 if (!mOnTrip) {
                     bindService(i, mConnection, Context.BIND_AUTO_CREATE);
-                    mStartTime = System.nanoTime();
                     mOnTrip = true;
                     if (!mMapView) {
                         StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
@@ -94,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
                 Log.d(TAG, "Main trip_stop called");
                 if (mOnTrip) {
                     MainActivity.this.unbindService(mConnection);
-                    mEndTime = System.nanoTime();
                     mOnTrip = false;
                     if (!mMapView) {
                         StatsFragment fragmentStats = new StatsFragment();
