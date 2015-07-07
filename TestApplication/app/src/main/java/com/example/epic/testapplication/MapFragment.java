@@ -193,6 +193,7 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onPause() {
+        Log.d(TAG, "Map onPause called");
         mHandler.removeCallbacksAndMessages(null);
         stopLocationUpdates();
         super.onPause();
@@ -200,6 +201,7 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onResume() {
+        Log.d(TAG, "Map onResume called");
         mHandler.postDelayed(mRunnable, 1000);
         super.onResume();
     }
