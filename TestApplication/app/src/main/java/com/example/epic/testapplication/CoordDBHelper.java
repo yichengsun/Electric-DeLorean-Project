@@ -13,7 +13,9 @@ import com.github.filosganga.geogson.gson.GeometryAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,10 +28,10 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     private static int VERSION = 1;
 
     public static final String COORD_ID = "_id";
+    public static final String COORD_TIMESTAMP = "timestamp";
     public static final String COORD_ROUTE = "route";
     public static final String COORD_LAT = "lat";
     public static final String COORD_LNG = "lng";
-    public static final String COORD_ALT = "alt";
     public static final String COORD_TIME_ELPSD = "time_elapsed";
     public static final String COORD_DIST_DIFF = "distance_interval";
     public static final String COORD_DIST_TOTAL = "cumulative_distance_traveled";
@@ -37,7 +39,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     public static final String COORD_MPG = "average_mpg";
     public static final String COORD_VEL = "velocity";
     private static final String TABLE_COORD = "coordinates";
-    private static final String[] COLUMNS = {COORD_ID,COORD_ROUTE,COORD_LAT,COORD_LNG,COORD_ALT,
+    private static final String[] COLUMNS = {COORD_ID,COORD_TIMESTAMP, COORD_ROUTE,COORD_LAT,COORD_LNG,
             COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL,COORD_BATT,COORD_MPG, COORD_VEL};
     private SQLiteDatabase mDB;
 
@@ -51,13 +53,12 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "Coord onCreate called");
-        //TODO add timestamp
         String sql = "create table " + TABLE_COORD + " ( " +
                 COORD_ID + " integer primary key autoincrement, " +
+                COORD_TIMESTAMP + " string , " +
                 COORD_ROUTE + " integer , " +
                 COORD_LAT + " real , " +
                 COORD_LNG + " real , " +
-                COORD_ALT + " real , " +
                 COORD_TIME_ELPSD + " real , " +
                 COORD_DIST_DIFF + " real , " +
                 COORD_DIST_TOTAL + " real ," +
@@ -68,13 +69,13 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         db.execSQL(sql);
     }
 
-    public long insertCoord(int route, double lat, double lng, double alt, double time, double diff, double dist, double batt, double mpg, double vel) {
-        Log.d(TAG, "Coord insert " + route + ", " + lat + ", " + lng  + ", " + alt + ", " + time + ", " + diff + ", " + dist + ", " + batt + ", " + mpg + ", " + vel);
+    public long insertCoord(String timestamp, int route, double lat, double lng, double time, double diff, double dist, double batt, double mpg, double vel) {
+        Log.d(TAG, "Coord insert " + route + ", " + lat + ", " + lng + ", " + time + ", " + diff + ", " + dist + ", " + batt + ", " + mpg + ", " + vel);
         ContentValues cv = new ContentValues();
+        cv.put(COORD_TIMESTAMP, timestamp);
         cv.put(COORD_ROUTE, route);
         cv.put(COORD_LAT, lat);
         cv.put(COORD_LNG, lng);
-        cv.put(COORD_ALT, alt);
         cv.put(COORD_TIME_ELPSD, time);
         cv.put(COORD_DIST_DIFF, diff);
         cv.put(COORD_DIST_TOTAL, dist);
@@ -128,9 +129,9 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         int i = 0;
         cursor.moveToNext();
         while (!cursor.isAfterLast() && cursor.getInt(1) == routeNum) {
-            DataPoint point = new DataPoint(cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3),
-                    cursor.getDouble(4), cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7),
-                    cursor.getDouble(8), cursor.getDouble(9), cursor.getDouble(10));
+            DataPoint point = new DataPoint(cursor.getString(1), cursor.getInt(2), cursor.getDouble(3), cursor.getDouble(4),
+                    cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7), cursor.getDouble(8),
+                    cursor.getDouble(9), cursor.getDouble(10));
             points.add(point);
             cursor.moveToNext();
         }

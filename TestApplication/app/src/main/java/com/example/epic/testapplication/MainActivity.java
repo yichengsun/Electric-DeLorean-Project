@@ -74,31 +74,39 @@ public class MainActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.trip_start:
                 Log.d(TAG, "Main trip_start called");
-                bindService(i, mConnection, Context.BIND_AUTO_CREATE);
-                mStartTime = System.nanoTime();
-                mOnTrip = true;
-                if (!mMapView) {
-                    StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
-                } else {
-                    MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
+                if (!mOnTrip) {
+                    bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+                    mStartTime = System.nanoTime();
+                    mOnTrip = true;
+                    if (!mMapView) {
+                        StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
+                        fm.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
+                    } else {
+                        MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
+                        fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
+                    }
+                    findViewById(R.id.trip_stop).setEnabled(true);
+                    findViewById(R.id.trip_start).setEnabled(false);
                 }
                 return true;
 
             case R.id.trip_stop:
                 Log.d(TAG, "Main trip_stop called");
-                MainActivity.this.unbindService(mConnection);
-                mEndTime = System.nanoTime();
-                mOnTrip = false;
-                if (!mMapView) {
-                    StatsFragment fragmentStats = new StatsFragment();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
-                }
+                if (mOnTrip) {
+                    MainActivity.this.unbindService(mConnection);
+                    mEndTime = System.nanoTime();
+                    mOnTrip = false;
+                    if (!mMapView) {
+                        StatsFragment fragmentStats = new StatsFragment();
+                        fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+                    }
 //                else {
 //                    MapFragment fragmentMap = new MapFragment();
 //                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
 //                }
+                    findViewById(R.id.trip_stop).setEnabled(false);
+                    findViewById(R.id.trip_start).setEnabled(true);
+                }
                 return true;
 
             case R.id.view_switch:

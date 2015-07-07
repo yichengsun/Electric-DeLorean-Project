@@ -65,10 +65,10 @@ public class PollService extends Service implements
 
     protected CoordDBHelper mCoordDBHelper;
     protected RouteDBHelper mRouteDBHelper;
+    protected String mTimestamp;
     protected int mLastRouteId = 0;
     protected double mLastLat = 0.0;
     protected double mLastLng = 0.0;
-    protected double mLastAlt = 0.0;
     protected double mTimeElapsed = 0.0;
     protected double mDistanceInterval = 0.0;
     protected double mTotalDistance = 0.0;
@@ -128,19 +128,19 @@ public class PollService extends Service implements
 
         mLastLat = mLastLocation.getLatitude();
         mLastLng = mLastLocation.getLongitude();
+        mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
         mTotalDistance += mDistanceInterval;
         mVelocity = (mDistanceInterval/(UPDATE_INTERVAL / MILI_TO_SECONDS)) * MPS_TO_MPH;
         Log.d("gps", "" + mLastLocation.hasAltitude());
-        mLastAlt = mLastLocation.getAltitude(); // remove eventually
         mLastDate = new Date();
         mLastUpdateTime = DateFormat.getTimeInstance().format(mLastDate);
         double[] stats = MainActivity.getBatteryData();
         mBatteryLevel = stats[0];
         mMPG = stats[1];
 
-        mCoordDBHelper.insertCoord(mLastRouteId, mLastLat, mLastLng, mLastAlt, mTimeElapsed, mDistanceInterval, mTotalDistance, mBatteryLevel, mMPG, mVelocity);
+        mCoordDBHelper.insertCoord(mTimestamp, mLastRouteId, mLastLat, mLastLng, mTimeElapsed, mDistanceInterval, mTotalDistance, mBatteryLevel, mMPG, mVelocity);
         Toast.makeText(this, getResources().getString(R.string.location_updated),
                 Toast.LENGTH_SHORT).show();
     }
