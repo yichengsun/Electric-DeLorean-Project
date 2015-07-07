@@ -61,45 +61,45 @@ public class MapFragmentTrip extends Fragment {
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
 
-        car_full_bitmap = BitmapFactory.decodeResource(
-                getResources(), R.drawable.delorean_transparent);
-        car_half_bitmap = Bitmap.createScaledBitmap(
-                car_full_bitmap, car_full_bitmap.getWidth() / 2, car_full_bitmap.getHeight() / 2, false);
-
-        mCoordDBHelper = new CoordDBHelper(getActivity());
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
-
-        delorean = mMap.addMarker(new MarkerOptions()
-                .position(BELFAST)
-                .title("DeLorean DMC-12")
-                .snippet("Roads? Where we're going, we don't need roads.")
-                .visible(false)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
-
-        mHandler = new Handler();
-        mRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        delorean.setPosition(mCoordDBHelper.getLastLatLng());
-                        delorean.setVisible(true);
-                        mAllLatLng = mCoordDBHelper.getAllLatLng();
-                        mPolyline = new PolylineOptions()
-                                .addAll(mAllLatLng)
-                                .width(20)
-                                .color(Color.BLUE)
-                                .geodesic(true)
-                                .zIndex(1);
-                        mMap.addPolyline(mPolyline);
-
-                        mHandler.postDelayed(this, 1000);
-                    }
-                });
-            }
-        };
-        mHandler.post(mRunnable);
+//        car_full_bitmap = BitmapFactory.decodeResource(
+//                getResources(), R.drawable.delorean_transparent);
+//        car_half_bitmap = Bitmap.createScaledBitmap(
+//                car_full_bitmap, car_full_bitmap.getWidth() / 2, car_full_bitmap.getHeight() / 2, false);
+//
+//        mCoordDBHelper = new CoordDBHelper(getActivity());
+////        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
+//
+//        delorean = mMap.addMarker(new MarkerOptions()
+//                .position(BELFAST)
+//                .title("DeLorean DMC-12")
+//                .snippet("Roads? Where we're going, we don't need roads.")
+//                .visible(false)
+//                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+//
+//        mHandler = new Handler();
+//        mRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                mActivity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        delorean.setPosition(mCoordDBHelper.getLastLatLng());
+//                        delorean.setVisible(true);
+//                        mAllLatLng = mCoordDBHelper.getAllLatLng();
+//                        mPolyline = new PolylineOptions()
+//                                .addAll(mAllLatLng)
+//                                .width(20)
+//                                .color(Color.BLUE)
+//                                .geodesic(true)
+//                                .zIndex(1);
+//                        mMap.addPolyline(mPolyline);
+//
+//                        mHandler.postDelayed(this, 1000);
+//                    }
+//                });
+//            }
+//        };
+//        mHandler.post(mRunnable);
         return v;
     }
 
@@ -111,7 +111,7 @@ public class MapFragmentTrip extends Fragment {
 
     @Override
     public void onResume() {
-        mHandler.postDelayed(mRunnable, 1000);
+//        mHandler.postDelayed(mRunnable, 1000);
         super.onResume();
     }
 }

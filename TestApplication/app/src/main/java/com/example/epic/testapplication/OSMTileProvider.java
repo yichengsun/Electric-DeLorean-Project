@@ -59,6 +59,6 @@ public class OSMTileProvider implements TileProvider {
     }
 
     private String getTileFilename(int x, int y, int zoom) {
-        return "map/" + zoom + '/' + x + '/' + y + ".png";
+        return "Tiles/" + zoom + '/' + x + '/' + y + ".png";
     }
 }
