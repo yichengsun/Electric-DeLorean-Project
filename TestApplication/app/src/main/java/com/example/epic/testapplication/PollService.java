@@ -131,6 +131,9 @@ public class PollService extends Service implements
         mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
+//        if (Double.compare(mDistanceInterval, 1.0) == -1) {
+//            mDistanceInterval = 0;
+//        }
         mTotalDistance += mDistanceInterval;
         mVelocity = (mDistanceInterval/(UPDATE_INTERVAL / MILI_TO_SECONDS)) * MPS_TO_MPH;
         Log.d("gps", "" + mLastLocation.hasAltitude());
@@ -214,12 +217,8 @@ public class PollService extends Service implements
 
         Thread t = new Thread(mainR);
         t.start();
+        mLastRouteId = mCoordDBHelper.getLastRouteId() + 1;
 
-        Cursor cursor = mCoordDBHelper.getAllData();
-        if (cursor.getCount() > 0) {
-            cursor.moveToLast();
-            mLastRouteId = cursor.getInt(2) + 1;
-        }
         Route route = new Route(mLastRouteId);
         mRouteDBHelper.insertRoute(route);
         return mBinder;

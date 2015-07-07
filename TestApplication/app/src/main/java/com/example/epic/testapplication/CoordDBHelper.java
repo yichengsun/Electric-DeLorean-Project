@@ -13,9 +13,7 @@ import com.github.filosganga.geogson.gson.GeometryAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +40,19 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     private static final String[] COLUMNS = {COORD_ID,COORD_TIMESTAMP, COORD_ROUTE,COORD_LAT,COORD_LNG,
             COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL,COORD_BATT,COORD_MPG,COORD_VEL};
     private SQLiteDatabase mDB;
+
+    private final int INDEX_TIMESTAMP = 1;
+    private final int INDEX_ROUTE = 2;
+    private final int INDEX_LAT = 3;
+    private final int INDEX_LNG = 4;
+    private final int INDEX_TIME_ELPSD = 5;
+    private final int INDEX_DIST_DIFF= 6;
+    private final int INDEX_DIST_TOTAL = 7;
+    private final int INDEX_BATT = 8;
+    private final int INDEX_MPG = 9;
+    private final int INDEX_VEL = 10;
+
+    private Cursor mCursor;
 
     public CoordDBHelper(Context context) {
         super(context, DBNAME, null, VERSION);
@@ -98,15 +109,10 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         return mDB.query(TABLE_COORD, COLUMNS, null, null, null, null, null);
     }
 
-    // returns latest cumulative distance info
-    public double getDistance() {
-        Log.d(TAG, "Coord getDistance called");
-        Cursor cursor = getAllData();
-        if (cursor.getCount() > 0) {
-            cursor.moveToLast();
-            return cursor.getDouble(7);
-        }
-        return 0;
+    //TODO query to only return last row
+    public Cursor getLastRow() {
+        String selectQuery = "SELECT * FROM " + TABLE_COORD + " ORDER BY " + COORD_ROUTE + " DESC, " + COORD_TIME_ELPSD + " DESC LIMIT 1";
+        return mDB.rawQuery(selectQuery, null);
     }
 
     // returns database
@@ -122,22 +128,22 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         ArrayList points = new ArrayList<DataPoint>();
         cursor.moveToLast();
 
-        while (!cursor.isBeforeFirst() && cursor.getInt(2) >= routeNum) {
+        while (!cursor.isBeforeFirst() && cursor.getInt(INDEX_ROUTE) >= routeNum) {
             cursor.moveToPrevious();
         }
 
         int i = 0;
         cursor.moveToNext();
-        while (!cursor.isAfterLast() && cursor.getInt(2) == routeNum) {
-            DataPoint point = new DataPoint(cursor.getString(1), cursor.getInt(2), cursor.getDouble(3), cursor.getDouble(4),
-                    cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7), cursor.getDouble(8),
-                    cursor.getDouble(9), cursor.getDouble(10));
+        while (!cursor.isAfterLast() && cursor.getInt(INDEX_ROUTE) == routeNum) {
+            DataPoint point = new DataPoint(cursor.getString(INDEX_TIMESTAMP), cursor.getInt(INDEX_ROUTE), cursor.getDouble(INDEX_LAT), cursor.getDouble(INDEX_LNG),
+                    cursor.getDouble(INDEX_TIME_ELPSD), cursor.getDouble(INDEX_DIST_DIFF), cursor.getDouble(INDEX_DIST_TOTAL), cursor.getDouble(INDEX_BATT),
+                    cursor.getDouble(INDEX_MPG), cursor.getDouble(INDEX_VEL));
             points.add(point);
             cursor.moveToNext();
         }
 
         String json = gson.toJson(points);
-
+        cursor.close();
         return json;
     }
 //
@@ -183,7 +189,9 @@ public class CoordDBHelper extends SQLiteOpenHelper{
 
             } while (allRows.moveToNext());
         }
-
+        if (allRows != null) {
+            allRows.close();
+        }
         return tableString;
     }
 
@@ -199,7 +207,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
             latLngArrayList = new ArrayList<LatLng>();
             cur = getAllData();
             while (cur.moveToNext()) {
-                LatLng latLng = new LatLng(cur.getDouble(2), cur.getDouble(3));
+                LatLng latLng = new LatLng(cur.getDouble(INDEX_LAT), cur.getDouble(INDEX_LNG));
                 latLngArrayList.add(latLng);
                 Log.d(TAG, latLng.toString());
 
@@ -219,7 +227,83 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         Log.d(TAG, "getLastLatLng called");
         Cursor cur = getAllData();
         cur.moveToLast();
-        return new LatLng(cur.getDouble(2), cur.getDouble(3));
+        LatLng coord = new LatLng(cur.getDouble(INDEX_LAT), cur.getDouble(INDEX_LNG));
+        cur.close();
+        return coord;
     }
 
+    public int getLastRouteId() {
+        Cursor cur = getAllData();
+        int count = cur.getCount();
+        if (count > 0) {
+            cur.moveToLast();
+            int id = cur.getInt(INDEX_ROUTE);
+            cur.close();
+            return id;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public double getLastBatt() {
+        Cursor cur = getAllData();
+        int count = cur.getCount();
+        if (count > 0) {
+            cur.moveToLast();
+            double batt = cur.getDouble(INDEX_BATT);
+            cur.close();
+            return batt;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public double getLastMPG() {
+        Cursor cur = getAllData();
+        int count = cur.getCount();
+        if (count > 0) {
+            cur.moveToLast();
+            double mpg = cur.getDouble(INDEX_MPG);
+            cur.close();
+            return mpg;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public double getLastDistTotal() {
+        Cursor cur = getAllData();
+        int count = cur.getCount();
+        if (count > 0) {
+            cur.moveToLast();
+            double dist = cur.getDouble(INDEX_DIST_TOTAL);
+            cur.close();
+            return dist;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public double getLastVelocity() {
+        Cursor cur = getAllData();
+        int count = cur.getCount();
+        if (count > 0) {
+            cur.moveToLast();
+            double vel = cur.getDouble(INDEX_VEL);
+            cur.close();
+            return vel;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public boolean isEmpty() {
+        Cursor cur = getAllData();
+        int count = cur.getCount();
+        cur.close();
+        if (count > 0)
+            return false;
+        else
+            return true;
+    }
 }

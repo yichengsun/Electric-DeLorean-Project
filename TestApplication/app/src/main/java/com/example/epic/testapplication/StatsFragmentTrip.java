@@ -47,13 +47,11 @@ public class StatsFragmentTrip extends Fragment {
                     @Override
                     public void run() {
                         Log.d("statsfragmenttrip", "running");
-                        Cursor cursor = mCoordDBHelper.getAllData();
-                        if (cursor.getCount() > 0) {
-                            cursor.moveToLast();
-                            mBatteryData.setText(new DecimalFormat("##.##").format(cursor.getDouble(8)));
-                            mDistanceData.setText(new DecimalFormat("##.##").format(cursor.getDouble(7)));
-                            mMPGData.setText(new DecimalFormat("##.##").format(cursor.getDouble(9)));
-                            mVelocityData.setText(new DecimalFormat("##.##").format(cursor.getDouble(10)));
+                        if (!mCoordDBHelper.isEmpty()) {
+                            mBatteryData.setText(new DecimalFormat("##.##").format(mCoordDBHelper.getLastBatt()));
+                            mDistanceData.setText(new DecimalFormat("##.##").format(mCoordDBHelper.getLastDistTotal()));
+                            mMPGData.setText(new DecimalFormat("##.##").format(mCoordDBHelper.getLastMPG()));
+                            mVelocityData.setText(new DecimalFormat("##.##").format(mCoordDBHelper.getLastVelocity()));
                         }
                         mHandler.postDelayed(this, 1000);
                     }
