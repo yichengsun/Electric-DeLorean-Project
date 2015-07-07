@@ -88,14 +88,9 @@ public class MapFragment extends Fragment implements
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d(TAG, "onConnected called");
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//            startLocationUpdates();
-        delorean = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
-                .title("DeLorean DMC-12")
-                .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        delorean.setVisible(true);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
 
