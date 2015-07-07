@@ -139,7 +139,7 @@ public class MapFragment extends Fragment implements
             public void run() {
                 startLocationUpdates();
             }
-        }, 100);
+        }, 200);
 
         delorean = mMap.addMarker(new MarkerOptions()
                 .position(BELFAST)

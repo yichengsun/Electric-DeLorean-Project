@@ -54,9 +54,9 @@ public class MapFragmentTrip extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "Map onCreateView called");
         View v = inflater.inflate(R.layout.fragment_map, parent, false);
+
         mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
                 .getMap();
-
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
@@ -66,15 +66,14 @@ public class MapFragmentTrip extends Fragment {
         car_half_bitmap = Bitmap.createScaledBitmap(
                 car_full_bitmap, car_full_bitmap.getWidth() / 2, car_full_bitmap.getHeight() / 2, false);
 
-
         mCoordDBHelper = new CoordDBHelper(getActivity());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
 
         delorean = mMap.addMarker(new MarkerOptions()
-                .position(mCoordDBHelper.getLastLatLng())
+                .position(BELFAST)
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
-                .visible(true)
+                .visible(false)
                 .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
 
         mHandler = new Handler();
@@ -85,13 +84,13 @@ public class MapFragmentTrip extends Fragment {
                     @Override
                     public void run() {
                         delorean.setPosition(mCoordDBHelper.getLastLatLng());
-
+                        delorean.setVisible(true);
                         mAllLatLng = mCoordDBHelper.getAllLatLng();
                         mPolyline = new PolylineOptions()
                                 .addAll(mAllLatLng)
                                 .width(20)
                                 .color(Color.BLUE)
-                                .geodesic(false)
+                                .geodesic(true)
                                 .zIndex(1);
                         mMap.addPolyline(mPolyline);
 
