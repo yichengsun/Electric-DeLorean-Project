@@ -40,7 +40,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     public static final String COORD_VEL = "velocity";
     private static final String TABLE_COORD = "coordinates";
     private static final String[] COLUMNS = {COORD_ID,COORD_TIMESTAMP, COORD_ROUTE,COORD_LAT,COORD_LNG,
-            COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL,COORD_BATT,COORD_MPG, COORD_VEL};
+            COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL,COORD_BATT,COORD_MPG,COORD_VEL};
     private SQLiteDatabase mDB;
 
     public CoordDBHelper(Context context) {
@@ -48,7 +48,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         mDB = this.getWritableDatabase();
     }
 
-    //callback invoked when getReadableDatabse()/getWritableDatabase() is called
+    //callback invoked when getReadableDatabase()/getWritableDatabase() is called
     //provided the database does not exist
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -128,7 +128,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
 
         int i = 0;
         cursor.moveToNext();
-        while (!cursor.isAfterLast() && cursor.getInt(1) == routeNum) {
+        while (!cursor.isAfterLast() && cursor.getInt(2) == routeNum) {
             DataPoint point = new DataPoint(cursor.getString(1), cursor.getInt(2), cursor.getDouble(3), cursor.getDouble(4),
                     cursor.getDouble(5), cursor.getDouble(6), cursor.getDouble(7), cursor.getDouble(8),
                     cursor.getDouble(9), cursor.getDouble(10));
