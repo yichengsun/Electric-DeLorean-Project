@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import android.support.v4.app.Fragment;
 
@@ -39,6 +40,9 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
     private Handler mHandler;
     private Activity mActivity;
     private Runnable mRunnable;
+    private Marker delorean;
+    public static  Bitmap car_full_bitmap;
+    public static Bitmap car_half_bitmap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,19 +57,27 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
         View v = inflater.inflate(R.layout.fragment_map, parent, false);
         mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
                 .getMap();
-        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        //mMap.setMyLocationEnabled(true);
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
+                new OSMTileProvider(getResources().getAssets())));
 
 
-
-        final Bitmap car_full_bitmap = BitmapFactory.decodeResource(
+        car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.delorean_transparent);
-        final Bitmap car_half_bitmap = Bitmap.createScaledBitmap(
-                car_full_bitmap, car_full_bitmap.getWidth() /2, car_full_bitmap.getHeight() /2, false);
+        car_half_bitmap = Bitmap.createScaledBitmap(
+                car_full_bitmap, car_full_bitmap.getWidth() / 2, car_full_bitmap.getHeight() / 2, false);
 
 
         mCoordDBHelper = new CoordDBHelper(getActivity());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), 16));
+
+        delorean = mMap.addMarker(new MarkerOptions()
+                .position(mCoordDBHelper.getLastLatLng())
+                .title("DeLorean DMC-12")
+                .snippet("Roads? Where we're going, we don't need roads.")
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
 
         mHandler = new Handler();
         mRunnable = new Runnable() {
@@ -74,13 +86,7 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mMap.clear();
-                        Marker delorean = mMap.addMarker(new MarkerOptions()
-                                .position(mCoordDBHelper.getLastLatLng())
-                                .title("DeLorean DMC-12")
-                                .snippet("Roads? Where we're going, we don't need roads.")
-                                .draggable(true)
-                                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+                        delorean.setPosition(mCoordDBHelper.getLastLatLng());
 
                         mAllLatLng = mCoordDBHelper.getAllLatLng();
                         mPolyline = new PolylineOptions()
@@ -90,7 +96,6 @@ public class MapFragmentTrip extends Fragment /*implements OnMapReadyCallback*/ 
                                 .geodesic(false)
                                 .zIndex(1);
                         mMap.addPolyline(mPolyline);
-
 
                         mHandler.postDelayed(this, 1000);
                     }

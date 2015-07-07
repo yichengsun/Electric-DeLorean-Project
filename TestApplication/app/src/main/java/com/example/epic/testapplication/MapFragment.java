@@ -125,13 +125,8 @@ public class MapFragment extends Fragment implements
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called: " + mLastLocation.toString());
-        delorean.remove();
-        delorean = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
-                .title("DeLorean DMC-12")
-                .snippet("Roads? Where we're going, we don't need roads.")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+        delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+
         Toast.makeText(mActivity, "location updated", Toast.LENGTH_SHORT).show();
     }
 
@@ -151,7 +146,7 @@ public class MapFragment extends Fragment implements
         car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.delorean_transparent);
         car_half_bitmap = Bitmap.createScaledBitmap(
-                car_full_bitmap, car_full_bitmap.getWidth()/2, car_full_bitmap.getHeight()/2, false);
+                car_full_bitmap, car_full_bitmap.getWidth() / 2, car_full_bitmap.getHeight() / 2, false);
 
         buildGoogleApiClient();
         mGoogleApiClient.connect();
@@ -162,6 +157,14 @@ public class MapFragment extends Fragment implements
                 startLocationUpdates();
             }
         }, 100);
+
+        delorean = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                .title("DeLorean DMC-12")
+                .snippet("Roads? Where we're going, we don't need roads.")
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
+        //TODO figure out how to set minimum zoom and maximum zoom
 
 //                .icon(BitmapDescriptorFactory.fromBitmap(car_half_bitmap)));
 
