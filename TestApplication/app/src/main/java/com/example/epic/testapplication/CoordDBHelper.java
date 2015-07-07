@@ -122,7 +122,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         ArrayList points = new ArrayList<DataPoint>();
         cursor.moveToLast();
 
-        while (!cursor.isBeforeFirst() && cursor.getInt(1) >= routeNum) {
+        while (!cursor.isBeforeFirst() && cursor.getInt(2) >= routeNum) {
             cursor.moveToPrevious();
         }
 
@@ -221,4 +221,5 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         cur.moveToLast();
         return new LatLng(cur.getDouble(2), cur.getDouble(3));
     }
+
 }

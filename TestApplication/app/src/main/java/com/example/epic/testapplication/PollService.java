@@ -218,7 +218,7 @@ public class PollService extends Service implements
         Cursor cursor = mCoordDBHelper.getAllData();
         if (cursor.getCount() > 0) {
             cursor.moveToLast();
-            mLastRouteId = cursor.getInt(1) + 1;
+            mLastRouteId = cursor.getInt(2) + 1;
         }
         Route route = new Route(mLastRouteId);
         mRouteDBHelper.insertRoute(route);
