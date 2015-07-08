@@ -28,6 +28,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import android.support.v4.app.Fragment;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MapFragment extends Fragment implements
@@ -53,6 +55,8 @@ public class MapFragment extends Fragment implements
     protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
 
+    private ImageButton imgMyLocation;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "Map onCreate called");
@@ -62,7 +66,6 @@ public class MapFragment extends Fragment implements
                 getResources(), R.drawable.rear);
         car_resized_bitmap = Bitmap.createScaledBitmap(
                 car_full_bitmap, car_full_bitmap.getWidth() / 4, car_full_bitmap.getHeight() / 4, false);
-
         super.onCreate(savedInstanceState);
     }
 
@@ -70,6 +73,14 @@ public class MapFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "Map onCreateView called");
         View v = inflater.inflate(R.layout.fragment_map, parent, false);
+
+        imgMyLocation = (ImageButton)v.findViewById(R.id.imgMyLocation);
+        imgMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(delorean.getPosition()));
+            }
+        });
 
         mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
                 .getMap();
@@ -112,7 +123,6 @@ public class MapFragment extends Fragment implements
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called: " + mLastLocation.toString());
         delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(delorean.getPosition()));
         Toast.makeText(mActivity, "location updated", Toast.LENGTH_SHORT).show();
     }
 
