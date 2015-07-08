@@ -96,15 +96,7 @@ public class MapFragmentTrip extends Fragment {
         mMap.setOnCameraChangeListener(getCameraChangeListener());
 
         mCoordDBHelper = new CoordDBHelper(getActivity());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCoordDBHelper.getLastLatLng(), defaultZoom));
-
-        delorean = mMap.addMarker(new MarkerOptions()
-                .position(mCoordDBHelper.getLastLatLng())
-                .title("DeLorean DMC-12")
-                .snippet("Roads? Where we're going, we don't need roads.")
-                .visible(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_resized_bitmap)));
-
+       
         mHandler = new Handler();
         mRunnable = new Runnable() {
             @Override
@@ -112,7 +104,14 @@ public class MapFragmentTrip extends Fragment {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        delorean.setPosition(mCoordDBHelper.getLastLatLng());
+                        delorean = mMap.addMarker(new MarkerOptions()
+                                .position(mCoordDBHelper.getLastLatLng())
+                                .title("DeLorean DMC-12")
+                                .snippet("Roads? Where we're going, we don't need roads.")
+                                .visible(true)
+                                .icon(BitmapDescriptorFactory.fromBitmap(car_resized_bitmap)));
+
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(), defaultZoom));
 
                         mAllLatLng = mCoordDBHelper.getAllLatLng();
                         mPolyline = new PolylineOptions()
