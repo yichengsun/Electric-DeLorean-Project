@@ -112,7 +112,6 @@ public class MapFragment extends Fragment implements
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called: " + mLastLocation.toString());
         delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        delorean.setVisible(true);
         mMap.animateCamera(CameraUpdateFactory.newLatLng(delorean.getPosition()));
         Toast.makeText(mActivity, "location updated", Toast.LENGTH_SHORT).show();
     }
