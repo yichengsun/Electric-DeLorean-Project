@@ -62,7 +62,7 @@ public class MapFragmentTrip extends Fragment {
                 new OSMTileProvider(getResources().getAssets())));
 
 //        car_full_bitmap = BitmapFactory.decodeResource(
-//                getResources(), R.drawable.delorean_transparent);
+//                getResources(), R.drawable.rear);
 //        car_half_bitmap = Bitmap.createScaledBitmap(
 //                car_full_bitmap, car_full_bitmap.getWidth() / 2, car_full_bitmap.getHeight() / 2, false);
 //
