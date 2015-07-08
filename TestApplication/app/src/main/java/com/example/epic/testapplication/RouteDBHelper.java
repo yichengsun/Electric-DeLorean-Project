@@ -21,6 +21,10 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     public static final String ROUTE_UPLOADED = "uploaded_to_parse";
     public static final String[] COLUMNS = new String[]{ROUTE_ID, ROUTE_NUM, ROUTE_START_DATE, ROUTE_UPLOADED};
 
+    private final int INDEX_NUM = 1;
+    private final int INDEX_START_DATE = 2;
+    private final int INDEX_UPLOADED = 3;
+
     private static final String TABLE_ROUTE = "Routes_Data";
 
     private SQLiteDatabase mDB;
@@ -66,6 +70,24 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         mDB.update(TABLE_ROUTE, cv, ROUTE_NUM + " = ?", new String[]{sRow});
     }
 
+    // returns whether the route has been uploaded to parse or not
+    public boolean isUploaded(int i) {
+        Cursor cur = getAllData();
+        cur.moveToFirst();
+        int count = cur.getCount();
+        if (count > 0) {
+            int x = 0;
+            while (x < i) {
+                cur.moveToNext();
+                x++;
+            }
+            int uploaded = cur.getInt(INDEX_UPLOADED);
+            cur.close();
+            return uploaded == 1;
+        }
+        cur.close();
+        return false;
+    }
 
 //    public long insert(ContentValues contentValues) {
 //        long rowID = mDB.insert(TABLE_COORD, null, contentValues);

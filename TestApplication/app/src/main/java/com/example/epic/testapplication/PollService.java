@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -41,13 +42,12 @@ public class PollService extends Service implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener  {
     //TAG
     private static final String TAG = "PollService";
+    // meters to miles conversion
     private static final double METERS_TO_MILES = 0.000621371192;
     // Miles per second to miles per hour
     private static final double MPS_TO_MPH = 3600;
     // nanoseconds to seconds
     private static final double NANO_TO_SECONDS = 1000000000.0;
-    // miliseconds to seconds
-    private static final double MILI_TO_SECONDS = 1000.0;
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
 
@@ -75,8 +75,6 @@ public class PollService extends Service implements
     protected double mBatteryLevel = 0.0;
     protected double mMPG = 0.0;
     protected double mVelocity = 0.0;
-    protected Date mLastDate;
-    protected String mLastUpdateTime;
     private long mStartTime;
 
     public class LocalBinder extends Binder {
@@ -115,6 +113,7 @@ public class PollService extends Service implements
         Log.d(TAG, "onLocationChanged called");
         double zero = 0.0;
         double mOldLat, mOldLng;
+        double mOldTimeElapsed = mTimeElapsed;
         mLastLocation = location;
 
         if (Double.compare(zero, mLastLat) == 0 && Double.compare(zero, mLastLng) == 0)
@@ -135,10 +134,7 @@ public class PollService extends Service implements
 //            mDistanceInterval = 0;
 //        }
         mTotalDistance += mDistanceInterval;
-        mVelocity = (mDistanceInterval/(UPDATE_INTERVAL / MILI_TO_SECONDS)) * MPS_TO_MPH;
-        Log.d("gps", "" + mLastLocation.hasAltitude());
-        mLastDate = new Date();
-        mLastUpdateTime = DateFormat.getTimeInstance().format(mLastDate);
+        mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
         double[] stats = MainActivity.getBatteryData();
         mBatteryLevel = stats[0];
         mMPG = stats[1];
@@ -153,11 +149,7 @@ public class PollService extends Service implements
         Log.d(TAG, "onConnected called");
 
         if (mLastLocation != null) {
-            //TODO add accuracy, speed, time, altitude
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            mLastDate = new Date();
-            mLastUpdateTime = DateFormat.getTimeInstance().format(mLastDate);
-            //updateUI();
         } else {
             Toast.makeText(this, getResources().getString(R.string.no_location_detected),
                     Toast.LENGTH_LONG).show();
@@ -198,7 +190,6 @@ public class PollService extends Service implements
             public void run() {
                 Looper.prepare();
                 mRequestingLocationUpdates = true;
-                mLastUpdateTime = "";
                 buildGoogleApiClient();
 
                 mGoogleApiClient.connect();
@@ -244,6 +235,7 @@ public class PollService extends Service implements
             DeLoreanRouteObject.saveInBackground();
 
             mRouteDBHelper.updateUploaded(mLastRouteId);
+            Toast.makeText(this, "saved to parse", Toast.LENGTH_LONG).show();
         }
         return false;
     }

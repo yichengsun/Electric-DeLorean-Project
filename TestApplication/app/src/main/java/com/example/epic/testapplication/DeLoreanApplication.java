@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseFile;
@@ -21,7 +22,8 @@ import com.parse.ParseObject;
  * Created by henryshangguan on 7/1/15.
  */
 public class DeLoreanApplication extends Application {
-    private boolean mParseInitialized;
+    private String TAG = "DeLoreanApplication";
+    private static boolean mParseInitialized;
     private RouteDBHelper mRouteDBHelper;
     private CoordDBHelper mCoordDBHelper;
 
@@ -40,6 +42,15 @@ public class DeLoreanApplication extends Application {
             initializeParse();
             mParseInitialized = true;
             checkAndUpload();
+        }
+
+        LocationManager mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        boolean network = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        WifiManager mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        boolean wifi = mWifiManager.isWifiEnabled();
+
+        if (!(network && wifi)) {
+            Toast.makeText(this, "Ensure Location setting set to 'High Accuracy' and Wifi enabled", Toast.LENGTH_LONG).show();
         }
 
         IntentFilter intentFilter = new IntentFilter();
@@ -69,13 +80,14 @@ public class DeLoreanApplication extends Application {
     }
 
     public void checkAndUpload() {
+        Log.d(TAG, "checkAndUpload() called");
         Cursor routeCursor = mRouteDBHelper.getAllData();
         int count = routeCursor.getCount();
         if (count > 0) {
             routeCursor.moveToLast();
             while (!routeCursor.isBeforeFirst()) {
-                if (routeCursor.getInt(3) == 0) {
-                    String jsonFile = mCoordDBHelper.dataToJSON(--count);
+                if (!mRouteDBHelper.isUploaded(--count)) {
+                    String jsonFile = mCoordDBHelper.dataToJSON(count);
                     final byte[] translated = jsonFile.getBytes();
                     ParseFile stored = new ParseFile("route.json", translated);
                     stored.saveInBackground();
@@ -85,11 +97,18 @@ public class DeLoreanApplication extends Application {
                     DeLoreanRouteObject.saveInBackground();
                     mRouteDBHelper.updateUploaded(count);
                     routeCursor.moveToPrevious();
+                    Toast.makeText(this, "Route " + count + " saved to parse", Toast.LENGTH_SHORT).show();
                 } else {
+                    routeCursor.close();
                     break;
                 }
             }
         }
     }
+
+    public static boolean isParseInitialized() {
+        return mParseInitialized;
+    }
+
 }
 

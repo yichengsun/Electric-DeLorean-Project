@@ -109,7 +109,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         return mDB.query(TABLE_COORD, COLUMNS, null, null, null, null, null);
     }
 
-    //TODO query to only return last row
+    //TODO FIX THIS
     public Cursor getLastRow() {
         String selectQuery = "SELECT * FROM " + TABLE_COORD + " ORDER BY " + COORD_ROUTE + " DESC, " + COORD_TIME_ELPSD + " DESC LIMIT 1";
         return mDB.rawQuery(selectQuery, null);
@@ -146,28 +146,6 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         cursor.close();
         return json;
     }
-//
-//    // Converts route (coordinates only) to geoJSON - not quite functional
-//    public String routeToJSON() {
-//        Log.d(TAG, "Coord routeToJSON called");
-//        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new GeometryAdapterFactory()).create();
-//
-//        Cursor cursor = getAllData();
-//        SinglePosition[] points = new SinglePosition[cursor.getCount()];
-//        cursor.moveToFirst();
-//        int i = 0;
-//
-//        while (!cursor.isAfterLast()) {
-//            Coordinates xy = Coordinates.of(cursor.getDouble(2), cursor.getDouble(3));
-//            SinglePosition x = new SinglePosition(xy);
-//            points[i++] = x;
-//            cursor.moveToNext();
-//        }
-//
-//        String json = gson.toJson(points);
-//        del();
-//        return json;
-//    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -5,10 +5,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -40,6 +43,8 @@ public class MainActivity extends ActionBarActivity {
     public static PollService mService;
     private boolean mOnTrip;
     private boolean mMapView;
+    private RouteDBHelper mRouteDBHelper;
+    private CoordDBHelper mCoordDBHelper;
 
     //dummy variable
     private static double mCalculatedBatteryLevel = 100.0;
@@ -126,11 +131,41 @@ public class MainActivity extends ActionBarActivity {
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
                     mMapView = false;
                 }
+            case R.id.parse_push:
+                Log.d(TAG, "parse push called");
+                mCoordDBHelper = new CoordDBHelper(this);
+                mRouteDBHelper = new RouteDBHelper(this);
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                if (DeLoreanApplication.isParseInitialized() && mWifi.isConnected()) {
+                    Cursor routeCursor = mRouteDBHelper.getAllData();
+                    int count = routeCursor.getCount();
+                    if (count > 0) {
+                        routeCursor.moveToLast();
+                        while (!routeCursor.isBeforeFirst()) {
+                            Log.d(TAG, "parse push running");
+                            String jsonFile = mCoordDBHelper.dataToJSON(count);
+                            final byte[] translated = jsonFile.getBytes();
+                            ParseFile stored = new ParseFile("route.json", translated);
+                            stored.saveInBackground();
+
+                            ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
+                            DeLoreanRouteObject.put("File", stored);
+                            DeLoreanRouteObject.saveInBackground();
+                            mRouteDBHelper.updateUploaded(count);
+                            routeCursor.moveToPrevious();
+                        }
+                        routeCursor.close();
+                    }
+                } else {
+                    Toast.makeText(this, "Please connect to wifi", Toast.LENGTH_LONG);
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    // dummy data for now
     public static double[] getBatteryData() {
         mCalculatedBatteryLevel -= 0.01;
         return new double[]{mCalculatedBatteryLevel, 0.0};
