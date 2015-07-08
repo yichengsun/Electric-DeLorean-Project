@@ -140,7 +140,7 @@ public class MainActivity extends ActionBarActivity {
                     mMapView = false;
                 }
                 return true;
-            git
+            
             case R.id.parse_push:
                 Log.d(TAG, "parse push called");
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
