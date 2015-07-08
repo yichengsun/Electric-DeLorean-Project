@@ -103,22 +103,7 @@ public class MainActivity extends ActionBarActivity {
                 Log.d(TAG, "Main trip_stop called");
                 if (mOnTrip) {
                     mOnTrip = false;
-
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-                    final EditText nameInput = new EditText(this);
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                    nameInput.setLayoutParams(lp);
-                    alertDialog.setView(nameInput);
-                    alertDialog.setTitle("Name this route");
-                    alertDialog.setMessage("Please enter a name for this trip (e.g. Belfast to Princeton)");
-                    alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            mRouteDBHelper.updateName(nameInput.getText().toString(), mCoordDBHelper.getLastRouteId());
-                            MainActivity.this.unbindService(mConnection);
-                        }
-                    });
-                    alertDialog.show();
+                    showNameRouteDialog();
 
                     if (!mMapView) {
                         StatsFragment fragmentStats = new StatsFragment();
@@ -154,6 +139,8 @@ public class MainActivity extends ActionBarActivity {
                     fm.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
                     mMapView = false;
                 }
+                return true;
+            
             case R.id.parse_push:
                 Log.d(TAG, "parse push called");
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -200,6 +187,24 @@ public class MainActivity extends ActionBarActivity {
             Log.d(TAG, "Main onServiceDisconnected called");
         }
     };
+
+    private void showNameRouteDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        final EditText nameInput = new EditText(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        nameInput.setLayoutParams(lp);
+        alertDialog.setView(nameInput);
+        alertDialog.setTitle("Name this route");
+        alertDialog.setMessage("Please enter a name for this trip (e.g. Belfast to Princeton)");
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mRouteDBHelper.updateName(nameInput.getText().toString(), mCoordDBHelper.getLastRouteId());
+                MainActivity.this.unbindService(mConnection);
+            }
+        });
+        alertDialog.show();
+    }
 }
 
 /**

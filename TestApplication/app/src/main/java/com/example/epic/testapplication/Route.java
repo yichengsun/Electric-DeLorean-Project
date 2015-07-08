@@ -21,7 +21,6 @@ public class Route {
     public Route(int routeNum) {
         mID = routeNum;
         mStartDate = new Date();
-        Log.d("DATE", mStartDate.toString());
     }
 
     public long getmID() {
