@@ -24,8 +24,8 @@ import com.parse.ParseObject;
 public class DeLoreanApplication extends Application {
     private String TAG = "DeLoreanApplication";
     private static boolean mParseInitialized;
-    private RouteDBHelper mRouteDBHelper;
-    private CoordDBHelper mCoordDBHelper;
+    private static RouteDBHelper mRouteDBHelper;
+    private static CoordDBHelper mCoordDBHelper;
 
     @Override
     public void onCreate() {
@@ -87,15 +87,7 @@ public class DeLoreanApplication extends Application {
             routeCursor.moveToLast();
             while (!routeCursor.isBeforeFirst()) {
                 if (!mRouteDBHelper.isUploaded(--count)) {
-                    String jsonFile = mCoordDBHelper.dataToJSON(count);
-                    final byte[] translated = jsonFile.getBytes();
-                    ParseFile stored = new ParseFile("route.json", translated);
-                    stored.saveInBackground();
-
-                    ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
-                    DeLoreanRouteObject.put("File", stored);
-                    DeLoreanRouteObject.saveInBackground();
-                    mRouteDBHelper.updateUploaded(count);
+                    uploadToParse(count);
                     routeCursor.moveToPrevious();
                     Toast.makeText(this, "Route " + count + " saved to parse", Toast.LENGTH_SHORT).show();
                 } else {
@@ -108,6 +100,20 @@ public class DeLoreanApplication extends Application {
 
     public static boolean isParseInitialized() {
         return mParseInitialized;
+    }
+
+    public static void uploadToParse(int route){
+        String jsonFile = mCoordDBHelper.dataToJSON(route);
+        final byte[] translated = jsonFile.getBytes();
+        String fileName = mRouteDBHelper.getRowName(route);
+        ParseFile stored = new ParseFile(fileName + ".json", translated);
+        stored.saveInBackground();
+
+        ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
+        DeLoreanRouteObject.put("File", stored);
+        DeLoreanRouteObject.saveInBackground();
+
+        mRouteDBHelper.updateUploaded(route);
     }
 
 }
