@@ -130,9 +130,6 @@ public class PollService extends Service implements
         mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
-//        if (Double.compare(mDistanceInterval, 1.0) == -1) {
-//            mDistanceInterval = 0;
-//        }
         mTotalDistance += mDistanceInterval;
         mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
         double[] stats = MainActivity.getBatteryData();
@@ -223,20 +220,21 @@ public class PollService extends Service implements
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
         if (mWifi.isConnected()) {
-            String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
-            final byte[] translated = jsonFile.getBytes();
-            ParseFile stored = new ParseFile("route.json", translated);
-            stored.saveInBackground();
-
-            ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
-            DeLoreanRouteObject.put("File", stored);
-            DeLoreanRouteObject.saveInBackground();
-
-            mRouteDBHelper.updateUploaded(mLastRouteId);
-            Toast.makeText(this, "saved to parse", Toast.LENGTH_LONG).show();
+            DeLoreanApplication.uploadToParse(mLastRouteId);
         }
         return false;
     }
 }
+
+//            String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
+//            final byte[] translated = jsonFile.getBytes();
+//            ParseFile stored = new ParseFile("route.json", translated);
+//            stored.saveInBackground();
+//
+//            ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
+//            DeLoreanRouteObject.put("File", stored);
+//            DeLoreanRouteObject.saveInBackground();
+//
+//            mRouteDBHelper.updateUploaded(mLastRouteId);
+//            Toast.makeText(this, "saved to parse", Toast.LENGTH_LONG).show();

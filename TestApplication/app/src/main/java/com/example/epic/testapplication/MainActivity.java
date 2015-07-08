@@ -1,8 +1,10 @@
 package com.example.epic.testapplication;
 
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -32,6 +34,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.parse.Parse;
@@ -55,6 +59,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("Electric DeLorean Tracker");
+
+        mCoordDBHelper = new CoordDBHelper(this);
+        mRouteDBHelper = new RouteDBHelper(this);
 
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         android.support.v4.app.Fragment fragmentStats = new StatsFragment();
@@ -95,8 +102,24 @@ public class MainActivity extends ActionBarActivity {
             case R.id.trip_stop:
                 Log.d(TAG, "Main trip_stop called");
                 if (mOnTrip) {
-                    MainActivity.this.unbindService(mConnection);
                     mOnTrip = false;
+
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                    final EditText nameInput = new EditText(this);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                    nameInput.setLayoutParams(lp);
+                    alertDialog.setView(nameInput);
+                    alertDialog.setTitle("Name this route");
+                    alertDialog.setMessage("Please enter a name for this trip (e.g. Belfast to Princeton)");
+                    alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mRouteDBHelper.updateName(nameInput.getText().toString(), mCoordDBHelper.getLastRouteId());
+                            MainActivity.this.unbindService(mConnection);
+                        }
+                    });
+                    alertDialog.show();
+
                     if (!mMapView) {
                         StatsFragment fragmentStats = new StatsFragment();
                         fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
@@ -133,8 +156,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             case R.id.parse_push:
                 Log.d(TAG, "parse push called");
-                mCoordDBHelper = new CoordDBHelper(this);
-                mRouteDBHelper = new RouteDBHelper(this);
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
                 if (DeLoreanApplication.isParseInitialized() && mWifi.isConnected()) {
@@ -144,16 +165,7 @@ public class MainActivity extends ActionBarActivity {
                         routeCursor.moveToLast();
                         while (!routeCursor.isBeforeFirst()) {
                             Log.d(TAG, "parse push running");
-                            String jsonFile = mCoordDBHelper.dataToJSON(count);
-                            final byte[] translated = jsonFile.getBytes();
-                            ParseFile stored = new ParseFile("route.json", translated);
-                            stored.saveInBackground();
-
-                            ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
-                            DeLoreanRouteObject.put("File", stored);
-                            DeLoreanRouteObject.saveInBackground();
-                            mRouteDBHelper.updateUploaded(count);
-                            routeCursor.moveToPrevious();
+                            DeLoreanApplication.uploadToParse(count);
                         }
                         routeCursor.close();
                     }

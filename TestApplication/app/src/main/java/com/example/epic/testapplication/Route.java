@@ -1,5 +1,7 @@
 package com.example.epic.testapplication;
 
+import android.util.Log;
+
 import java.util.Date;
 
 /**
@@ -9,6 +11,7 @@ public class Route {
     public Date mStartDate;
     private long mID;
     private int mUploaded;
+    private String mName = "unnamed";
 
     public Route() {
         mID = -1;
@@ -18,6 +21,7 @@ public class Route {
     public Route(int routeNum) {
         mID = routeNum;
         mStartDate = new Date();
+        Log.d("DATE", mStartDate.toString());
     }
 
     public long getmID() {
@@ -42,6 +46,14 @@ public class Route {
 
     public void setUploaded() {
         mUploaded = 1;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        mName = name;
     }
 
 }
