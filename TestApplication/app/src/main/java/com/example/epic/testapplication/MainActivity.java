@@ -140,7 +140,7 @@ public class MainActivity extends ActionBarActivity {
                     mMapView = false;
                 }
                 return true;
-            
+
             case R.id.parse_push:
                 Log.d(TAG, "parse push called");
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -151,8 +151,8 @@ public class MainActivity extends ActionBarActivity {
                     if (count > 0) {
                         routeCursor.moveToLast();
                         while (!routeCursor.isBeforeFirst()) {
-                            Log.d(TAG, "parse push running");
-                            DeLoreanApplication.uploadToParse(count);
+                            DeLoreanApplication.uploadToParse(--count);
+                            routeCursor.moveToPrevious();
                         }
                         routeCursor.close();
                     }
