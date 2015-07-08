@@ -34,26 +34,25 @@ import android.widget.Toast;
 
 public class MapFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener /*implements OnMapReadyCallback*/ {
-
     protected static final String TAG = "MapFragment";
     public static final LatLng BELFAST = new LatLng(54.5970, -5.9300);
     public static  Bitmap car_full_bitmap;
     public static Bitmap car_resized_bitmap;
-    protected GoogleMap mMap;
+    private Marker delorean;
+    private GoogleMap mMap;
     private Handler mHandler;
     private Activity mActivity;
-    private Runnable mRunnable;
-    private Marker delorean;
-    private float maxZoom = 15.5f;
+    protected GoogleApiClient mGoogleApiClient;
+    protected Location mLastLocation;
+    protected LocationRequest mLocationRequest;
+
+    private float maxZoom = 16.9f;
     private float minZoom = 10.0f;
     private float defaultZoom = 15f;
 
     public static final long UPDATE_INTERVAL = 1000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
 
-    protected GoogleApiClient mGoogleApiClient;
-    protected Location mLastLocation;
-    protected LocationRequest mLocationRequest;
 
     private ImageButton imgMyLocation;
 
@@ -188,7 +187,6 @@ public class MapFragment extends Fragment implements
     @Override
     public void onResume() {
         Log.d(TAG, "Map onResume called");
-        //mHandler.postDelayed(mRunnable, 500);
         super.onResume();
     }
 }
