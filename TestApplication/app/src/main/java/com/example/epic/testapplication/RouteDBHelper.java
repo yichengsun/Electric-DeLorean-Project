@@ -113,8 +113,6 @@ public class RouteDBHelper extends SQLiteOpenHelper {
             cur.moveToNext();
         String name = cur.getString(INDEX_NAME);
         cur.close();
-        Log.d("getRowName", "" + name);
-        Log.d(TAG, getTableAsString());
         return name;
     }
 
