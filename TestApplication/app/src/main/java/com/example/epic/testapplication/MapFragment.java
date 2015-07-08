@@ -44,7 +44,7 @@ public class MapFragment extends Fragment implements
     private Marker delorean;
     private float maxZoom = 15.5f;
     private float minZoom = 10.0f;
-    private float defaultZoom = 14.0f;
+    private float defaultZoom = 15f;
 
     public static final long UPDATE_INTERVAL = 1000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
@@ -67,20 +67,6 @@ public class MapFragment extends Fragment implements
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged called: " + mLastLocation.toString());
-        delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        delorean.setVisible(true);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(), defaultZoom));
-        Toast.makeText(mActivity, "location updated", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "Map onCreateView called");
         View v = inflater.inflate(R.layout.fragment_map, parent, false);
@@ -91,6 +77,7 @@ public class MapFragment extends Fragment implements
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
         mMap.setOnCameraChangeListener(getCameraChangeListener());
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(defaultZoom));
 
         buildGoogleApiClient();
         mGoogleApiClient.connect();
@@ -110,6 +97,24 @@ public class MapFragment extends Fragment implements
                 .icon(BitmapDescriptorFactory.fromBitmap(car_resized_bitmap)));
         //TODO figure out how to set minimum zoom and maximum zoom
         return v;
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.d(TAG, "onConnected called");
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        delorean.setVisible(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(delorean.getPosition()));
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(TAG, "onLocationChanged called: " + mLastLocation.toString());
+        delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        delorean.setVisible(true);
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(delorean.getPosition()));
+        Toast.makeText(mActivity, "location updated", Toast.LENGTH_SHORT).show();
     }
 
     public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
@@ -153,19 +158,14 @@ public class MapFragment extends Fragment implements
     }
 
     @Override
-    public void onConnected(Bundle connectionHint) {
-        Log.d(TAG, "onConnected called");
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        delorean.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        delorean.setVisible(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
-    }
-
-    @Override
     public void onConnectionSuspended(int cause) {
         Log.d(TAG, "onConnectionSuspended called");
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     @Override
