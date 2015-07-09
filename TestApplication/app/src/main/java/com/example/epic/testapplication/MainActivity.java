@@ -2,6 +2,9 @@ package com.example.epic.testapplication;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -49,6 +52,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         mDropdownValues = mRouteDBHelper.getAllRouteNames();
 
         setActionBar();
+
         mFM = getSupportFragmentManager();
         android.support.v4.app.Fragment fragmentStats = new StatsFragment();
         mFM.beginTransaction().add(R.id.mainFragmentContainer, fragmentStats).commit();
@@ -71,6 +75,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
             case R.id.trip_start:
                 Log.d(TAG, "Main trip_start called");
                 setActionBar();
+                createNotification();
                 if (!mOnTrip) {
                     bindService(i, mConnection, Context.BIND_AUTO_CREATE);
                     mOnTrip = true;
@@ -95,11 +100,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                     if (!mMapView) {
                         StatsFragment fragmentStats = new StatsFragment();
                         mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
-                    }
-                else {
+                    } else {
                     MapFragment fragmentMap = new MapFragment();
                     mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                 }
+                    cancelNotification();
                     findViewById(R.id.trip_stop).setEnabled(false);
                     findViewById(R.id.trip_start).setEnabled(true);
                 }
@@ -235,6 +240,25 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, android.R.id.text1, mDropdownValues);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         actionBar.setListNavigationCallbacks(adapter, this);
+    }
+
+    private void createNotification() {
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        Notification notif = new Notification.Builder(this)
+                .setContentTitle("DeLorean Tracker")
+                .setContentText("Currently recording location and battery data")
+                .setSmallIcon(R.mipmap.qub_launcher)
+                .setContentIntent(pIntent).build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0, notif);
+    }
+
+    private void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
     }
 }
 
