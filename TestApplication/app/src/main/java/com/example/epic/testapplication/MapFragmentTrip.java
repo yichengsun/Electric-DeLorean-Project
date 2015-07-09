@@ -93,7 +93,6 @@ public class MapFragmentTrip extends Fragment {
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
-        mMap.setOnCameraChangeListener(getCameraChangeListener());
 
         mCoordDBHelper = new CoordDBHelper(getActivity());
 
@@ -101,6 +100,7 @@ public class MapFragmentTrip extends Fragment {
         mHandlerInit.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "first runnable called");
                 delorean = mMap.addMarker(new MarkerOptions()
                         .position(mCoordDBHelper.getLastLatLng())
                         .title("DeLorean DMC-12")
@@ -108,45 +108,51 @@ public class MapFragmentTrip extends Fragment {
                         .visible(true)
                         .icon(BitmapDescriptorFactory.fromBitmap(car_resized_bitmap)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(), defaultZoom));
+
+                mMap.setOnCameraChangeListener(getCameraChangeListener());
+
+                mHandler = new Handler();
+                mRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG, "2nd runnable called");
+                                delorean.setPosition(mCoordDBHelper.getLastLatLng());
+
+                                mAllLatLng = mCoordDBHelper.getAllLatLng();
+                                mPolyline = new PolylineOptions()
+                                        .addAll(mAllLatLng)
+                                        .width(15)
+                                        .color(Color.BLUE)
+                                        .geodesic(true)
+                                        .zIndex(1);
+                                mMap.addPolyline(mPolyline);
+
+                                mHandler.postDelayed(this, 1000);
+                            }
+                        });
+                    }
+                };
+                mHandler.post(mRunnable);
             }
         }, 1000);
 
-        mHandler = new Handler();
-        mRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        delorean.setPosition(mCoordDBHelper.getLastLatLng());
-
-                        mAllLatLng = mCoordDBHelper.getAllLatLng();
-                        mPolyline = new PolylineOptions()
-                                .addAll(mAllLatLng)
-                                .width(15)
-                                .color(Color.BLUE)
-                                .geodesic(true)
-                                .zIndex(1);
-                        mMap.addPolyline(mPolyline);
-
-                        mHandler.postDelayed(this, 1000);
-                    }
-                });
-            }
-        };
-        mHandler.post(mRunnable);
         return v;
     }
 
     @Override
     public void onPause() {
+        Log.d(TAG, "MapTrip onPause called");
         mHandler.removeCallbacksAndMessages(null);
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        mHandler.postDelayed(mRunnable, 1000);
+        Log.d(TAG, "MapTrip onResume called");
+        //mHandler.postDelayed(mRunnable, 1000);
         super.onResume();
     }
 }
