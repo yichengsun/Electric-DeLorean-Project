@@ -48,6 +48,9 @@ public class PollService extends Service implements
     private static final double MPS_TO_MPH = 3600;
     // nanoseconds to seconds
     private static final double NANO_TO_SECONDS = 1000000000.0;
+    // Divide this by Em to get eMPG
+    private static final double eMPG_CONVERSION = 33705.0;
+    private double ZERO = 0.0;
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
 
@@ -105,38 +108,15 @@ public class PollService extends Service implements
     protected void startLocationUpdates() {
         Log.d(TAG, "startLocationUpdates called");
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, (LocationListener)this);
+                mGoogleApiClient, mLocationRequest, (LocationListener) this);
     }
 
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called");
-        double zero = 0.0;
-        double mOldLat, mOldLng;
-        double mOldTimeElapsed = mTimeElapsed;
-        mLastLocation = location;
-
-        if (Double.compare(zero, mLastLat) == 0 && Double.compare(zero, mLastLng) == 0)
-        {
-            mOldLat = mLastLocation.getLatitude();
-            mOldLng = mLastLocation.getLongitude();
-        } else {
-            mOldLat = mLastLat;
-            mOldLng = mLastLng;
-        }
-
-        mLastLat = mLastLocation.getLatitude();
-        mLastLng = mLastLocation.getLongitude();
-        mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
-        mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
-        mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
-        mTotalDistance += mDistanceInterval;
-        mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
-        double[] stats = MainActivity.getBatteryData();
-        mBatteryLevel = stats[0];
-        mMPG = stats[1];
-
-        mCoordDBHelper.insertCoord(mTimestamp, mLastRouteId, mLastLat, mLastLng, mTimeElapsed, mDistanceInterval, mTotalDistance, mBatteryLevel, mMPG, mVelocity);
+        updateVariables(location);
+        mCoordDBHelper.insertCoord(mTimestamp, mLastRouteId, mLastLat, mLastLng, mTimeElapsed,
+                mDistanceInterval, mTotalDistance, mBatteryLevel, mMPG, mVelocity);
         Toast.makeText(this, getResources().getString(R.string.location_updated),
                 Toast.LENGTH_SHORT).show();
     }
@@ -166,13 +146,6 @@ public class PollService extends Service implements
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
-    }
-
-    // helper method to calculate distance between two points
-    private double distanceBetweenTwo(double prevLat, double prevLong, double newLat, double newLong) {
-        LatLng oldPoint = new LatLng(prevLat, prevLong);
-        LatLng newPoint = new LatLng(newLat, newLong);
-        return SphericalUtil.computeDistanceBetween(oldPoint, newPoint);
     }
 
     @Override
@@ -218,12 +191,62 @@ public class PollService extends Service implements
                 mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
 
+        calculateLifetimeStats();
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (mWifi.isConnected()) {
             DeLoreanApplication.uploadToParse(mLastRouteId);
         }
         return false;
+    }
+
+/************** Calculation methods ***************/
+    private void updateVariables(Location location) {
+        double mOldTimeElapsed = mTimeElapsed;
+        double mOldLat, mOldLng;
+
+        mLastLocation = location;
+        if (Double.compare(ZERO, mLastLat) == 0 && Double.compare(ZERO, mLastLng) == 0)
+        {
+            mOldLat = mLastLocation.getLatitude();
+            mOldLng = mLastLocation.getLongitude();
+        } else {
+            mOldLat = mLastLat;
+            mOldLng = mLastLng;
+        }
+
+        mLastLat = mLastLocation.getLatitude();
+        mLastLng = mLastLocation.getLongitude();
+
+        mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
+        mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
+
+        mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
+        mTotalDistance += mDistanceInterval;
+        mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
+
+        double[] stats = MainActivity.getBatteryData();
+        mBatteryLevel = stats[0];
+        mMPG = calculateMPG();
+    }
+
+    // helper method to calculate distance between two points
+    private double distanceBetweenTwo(double prevLat, double prevLong, double newLat, double newLong) {
+        LatLng oldPoint = new LatLng(prevLat, prevLong);
+        LatLng newPoint = new LatLng(newLat, newLong);
+        return SphericalUtil.computeDistanceBetween(oldPoint, newPoint);
+    }
+
+    //eMPG = (Energy content per gallon of gasoline) / (wall-to-wheel electrical energy used per mile * energy per KWatt-hour of electricity)
+    //     = 33,705/(wall-to-wheel electrical energy used per mile (Wh/mile))
+    private double calculateMPG() {
+        double energyUsed = 1;
+        return eMPG_CONVERSION / energyUsed;
+    }
+
+    private void calculateLifetimeStats() {
+        //TODO calculations
+        //TODO enter into routeDB
     }
 }
 

@@ -120,7 +120,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         Cursor cur = getAllData();
         if (cur.getCount() > 0) {
             String[] names = new String[cur.getCount() + 1];
-            names[0] = "Current Trip";
+            names[0] = "Current Data";
             cur.moveToFirst();
             int count = 0;
             while(!cur.isAfterLast()) {
@@ -130,7 +130,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
             cur.close();
             return names;
         } else {
-            String[] names = new String[]{"Current Trip"};
+            String[] names = new String[]{"Current Data"};
             return names;
         }
     }

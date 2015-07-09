@@ -70,6 +70,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         switch (item.getItemId()) {
             case R.id.trip_start:
                 Log.d(TAG, "Main trip_start called");
+                setActionBar();
                 if (!mOnTrip) {
                     bindService(i, mConnection, Context.BIND_AUTO_CREATE);
                     mOnTrip = true;
