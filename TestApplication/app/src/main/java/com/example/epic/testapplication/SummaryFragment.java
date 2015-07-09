@@ -1,7 +1,6 @@
 package com.example.epic.testapplication;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +11,7 @@ import android.widget.TextView;
 /**
  * Created by henryshangguan on 7/9/15.
  */
-public class StatsFragmentSummary extends Fragment {
+public class SummaryFragment extends Fragment {
     private final String TAG = "StatsFragmentSummary";
     private TextView mRouteNumView;
 
@@ -25,7 +24,7 @@ public class StatsFragmentSummary extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView called");
-        View v = inflater.inflate(R.layout.fragment_stats_summary, parent, false);
+        View v = inflater.inflate(R.layout.fragment_summary, parent, false);
         mRouteNumView = (TextView) v.findViewById(R.id.summary_route_num);
         return v;
     }

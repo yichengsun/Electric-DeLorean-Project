@@ -2,7 +2,6 @@ package com.example.epic.testapplication;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -155,7 +154,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
             // Dropdown numbering starts at 1 ("Current trip" occupies 0), routeDB numbering starts at 0
             final int pos = position - 1;
             findViewById(R.id.view_switch).setEnabled(false);
-            final StatsFragmentSummary summaryFragmentStats = new StatsFragmentSummary();
+            final SummaryFragment summaryFragmentStats = new SummaryFragment();
             mFM.beginTransaction().replace(R.id.mainFragmentContainer, summaryFragmentStats).commit();
             Handler mHandler = new Handler();
             Runnable mRunnable = new Runnable() {
