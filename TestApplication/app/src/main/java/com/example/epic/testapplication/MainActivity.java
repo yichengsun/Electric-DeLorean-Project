@@ -1,54 +1,41 @@
 package com.example.epic.testapplication;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.Service;
+import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
+import android.text.InputFilter;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.util.StateSet;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.parse.Parse;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.OnNavigationListener {
     private static final String TAG = "MainActivity";
+    private static final int MAX_NAME_LENGTH = 32;
     public static PollService mService;
     private boolean mOnTrip;
     private boolean mMapView;
     private RouteDBHelper mRouteDBHelper;
     private CoordDBHelper mCoordDBHelper;
+    private static String[] mDropdownValues;
+    private android.support.v4.app.FragmentManager mFM;
 
     //dummy variable
     private static double mCalculatedBatteryLevel = 100.0;
@@ -58,14 +45,14 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "Main onCreate called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setTitle("Electric DeLorean Tracker");
-
         mCoordDBHelper = new CoordDBHelper(this);
         mRouteDBHelper = new RouteDBHelper(this);
+        mDropdownValues = mRouteDBHelper.getAllRouteNames();
 
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        setActionBar();
+        mFM = getSupportFragmentManager();
         android.support.v4.app.Fragment fragmentStats = new StatsFragment();
-        fm.beginTransaction().add(R.id.mainFragmentContainer, fragmentStats).commit();
+        mFM.beginTransaction().add(R.id.mainFragmentContainer, fragmentStats).commit();
     }
 
     @Override
@@ -80,7 +67,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent i = new Intent(MainActivity.this, PollService.class);
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+//        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         switch (item.getItemId()) {
             case R.id.trip_start:
                 Log.d(TAG, "Main trip_start called");
@@ -89,10 +76,10 @@ public class MainActivity extends ActionBarActivity {
                     mOnTrip = true;
                     if (!mMapView) {
                         StatsFragmentTrip statsFragmentTrip = new StatsFragmentTrip();
-                        fm.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
+                        mFM.beginTransaction().replace(R.id.mainFragmentContainer, statsFragmentTrip).commit();
                     } else {
                         MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
-                        fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
+                        mFM.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
                     }
                     findViewById(R.id.trip_stop).setEnabled(true);
                     findViewById(R.id.trip_start).setEnabled(false);
@@ -107,12 +94,12 @@ public class MainActivity extends ActionBarActivity {
 
                     if (!mMapView) {
                         StatsFragment fragmentStats = new StatsFragment();
-                        fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+                        mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
                     }
-//                else {
-//                    MapFragment fragmentMap = new MapFragment();
-//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
-//                }
+                else {
+                    MapFragment fragmentMap = new MapFragment();
+                    mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
+                }
                     findViewById(R.id.trip_stop).setEnabled(false);
                     findViewById(R.id.trip_start).setEnabled(true);
                 }
@@ -122,21 +109,19 @@ public class MainActivity extends ActionBarActivity {
                 if (!mMapView && !mOnTrip) {
                     Log.d(TAG, "Main map_fragment called");
                     MapFragment fragmentMap = new MapFragment();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
-//                    MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
-//                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
+                    mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentMap).commit();
                     mMapView = true;
                 } else if (!mMapView && mOnTrip) {
                     MapFragmentTrip mapFragmentTrip = new MapFragmentTrip();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
+                    mFM.beginTransaction().replace(R.id.mainFragmentContainer, mapFragmentTrip).commit();
                     mMapView = true;
                 } else if (mMapView && !mOnTrip) {
-                    StatsFragment fragmentStats2 = new StatsFragment();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats2).commit();
+                    StatsFragment fragmentStats = new StatsFragment();
+                    mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
                     mMapView = false;
                 } else {
                     StatsFragmentTrip tripFragmentStats = new StatsFragmentTrip();
-                    fm.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
+                    mFM.beginTransaction().replace(R.id.mainFragmentContainer, tripFragmentStats).commit();
                     mMapView = false;
                 }
                 return true;
@@ -161,6 +146,36 @@ public class MainActivity extends ActionBarActivity {
                 }
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int position, long id) {
+        if(position != 0) {
+            // Dropdown numbering starts at 1 ("Current trip" occupies 0), routeDB numbering starts at 0
+            final int pos = position - 1;
+            findViewById(R.id.view_switch).setEnabled(false);
+            final StatsFragmentSummary summaryFragmentStats = new StatsFragmentSummary();
+            mFM.beginTransaction().replace(R.id.mainFragmentContainer, summaryFragmentStats).commit();
+            Handler mHandler = new Handler();
+            Runnable mRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    summaryFragmentStats.setData(mRouteDBHelper.getLifetimeData(pos));
+                }
+            };
+            mHandler.postDelayed(mRunnable, 100);
+            return true;
+        } else if (!mOnTrip){
+            findViewById(R.id.view_switch).setEnabled(true);
+            StatsFragment fragmentStats = new StatsFragment();
+            mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+            return true;
+        } else {
+            findViewById(R.id.view_switch).setEnabled(true);
+            StatsFragmentTrip fragmentStatsTrip = new StatsFragmentTrip();
+            mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStatsTrip).commit();
+            return true;
         }
     }
 
@@ -191,19 +206,35 @@ public class MainActivity extends ActionBarActivity {
     private void showNameRouteDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
         final EditText nameInput = new EditText(this);
+        nameInput.setFilters(new InputFilter[] {new InputFilter.LengthFilter(MAX_NAME_LENGTH)});
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         nameInput.setLayoutParams(lp);
         alertDialog.setView(nameInput);
         alertDialog.setTitle("Name this route");
-        alertDialog.setMessage("Please enter a name for this trip (e.g. Belfast to Princeton)");
+        alertDialog.setMessage("Please enter a name for this trip (e.g. Belfast - Princeton)");
         alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 mRouteDBHelper.updateName(nameInput.getText().toString(), mCoordDBHelper.getLastRouteId());
+                updateDropdownValues(mRouteDBHelper.getAllRouteNames());
                 MainActivity.this.unbindService(mConnection);
+                setActionBar();
             }
         });
         alertDialog.show();
+    }
+
+    public static void updateDropdownValues(String[] names) {
+        mDropdownValues = names;
+    }
+
+    public void setActionBar() {
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, android.R.id.text1, mDropdownValues);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        actionBar.setListNavigationCallbacks(adapter, this);
     }
 }
 

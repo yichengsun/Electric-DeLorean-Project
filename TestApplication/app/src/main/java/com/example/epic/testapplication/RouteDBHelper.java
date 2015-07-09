@@ -116,6 +116,25 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return name;
     }
 
+    public String[] getAllRouteNames() {
+        Cursor cur = getAllData();
+        if (cur.getCount() > 0) {
+            String[] names = new String[cur.getCount() + 1];
+            names[0] = "Current Trip";
+            cur.moveToFirst();
+            int count = 0;
+            while(!cur.isAfterLast()) {
+                names[++count] = cur.getString(INDEX_NAME);
+                cur.moveToNext();
+            }
+            cur.close();
+            return names;
+        } else {
+            String[] names = new String[]{"Current Trip"};
+            return names;
+        }
+    }
+
     public String getTableAsString() {
         Log.d(TAG, "getTableAsString called");
         String tableString = String.format("Table %s:\n", TABLE_ROUTE);
@@ -135,6 +154,12 @@ public class RouteDBHelper extends SQLiteOpenHelper {
             allRows.close();
         }
         return tableString;
+    }
+
+    // TODO THIS METHOD
+    public String[] getLifetimeData(int route) {
+
+        return new String[3];
     }
 //    public long insert(ContentValues contentValues) {
 //        long rowID = mDB.insert(TABLE_COORD, null, contentValues);
