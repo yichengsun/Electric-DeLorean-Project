@@ -179,9 +179,6 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         Cursor cur = null;
 
         try {
-//        Cursor cur = mDB.query(TABLE_COORD,
-//                new String[]{COORD_LAT, COORD_LNG},
-//                null, null, null, null, null);
             latLngArrayList = new ArrayList<LatLng>();
             cur = getAllData();
             while (cur.moveToNext()) {
@@ -208,6 +205,44 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         LatLng coord = new LatLng(cur.getDouble(INDEX_LAT), cur.getDouble(INDEX_LNG));
         cur.close();
         return coord;
+    }
+
+    public LatLng getRouteLastLng(int sel_route) {
+        Log.d(TAG, "getRouteLastLatLng called");
+        Cursor cur = getReadableDatabase().query(TABLE_COORD,
+                new String[]{COORD_LAT, COORD_LNG},
+                COORD_ROUTE + " =?",
+                new String[]{String.valueOf(sel_route)},
+                null,
+                null,
+                COORD_TIMESTAMP + " desc",
+                null);
+        cur.moveToLast();
+        LatLng coord = new LatLng(cur.getDouble(cur.getColumnIndex(COORD_LAT)),
+                cur.getDouble(cur.getColumnIndex(COORD_LNG)));
+        cur.close();
+        return coord;
+    }
+
+    public List<LatLng> getRouteAllLatLng(int sel_route) {
+        Log.d(TAG, "getRouteAllLatLng called");
+        List routeLatLngArrayList = new ArrayList<LatLng>();
+        Cursor cur = getReadableDatabase().query(TABLE_COORD,
+                new String[]{COORD_LAT, COORD_LNG},
+                COORD_ROUTE + " =?",
+                new String[]{String.valueOf(sel_route)},
+                null,
+                null,
+                COORD_TIMESTAMP + " desc",
+                null);
+        while(cur.moveToNext()) {
+            LatLng latLng = new LatLng(cur.getDouble(cur.getColumnIndex(COORD_LAT)),
+                    cur.getDouble(cur.getColumnIndex(COORD_LNG)));
+            routeLatLngArrayList.add(latLng);
+        }
+
+        cur.close();
+        return routeLatLngArrayList;
     }
 
     public int getLastRouteId() {

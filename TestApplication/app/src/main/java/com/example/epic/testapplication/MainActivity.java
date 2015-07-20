@@ -159,17 +159,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         if(position != 0) {
             // Dropdown numbering starts at 1 ("Current trip" occupies 0), routeDB numbering starts at 0
             final int pos = position - 1;
-            findViewById(R.id.view_switch).setEnabled(false);
+            Bundle bundle = new Bundle();
+            bundle.putInt("sel_route", pos);
             final SummaryFragment summaryFragmentStats = new SummaryFragment();
+            summaryFragmentStats.setArguments(bundle);
+
+            findViewById(R.id.view_switch).setEnabled(false);
             mFM.beginTransaction().replace(R.id.mainFragmentContainer, summaryFragmentStats).commit();
-            Handler mHandler = new Handler();
-            Runnable mRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    summaryFragmentStats.setData(mRouteDBHelper.getLifetimeData(pos));
-                }
-            };
-            mHandler.postDelayed(mRunnable, 100);
             return true;
         } else if (!mOnTrip){
             findViewById(R.id.view_switch).setEnabled(true);
