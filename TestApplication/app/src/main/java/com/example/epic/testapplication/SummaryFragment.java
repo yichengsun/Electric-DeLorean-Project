@@ -99,7 +99,7 @@ public class SummaryFragment extends Fragment {
                 .position(mCoordDBHelper.getRouteLastLng(sel_route))
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
-                .visible(false)
+                .visible(true)
                 .icon(BitmapDescriptorFactory.fromBitmap(car_resized_bitmap)));
 
         //get all points in route and draw polyline
