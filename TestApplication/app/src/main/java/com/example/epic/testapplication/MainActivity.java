@@ -5,6 +5,9 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +19,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputFilter;
 import android.view.Menu;
@@ -28,6 +32,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.Set;
+import java.util.UUID;
+
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.OnNavigationListener {
     private static final String TAG = "MainActivity";
     private static final int MAX_NAME_LENGTH = 32;
@@ -38,9 +49,18 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     private CoordDBHelper mCoordDBHelper;
     private static String[] mDropdownValues;
     private android.support.v4.app.FragmentManager mFM;
+    private BluetoothAdapter mBluetoothAdapter;
 
-    //dummy variable
-    private static double mCalculatedBatteryLevel = 100.0;
+    private BluetoothDevice mmDevice;
+    private BluetoothSocket mmSocket;
+    private InputStream mmInputStream;
+    private OutputStream mmOutputStream;
+    private boolean stopWorker;
+    private int readBufferPosition;
+    private byte[] readBuffer;
+    private static double mBatteryLevel;
+    private Thread workerThread;
+    private UUID mUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +76,32 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         mFM = getSupportFragmentManager();
         android.support.v4.app.Fragment fragmentStats = new StatsFragment();
         mFM.beginTransaction().add(R.id.mainFragmentContainer, fragmentStats).commit();
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    findBT();
+                    openBT();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Handler handler = new Handler();
+        handler.post(r);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "Main onDestroy called");
+        cancelNotification();
+        try {
+            closeBT();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -180,12 +226,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         }
     }
 
-    // dummy data for now
-    public static double[] getBatteryData() {
-        mCalculatedBatteryLevel -= 0.01;
-        return new double[]{mCalculatedBatteryLevel, 0.0};
-    }
-
     /**
      * Defines callbacks for service binding, passed to bindService()
      */
@@ -239,7 +279,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     }
 
     private void createNotification() {
+        // TODO make it open to the right state
         Intent intent = new Intent(this, MainActivity.class);
+
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         Notification notif = new Notification.Builder(this)
@@ -256,6 +298,136 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
     }
+
+/************** BLUETOOTH METHODS *************/
+    void findBT()
+    {
+        Log.d(TAG, "findBT() called");
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(mBluetoothAdapter == null)
+        {
+            //myLabel.setText("No bluetooth adapter available");
+        }
+
+        if(!mBluetoothAdapter.isEnabled())
+        {
+            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBluetooth, 0);
+        }
+
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if(pairedDevices.size() > 0)
+        {
+            for(BluetoothDevice device : pairedDevices)
+            {
+                if(device.getName().equals("DeLorean Pi"))
+                {
+                    mmDevice = device;
+                    Log.d(TAG, "DeLorean Pi found");
+                    break;
+                }
+            }
+        }
+        //myLabel.setText("Bluetooth Device Found");
+        Log.d(TAG, "Bluetooth device found");
+    }
+
+    void openBT() throws IOException
+    {
+        Log.d(TAG, "openBT() called");
+        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard SerialPortService ID
+        Log.d(TAG, "UUID SET");
+        mmSocket = mmDevice.createInsecureRfcommSocketToServiceRecord(uuid);
+        Log.d(TAG, "mmSocket Set");
+        mmSocket.connect();
+        Log.d(TAG, "mmSocket Connected");
+        mmOutputStream = mmSocket.getOutputStream();
+        Log.d(TAG, "mmOutputStream set");
+        mmInputStream = mmSocket.getInputStream();
+        Log.d(TAG, "mmInputStream set");
+
+        beginListenForData();
+
+        Log.d(TAG, "Bluetooth Opened");
+    }
+//
+    void beginListenForData()
+    {
+        Log.d(TAG, "beginListenForData() called");
+        final Handler handler = new Handler();
+        final byte delimiter = 10; //This is the ASCII code for a newline character
+
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+        Thread workerThread = new Thread(new Runnable() {
+            public void run() {
+                Log.d(TAG, "workerThread started");
+                while(!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
+                        int bytesAvailable = mmInputStream.available();
+                        if (bytesAvailable > 0) {
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            mmInputStream.read(packetBytes);
+                            for(int i = 0; i < bytesAvailable; i++) {
+                                byte b = packetBytes[i];
+                                if(b == delimiter) {
+                                    byte[] encodedBytes = new byte[readBufferPosition];
+                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                    final String data = new String(encodedBytes, "US-ASCII");
+                                    readBufferPosition = 0;
+
+                                    handler.post(new Runnable() {
+                                        public void run() {
+                                            // TODO Convert reading to double
+                                            double batt = 1.0;
+                                            //Update battery level
+                                            mBatteryLevel = batt;
+                                            Log.d(TAG, data);
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    readBuffer[readBufferPosition++] = b;
+                                }
+                            }
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        stopWorker = true;
+                        Log.d(TAG, "thread stopped");
+                    }
+                }
+            }
+        });
+
+        workerThread.start();
+    }
+
+    void closeBT() throws IOException
+    {
+        Log.d(TAG, "closeBT() called");
+        stopWorker = true;
+        mmOutputStream.close();
+        mmInputStream.close();
+        mmSocket.close();
+    }
+
+//    void sendData() throws IOException
+//    {
+//        String msg = myTextbox.getText().toString();
+//        msg += "\n";
+//        mmOutputStream.write(msg.getBytes());
+//        myLabel.setText("Data Sent");
+//    }
+//
+
+    public static double getBatteryLevel() {
+        return mBatteryLevel;
+    }
+
 }
 
 /**

@@ -1,6 +1,9 @@
 package com.example.epic.testapplication;
 
+import android.app.Activity;
 import android.app.Application;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +20,8 @@ import android.widget.Toast;
 import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+
+import java.util.Set;
 
 /**
  * Created by henryshangguan on 7/1/15.
@@ -71,6 +76,8 @@ public class DeLoreanApplication extends Application {
             }
         };
         registerReceiver(broadcastReceiver, intentFilter);
+
+//        bluetoothSetup();
     }
 
     public void initializeParse() {
@@ -115,6 +122,23 @@ public class DeLoreanApplication extends Application {
 
         mRouteDBHelper.updateUploaded(route);
     }
+
+//    public void bluetoothSetup() {
+//        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//        if (!mBluetoothAdapter.isEnabled()) {
+//            Toast.makeText(this, "Please enable bluetooth", Toast.LENGTH_LONG).show();
+//        }
+//
+//        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+//        // If there are paired devices
+//        if (pairedDevices.size() > 0) {
+//            // Loop through paired devices
+//            for (BluetoothDevice device : pairedDevices) {
+//                // Add the name and address to an array adapter to show in a ListView
+//                mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+//            }
+//        }
+//    }
 
 }
 

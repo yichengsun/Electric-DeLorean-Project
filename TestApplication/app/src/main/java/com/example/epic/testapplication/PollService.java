@@ -1,6 +1,7 @@
 package com.example.epic.testapplication;
 
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,6 +54,8 @@ public class PollService extends Service implements
     private double ZERO = 0.0;
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
+    // requestCode parameter of onActivityResult() for bluetooth
+    private final int REQUEST_ENABLE_BT = 10;
 
     public static final long UPDATE_INTERVAL = 1000;
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
@@ -182,6 +185,7 @@ public class PollService extends Service implements
 
         Route route = new Route(mLastRouteId);
         mRouteDBHelper.insertRoute(route);
+
         return mBinder;
     }
 
@@ -224,9 +228,7 @@ public class PollService extends Service implements
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
         mTotalDistance += mDistanceInterval;
         mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
-
-        double[] stats = MainActivity.getBatteryData();
-        mBatteryLevel = stats[0];
+        mBatteryLevel = MainActivity.getBatteryLevel();
         mMPG = calculateMPG();
     }
 
@@ -248,6 +250,7 @@ public class PollService extends Service implements
         //TODO calculations
         //TODO enter into routeDB
     }
+
 }
 
 //            String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
