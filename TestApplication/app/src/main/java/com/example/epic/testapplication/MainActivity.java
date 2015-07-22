@@ -379,11 +379,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
                                     handler.post(new Runnable() {
                                         public void run() {
-                                            // TODO Convert reading to double
-                                            double batt = 1.0;
-                                            //Update battery level
-                                            mBatteryLevel = batt;
                                             Log.d(TAG, data);
+                                            //Update battery level
+                                            mBatteryLevel = Double.parseDouble(data);
+
                                         }
                                     });
                                 }
