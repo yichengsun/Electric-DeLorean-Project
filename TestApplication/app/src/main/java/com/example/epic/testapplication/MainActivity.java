@@ -193,6 +193,13 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                 } else {
                     Toast.makeText(this, "Please connect to wifi", Toast.LENGTH_LONG);
                 }
+            case R.id.connect_to_pi:
+                try {
+                    findBT();
+                    openBT();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -304,7 +311,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter == null)
         {
-            //myLabel.setText("No bluetooth adapter available");
+            Toast.makeText(this, "Device not bluetooth enabled", Toast.LENGTH_LONG).show();
         }
 
         if(!mBluetoothAdapter.isEnabled())
@@ -332,21 +339,23 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
     void openBT() throws IOException
     {
-        Log.d(TAG, "openBT() called");
-        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard SerialPortService ID
-        Log.d(TAG, "UUID SET");
-        mmSocket = mmDevice.createInsecureRfcommSocketToServiceRecord(uuid);
-        Log.d(TAG, "mmSocket Set");
-        mmSocket.connect();
-        Log.d(TAG, "mmSocket Connected");
-        mmOutputStream = mmSocket.getOutputStream();
-        Log.d(TAG, "mmOutputStream set");
-        mmInputStream = mmSocket.getInputStream();
-        Log.d(TAG, "mmInputStream set");
+        if (mmDevice != null) {
+            Log.d(TAG, "openBT() called");
+            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard SerialPortService ID
+            Log.d(TAG, "UUID SET");
+            mmSocket = mmDevice.createInsecureRfcommSocketToServiceRecord(uuid);
+            Log.d(TAG, "mmSocket Set");
+            mmSocket.connect();
+            Log.d(TAG, "mmSocket Connected");
+            mmOutputStream = mmSocket.getOutputStream();
+            Log.d(TAG, "mmOutputStream set");
+            mmInputStream = mmSocket.getInputStream();
+            Log.d(TAG, "mmInputStream set");
 
-        beginListenForData();
+            beginListenForData();
 
-        Log.d(TAG, "Bluetooth Opened");
+            Log.d(TAG, "Bluetooth Opened");
+        }
     }
 //
     void beginListenForData()
