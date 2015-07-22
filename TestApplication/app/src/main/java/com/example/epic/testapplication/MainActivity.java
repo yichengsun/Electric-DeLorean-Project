@@ -59,8 +59,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     private int readBufferPosition;
     private byte[] readBuffer;
     private static double mBatteryLevel;
-    private Thread workerThread;
-    private UUID mUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
