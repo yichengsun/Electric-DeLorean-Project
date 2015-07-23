@@ -264,8 +264,8 @@ public class MapFragment extends Fragment implements
                 fast_bitmap.getHeight() * 2, false);
         car_full_bitmap = BitmapFactory.decodeResource(
                 getResources(), R.drawable.rear);
-        car_resized_bitmap = Bitmap.createScaledBitmap(car_full_bitmap, car_full_bitmap.getWidth() / 4,
-                car_full_bitmap.getHeight() / 4, false);
+        car_resized_bitmap = Bitmap.createScaledBitmap(car_full_bitmap, car_full_bitmap.getWidth() / 5,
+                car_full_bitmap.getHeight() / 5, false);
         super.onCreate(savedInstanceState);
     }
 
