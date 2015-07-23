@@ -181,7 +181,7 @@ public class PollService extends Service implements
 
         Thread t = new Thread(mainR);
         t.start();
-        mLastRouteId = mCoordDBHelper.getLastRouteId() + 1;
+        mLastRouteId = mRouteDBHelper.getLastRouteId() + 1;
 
         Route route = new Route(mLastRouteId);
         mRouteDBHelper.insertRoute(route);

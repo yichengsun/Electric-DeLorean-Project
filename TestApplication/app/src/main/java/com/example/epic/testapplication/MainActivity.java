@@ -286,7 +286,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mRouteDBHelper.updateName(nameInput.getText().toString(), mCoordDBHelper.getLastRouteId());
+                mRouteDBHelper.updateName(nameInput.getText().toString(), mRouteDBHelper.getLastRouteId());
                 updateDropdownValues(mRouteDBHelper.getAllRouteNames());
                 MainActivity.this.unbindService(mConnection);
                 setActionBar();

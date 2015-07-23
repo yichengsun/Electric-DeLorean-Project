@@ -91,7 +91,6 @@ public class RouteDBHelper extends SQLiteOpenHelper {
 
     // returns whether the route has been uploaded to parse or not
     public boolean isUploaded(int i) {
-        //TODO check if this is working properly
         Cursor cur = mDB.query(TABLE_ROUTE, null, ROUTE_NUM + "=?", new String[]{"" + i}, null, null, null);
         Log.d(TAG, "" + cur.getCount());
         cur.moveToFirst();
@@ -105,7 +104,6 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     }
 
     public String getRowName(int row) {
-        //TODO FIX THIS
         Cursor cur = mDB.query(TABLE_ROUTE, null, ROUTE_NUM + "=?", new String[]{"" + row}, null, null, null);
         cur.moveToFirst();
         Log.d(TAG, cur.getString(INDEX_NUM));
@@ -115,12 +113,23 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     }
 
     public int getRouteNum(String name) {
-        //TODO fix this
         Cursor cur = mDB.query(TABLE_ROUTE, null, ROUTE_NAME + "=?", new String[]{name}, null, null, null);
         cur.moveToFirst();
         int num = cur.getInt(INDEX_NUM);
         cur.close();
         return num;
+    }
+
+    public int getLastRouteId() {
+        Cursor cur = mDB.query(TABLE_ROUTE, null, null, null, null, null, ROUTE_NUM + " DESC", "1");
+        if (cur.getCount() > 0) {
+            cur.moveToFirst();
+            int id = cur.getInt(INDEX_NUM);
+            cur.close();
+            return id;
+        }
+        cur.close();
+        return -1;
     }
 
     public String[] getAllRouteNames() {

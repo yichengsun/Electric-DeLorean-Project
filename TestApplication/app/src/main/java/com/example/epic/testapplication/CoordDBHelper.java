@@ -253,19 +253,6 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         return mDB.delete(TABLE_COORD, COORD_ROUTE + " = ?", whereArgs);
     }
 
-    public int getLastRouteId() {
-        Cursor cur = getAllData();
-        int count = cur.getCount();
-        if (count > 0) {
-            cur.moveToLast();
-            int id = cur.getInt(INDEX_ROUTE);
-            cur.close();
-            return id;
-        }
-        cur.close();
-        return -1;
-    }
-
     public double getLastBatt() {
         Cursor cur = getAllData();
         int count = cur.getCount();
