@@ -252,15 +252,3 @@ public class PollService extends Service implements
     }
 
 }
-
-//            String jsonFile = mCoordDBHelper.dataToJSON(mLastRouteId);
-//            final byte[] translated = jsonFile.getBytes();
-//            ParseFile stored = new ParseFile("route.json", translated);
-//            stored.saveInBackground();
-//
-//            ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
-//            DeLoreanRouteObject.put("File", stored);
-//            DeLoreanRouteObject.saveInBackground();
-//
-//            mRouteDBHelper.updateUploaded(mLastRouteId);
-//            Toast.makeText(this, "saved to parse", Toast.LENGTH_LONG).show();
