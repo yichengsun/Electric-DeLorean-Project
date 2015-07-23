@@ -91,42 +91,26 @@ public class RouteDBHelper extends SQLiteOpenHelper {
 
     // returns whether the route has been uploaded to parse or not
     public boolean isUploaded(int i) {
-        Cursor cur = getAllData();
+        //TODO check if this is working properly
+        Cursor cur = mDB.query(TABLE_ROUTE, null, ROUTE_NUM + " = ?", new String[]{"" + i}, null, null, null);
         cur.moveToFirst();
-        int count = cur.getCount();
-        if (count > 0) {
-            int x = 0;
-            while (x < i) {
-                cur.moveToNext();
-                x++;
-            }
-            int uploaded = cur.getInt(INDEX_UPLOADED );
-            cur.close();
-            return uploaded == 1;
-        }
+        int uploaded = cur.getInt(INDEX_UPLOADED);
         cur.close();
-        return false;
+        return uploaded == 1;
     }
 
     public String getRowName(int row) {
-        //TODO FIX THIS (BETTER STYLE)
-        //Cursor cur = mDB.query(TABLE_ROUTE, new String[]{ROUTE_NUM}, ROUTE_NUM + " = ?", new String[]{"" + row}, null, null, null);
-        Cursor cur = getAllData();
+        Cursor cur = mDB.query(TABLE_ROUTE, null, ROUTE_NUM + " = ?", new String[]{"" + row}, null, null, null);
         cur.moveToFirst();
-        while (cur.getInt(INDEX_NUM) < row)
-            cur.moveToNext();
+        Log.d(TAG, cur.getString(INDEX_NUM));
         String name = cur.getString(INDEX_NAME);
         cur.close();
         return name;
     }
 
     public int getRouteNum(String name) {
-        //TODO FIX THIS (BETTER STYLE)
-        //Cursor cur = mDB.query(TABLE_ROUTE, new String[]{ROUTE_NUM}, ROUTE_NUM + " = ?", new String[]{"" + row}, null, null, null);
-        Cursor cur = getAllData();
+        Cursor cur = mDB.query(TABLE_ROUTE, null, ROUTE_NAME + " = ?", new String[]{name}, null, null, null);
         cur.moveToFirst();
-        while (!cur.getString(INDEX_NAME).equals(name))
-            cur.moveToNext();
         int num = cur.getInt(INDEX_NUM);
         cur.close();
         return num;
