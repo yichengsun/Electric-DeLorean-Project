@@ -370,17 +370,17 @@ public class MapFragmentTrip extends Fragment {
         return v;
     }
 
-    @Override
-    public void onPause() {
-        Log.d(TAG, "MapTrip onPause called");
-        mHandler.removeCallbacksAndMessages(null);
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        Log.d(TAG, "MapTrip onResume called");
-        //mHandler.postDelayed(mRunnable, 1000);
-        super.onResume();
-    }
+//    @Override
+//    public void onPause() {
+//        Log.d(TAG, "MapTrip onPause called");
+//        mHandler.removeCallbacksAndMessages(null);
+//        super.onPause();
+//    }
+//
+//    @Override
+//    public void onResume() {
+//        Log.d(TAG, "MapTrip onResume called");
+//        //mHandler.postDelayed(mRunnable, 1000);
+//        super.onResume();
+//    }
 }

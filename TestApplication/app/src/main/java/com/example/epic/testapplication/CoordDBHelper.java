@@ -124,26 +124,28 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     public String dataToJSON(int routeNum) {
         Log.d(TAG, "Coord dataToJSON called");
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new GeometryAdapterFactory()).create();
-        Cursor cursor = getAllData();
+
+        Log.d(TAG, "gson finished");
+        Cursor cursor = mDB.query(TABLE_COORD, null, COORD_ROUTE + "=?", new String[]{"" + routeNum}, null, null, COORD_TIME_ELPSD + " ASC");
+        Log.d(TAG, "Cursor created");
+        Log.d(TAG, "count = " + cursor.getCount());
         ArrayList points = new ArrayList<DataPoint>();
-        cursor.moveToLast();
 
-        while (!cursor.isBeforeFirst() && cursor.getInt(INDEX_ROUTE) >= routeNum) {
-            cursor.moveToPrevious();
-        }
-
-        int i = 0;
-        cursor.moveToNext();
-        while (!cursor.isAfterLast() && cursor.getInt(INDEX_ROUTE) == routeNum) {
+        cursor.moveToFirst();
+        Log.d(TAG, "cursor moved to First");
+        while (!cursor.isAfterLast()) {
             DataPoint point = new DataPoint(cursor.getString(INDEX_TIMESTAMP), cursor.getInt(INDEX_ROUTE), cursor.getDouble(INDEX_LAT), cursor.getDouble(INDEX_LNG),
                     cursor.getDouble(INDEX_TIME_ELPSD), cursor.getDouble(INDEX_DIST_DIFF), cursor.getDouble(INDEX_DIST_TOTAL), cursor.getDouble(INDEX_BATT),
                     cursor.getDouble(INDEX_MPG), cursor.getDouble(INDEX_VEL));
             points.add(point);
+            Log.d(TAG, "point added");
             cursor.moveToNext();
+            Log.d(TAG, "cursor moved to next");
         }
 
         String json = gson.toJson(points);
         cursor.close();
+        Log.d(TAG, "cursor closed");
         return json;
     }
 

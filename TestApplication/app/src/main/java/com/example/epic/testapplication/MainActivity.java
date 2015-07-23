@@ -16,6 +16,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -31,6 +32,10 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.parse.Parse;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,6 +65,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     private byte[] readBuffer;
     private static double mBatteryLevel = 9999.9;
     private int displayedRouteNum;
+    private boolean mParseInitialized;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,23 +196,20 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                 return true;
 
             case R.id.parse_push:
-                //TODO ONLY UPLOADED UNUPLOADED FILES
                 Log.d(TAG, "parse push called");
+
+                WifiManager mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+                if (!mWifiManager.isWifiEnabled()) {
+                    Toast.makeText(this, "Please enable wifi", Toast.LENGTH_LONG);
+                }
+
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                if (DeLoreanApplication.isParseInitialized() && mWifi.isConnected()) {
-                    Cursor routeCursor = mRouteDBHelper.getAllData();
-                    int count = routeCursor.getCount();
-                    if (count > 0) {
-                        routeCursor.moveToLast();
-                        while (!routeCursor.isBeforeFirst()) {
-                            DeLoreanApplication.uploadToParse(--count);
-                            routeCursor.moveToPrevious();
-                        }
-                        routeCursor.close();
-                    }
+
+                if (mWifi.isConnected()) {
+                    syncWithParse();
                 } else {
-                    Toast.makeText(this, "Please connect to wifi", Toast.LENGTH_LONG);
+                    Toast.makeText(this, "No network connection", Toast.LENGTH_LONG);
                 }
                 return true;
 
@@ -323,6 +326,57 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     private void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
+    }
+
+    private void syncWithParse() {
+        Log.d(TAG, "syncWithParse() called");
+        if (!mParseInitialized) {
+            Parse.enableLocalDatastore(this);
+            Parse.initialize(this, "uSrtODrZBDyDwNPUXviACZ2QU3SiMWezzQ9v1Pl9",
+                    "Ul60j3g3iqTRPAxgWZYGSB85RjPTOZAsaFMtMNhH");
+            mParseInitialized = true;
+            Log.d(TAG, "parse initialization finished");
+        }
+
+        Cursor routeCursor = mRouteDBHelper.getUnuploadedRoutes();
+        int count = routeCursor.getCount();
+        if (count > 0) {
+            Log.d(TAG, "count > 0");
+            routeCursor.moveToLast();
+            Log.d(TAG, "cursor moved to last");
+            while (!routeCursor.isBeforeFirst()) {
+                int routeNum = routeCursor.getInt(mRouteDBHelper.INDEX_NUM);
+                Log.d(TAG, "route num = " + routeNum);
+                uploadToParse(routeNum);
+                Toast.makeText(this, "'" + routeCursor.getString(mRouteDBHelper.INDEX_NAME) + "' uploaded to Parse", Toast.LENGTH_SHORT).show();
+                routeCursor.moveToPrevious();
+                Log.d(TAG, "moved to previous");
+
+            }
+            routeCursor.close();
+            Log.d(TAG, "routeCursor closed");
+        } else {
+            Toast.makeText(this, "All files uploaded", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void uploadToParse(int routeNum) {
+        Log.d(TAG, "uploadToParse() called");
+        String jsonFile = mCoordDBHelper.dataToJSON(routeNum);
+        Log.d(TAG, "jsonFile finished");
+        final byte[] translated = jsonFile.getBytes();
+        String fileName = mRouteDBHelper.getRowName(routeNum);
+        ParseFile stored = new ParseFile(fileName + ".json", translated);
+        stored.saveInBackground();
+        Log.d(TAG, "file saved in backbround");
+
+        ParseObject DeLoreanRouteObject = new ParseObject("DeLoreanRouteObject");
+        DeLoreanRouteObject.put("File", stored);
+        DeLoreanRouteObject.saveInBackground();
+        Log.d(TAG, "routeObject saved in background");
+
+        mRouteDBHelper.setUploaded(routeNum);
+        Log.d(TAG, "setUploaded called");
     }
 
 /************** BLUETOOTH METHODS *************/

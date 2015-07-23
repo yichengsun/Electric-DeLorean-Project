@@ -198,9 +198,9 @@ public class PollService extends Service implements
         calculateLifetimeStats();
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (mWifi.isConnected()) {
-            DeLoreanApplication.uploadToParse(mLastRouteId);
-        }
+//        if (mWifi.isConnected()) {
+//            DeLoreanApplication.uploadToParse(mLastRouteId);
+//        }
         return false;
     }
 
