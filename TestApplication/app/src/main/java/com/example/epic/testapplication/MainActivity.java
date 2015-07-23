@@ -58,7 +58,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     private boolean stopWorker;
     private int readBufferPosition;
     private byte[] readBuffer;
-    private static double mBatteryLevel;
+    private static double mBatteryLevel = 9999.9;
+    private int displayedRouteNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +104,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "Main onCreateOptionsMenu called");
         // Inflate the menu items for use in the action bar
@@ -114,10 +120,10 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent i = new Intent(MainActivity.this, PollService.class);
-//        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         switch (item.getItemId()) {
             case R.id.trip_start:
                 Log.d(TAG, "Main trip_start called");
+                Log.d(TAG, mCoordDBHelper.getTableAsString());
                 setActionBar();
                 createNotification();
                 if (!mOnTrip) {
@@ -152,6 +158,28 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                     findViewById(R.id.trip_stop).setEnabled(false);
                     findViewById(R.id.trip_start).setEnabled(true);
                 }
+                return true;
+
+            case R.id.trip_delete:
+
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete trip")
+                        .setMessage("Are you sure you want to delete data for this trip?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mRouteDBHelper.deleteRoute(displayedRouteNum);
+                                mCoordDBHelper.deleteDataForRoute(displayedRouteNum);
+                                updateDropdownValues(mRouteDBHelper.getAllRouteNames());
+                                setActionBar();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
                 return true;
 
             case R.id.view_switch:
@@ -193,6 +221,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                 } else {
                     Toast.makeText(this, "Please connect to wifi", Toast.LENGTH_LONG);
                 }
+                return true;
+
             case R.id.connect_to_pi:
                 try {
                     findBT();
@@ -200,6 +230,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -207,27 +239,30 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
     @Override
     public boolean onNavigationItemSelected(int position, long id) {
-        if(position != 0) {
+        if (position != 0) {
             // Dropdown numbering starts at 1 ("Current trip" occupies 0), routeDB numbering starts at 0
-            final int pos = position - 1;
+            final String routeName = mDropdownValues[position];
+            displayedRouteNum = mRouteDBHelper.getRouteNum(routeName);
             Bundle bundle = new Bundle();
-            bundle.putInt("sel_route", pos);
+            bundle.putInt("sel_route", displayedRouteNum);
             final SummaryFragment summaryFragmentStats = new SummaryFragment();
             summaryFragmentStats.setArguments(bundle);
-
             findViewById(R.id.view_switch).setEnabled(false);
+            findViewById(R.id.trip_delete).setEnabled(true);
             mFM.beginTransaction().replace(R.id.mainFragmentContainer, summaryFragmentStats).commit();
             return true;
-        } else if (!mOnTrip){
-            findViewById(R.id.view_switch).setEnabled(true);
-            StatsFragment fragmentStats = new StatsFragment();
-            mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
-            return true;
         } else {
+            if (!mOnTrip) {
+                StatsFragment fragmentStats = new StatsFragment();
+                mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStats).commit();
+            } else {
+                findViewById(R.id.view_switch).setEnabled(true);
+                StatsFragmentTrip fragmentStatsTrip = new StatsFragmentTrip();
+                mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStatsTrip).commit();
+            }
+            findViewById(R.id.trip_delete).setEnabled(false);
             findViewById(R.id.view_switch).setEnabled(true);
-            StatsFragmentTrip fragmentStatsTrip = new StatsFragmentTrip();
-            mFM.beginTransaction().replace(R.id.mainFragmentContainer, fragmentStatsTrip).commit();
-            return true;
+            return false;
         }
     }
 
@@ -284,7 +319,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     }
 
     private void createNotification() {
-        // TODO make it open to the right state
         Intent intent = new Intent(this, MainActivity.class);
 
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);

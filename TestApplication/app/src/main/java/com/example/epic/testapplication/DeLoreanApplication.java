@@ -76,8 +76,6 @@ public class DeLoreanApplication extends Application {
             }
         };
         registerReceiver(broadcastReceiver, intentFilter);
-
-//        bluetoothSetup();
     }
 
     public void initializeParse() {
@@ -94,7 +92,7 @@ public class DeLoreanApplication extends Application {
             routeCursor.moveToLast();
             while (!routeCursor.isBeforeFirst()) {
                 if (!mRouteDBHelper.isUploaded(--count)) {
-                    uploadToParse(count);
+                    uploadToParse(routeCursor.getInt(1));
                     routeCursor.moveToPrevious();
                     Toast.makeText(this, "Route " + count + " saved to parse", Toast.LENGTH_SHORT).show();
                 } else {

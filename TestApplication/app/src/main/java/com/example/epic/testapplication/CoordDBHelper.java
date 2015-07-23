@@ -245,6 +245,12 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         return routeLatLngArrayList;
     }
 
+    public int deleteDataForRoute(int routeNum) {
+        Log.d(TAG, "deleteDataForRoute called");
+        String[] whereArgs = new String[]{"" + routeNum};
+        return mDB.delete(TABLE_COORD, COORD_ROUTE + " = ?", whereArgs);
+    }
+
     public int getLastRouteId() {
         Cursor cur = getAllData();
         int count = cur.getCount();

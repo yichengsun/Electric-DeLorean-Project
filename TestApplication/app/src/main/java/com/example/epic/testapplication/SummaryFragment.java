@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,6 +41,7 @@ public class SummaryFragment extends Fragment {
     private TextView mEnergyUsedView;
     private TextView mAverageMPGView;
     private TextView mAverageCPMView;
+    private Button mDeleteTripButton;
 
     private float maxZoom = 16.9f;
     private float minZoom = 10.0f;

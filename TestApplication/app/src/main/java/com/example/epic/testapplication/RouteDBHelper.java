@@ -63,6 +63,10 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return getWritableDatabase().insert(TABLE_ROUTE, null, cv);
     }
 
+    public void deleteRoute(int routeNum) {
+        boolean x = mDB.delete(TABLE_ROUTE, ROUTE_NUM + " = " + routeNum, null) > 0;
+    }
+
     //returns all routes from table
     public Cursor getAllData() {
         //Log.d(TAG, "Coord getAllData called");
@@ -114,6 +118,18 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         String name = cur.getString(INDEX_NAME);
         cur.close();
         return name;
+    }
+
+    public int getRouteNum(String name) {
+        //TODO FIX THIS (BETTER STYLE)
+        //Cursor cur = mDB.query(TABLE_ROUTE, new String[]{ROUTE_NUM}, ROUTE_NUM + " = ?", new String[]{"" + row}, null, null, null);
+        Cursor cur = getAllData();
+        cur.moveToFirst();
+        while (!cur.getString(INDEX_NAME).equals(name))
+            cur.moveToNext();
+        int num = cur.getInt(INDEX_NUM);
+        cur.close();
+        return num;
     }
 
     public String[] getAllRouteNames() {
