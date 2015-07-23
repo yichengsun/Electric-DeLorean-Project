@@ -75,20 +75,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         mFM = getSupportFragmentManager();
         android.support.v4.app.Fragment fragmentStats = new StatsFragment();
         mFM.beginTransaction().add(R.id.mainFragmentContainer, fragmentStats).commit();
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    findBT();
-                    openBT();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        Handler handler = new Handler();
-        handler.post(r);
     }
 
     @Override
@@ -204,6 +190,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                 return true;
 
             case R.id.parse_push:
+                //TODO ONLY UPLOADED UNUPLOADED FILES
                 Log.d(TAG, "parse push called");
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);

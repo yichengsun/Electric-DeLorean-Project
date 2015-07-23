@@ -12,7 +12,7 @@
     <string name="end_trip">End</string>
     <string name="delete_trip">Delete</string>
     <string name="switch_views">Switch Views</string>
-    <string name="push_to_parse">Sync All Files</string>
+    <string name="push_to_parse">Upload Files</string>
     <string name="connect_to_pi">Connect to Pi</string>
 
     <string name="store_data">Store Data</string>
