@@ -41,7 +41,6 @@ public class SummaryFragment extends Fragment {
     private TextView mEnergyUsedView;
     private TextView mAverageMPGView;
     private TextView mAverageCPMView;
-    private Button mDeleteTripButton;
 
     private float maxZoom = 16.9f;
     private float minZoom = 10.0f;

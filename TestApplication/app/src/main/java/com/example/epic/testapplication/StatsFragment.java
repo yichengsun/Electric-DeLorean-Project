@@ -40,7 +40,7 @@ public class StatsFragment extends Fragment {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mBatteryData.setText("" + MainActivity.getBatteryLevel());
+                        mBatteryData.setText("TODO");
                         mDistToEmptyData.setText("TODO");
                         mHandler.postDelayed(this, 1000);
                     }

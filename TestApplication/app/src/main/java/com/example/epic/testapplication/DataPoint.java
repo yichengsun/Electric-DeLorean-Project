@@ -12,21 +12,33 @@ public class DataPoint {
     private int route;
     private Point coordinates;
     private double time_elapsed_seconds;
-    private double distance_from_prev_miles;
+    private double electricity_used;
     private double total_distance_miles;
-    private double battery;
-    private double MPG;
+    private double distance_to_empty_miles;
     private double velocity_mph;
+    private double average_mpkwh;
+    private double charge_state;
+    private double amperage;
+    private double power;
+    private double voltage;
+    private double rpm;
 
-    public DataPoint(String time, int route, double lat, double lng, double timeElapsed, double diff, double dist, double batt, double mpg, double vel) {
+    public DataPoint(String time, int route, double lat, double lng, double timeElapsed, double dist,
+                     double distLeft, double electricityUsed, double mpkwh, double vel,
+                     double chargeState, double amperage, double power, double voltage, double rpm) {
         this.timestamp = time;
         this.route = route;
         this.coordinates = new Point(lat, lng);
         this.time_elapsed_seconds = timeElapsed;
-        this.distance_from_prev_miles = diff;
         this.total_distance_miles = dist;
-        this.battery = batt;
-        this.MPG = mpg;
+        this.distance_to_empty_miles = distLeft;
+        this.electricity_used = electricityUsed;
+        this.average_mpkwh = mpkwh;
         this.velocity_mph = vel;
+        this.charge_state = chargeState;
+        this.amperage = amperage;
+        this.power = power;
+        this.voltage = voltage;
+        this.rpm = rpm;
     }
 }

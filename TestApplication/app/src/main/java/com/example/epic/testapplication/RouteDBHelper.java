@@ -73,6 +73,10 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return mDB.query(TABLE_ROUTE, COLUMNS, null, null, null, null, null);
     }
 
+    public Cursor getLastEntry() {
+        return mDB.query(TABLE_ROUTE, null, null, null, null, null, ROUTE_ID + " DESC", "1");
+    }
+
     // updates database row to mark as uploaded to parse
     public void setUploaded(int row) {
         ContentValues cv = new ContentValues();
@@ -121,7 +125,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     }
 
     public int getLastRouteId() {
-        Cursor cur = mDB.query(TABLE_ROUTE, null, null, null, null, null, ROUTE_NUM + " DESC", "1");
+        Cursor cur = getLastEntry();
         if (cur.getCount() > 0) {
             cur.moveToFirst();
             int id = cur.getInt(INDEX_NUM);
@@ -177,9 +181,5 @@ public class RouteDBHelper extends SQLiteOpenHelper {
 
         return new String[3];
     }
-//    public long insert(ContentValues contentValues) {
-//        long rowID = mDB.insert(TABLE_COORD, null, contentValues);
-//        return rowID;
-//    }
 
 }

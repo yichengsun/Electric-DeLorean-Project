@@ -31,14 +31,22 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     public static final String COORD_LAT = "lat";
     public static final String COORD_LNG = "lng";
     public static final String COORD_TIME_ELPSD = "time_elapsed";
-    public static final String COORD_DIST_DIFF = "distance_interval";
     public static final String COORD_DIST_TOTAL = "cumulative_distance_traveled";
-    public static final String COORD_BATT = "battery_level";
-    public static final String COORD_MPG = "average_mpg";
+    public static final String COORD_DIST_TO_EMPTY = "distance_to_empty";
+    public static final String COORD_MPKWH = "average_mpkwh";
+    public static final String COORD_ELECTRICITY_USED = "electricity_used";
     public static final String COORD_VEL = "velocity";
+    public static final String COORD_CHARGE_STATE = "charge_state";
+    public static final String COORD_AMPERAGE = "amperage";
+    public static final String COORD_POWER = "power";
+    public static final String COORD_VOLTAGE = "voltage";
+    public static final String COORD_RPM = "rpm";
+
+
+
     private static final String TABLE_COORD = "coordinates";
-    private static final String[] COLUMNS = {COORD_ID,COORD_TIMESTAMP, COORD_ROUTE,COORD_LAT,COORD_LNG,
-            COORD_TIME_ELPSD,COORD_DIST_DIFF,COORD_DIST_TOTAL,COORD_BATT,COORD_MPG,COORD_VEL};
+    private static final String[] COLUMNS = {COORD_ID, COORD_TIMESTAMP, COORD_ROUTE, COORD_LAT, COORD_LNG,
+            COORD_TIME_ELPSD, COORD_DIST_TOTAL, COORD_DIST_TO_EMPTY, COORD_MPKWH, COORD_ELECTRICITY_USED, COORD_VEL, COORD_CHARGE_STATE, COORD_AMPERAGE, COORD_POWER, COORD_VOLTAGE, COORD_RPM};
     private SQLiteDatabase mDB;
 
     private final int INDEX_TIMESTAMP = 1;
@@ -46,13 +54,16 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     private final int INDEX_LAT = 3;
     private final int INDEX_LNG = 4;
     private final int INDEX_TIME_ELPSD = 5;
-    private final int INDEX_DIST_DIFF= 6;
-    private final int INDEX_DIST_TOTAL = 7;
-    private final int INDEX_BATT = 8;
-    private final int INDEX_MPG = 9;
+    private final int INDEX_DIST_TOTAL = 6;
+    private final int INDEX_DIST_TO_EMPTY = 7;
+    private final int INDEX_MPKWH = 8;
+    private final int INDEX_ELETRICITY_USED = 9;
     private final int INDEX_VEL = 10;
-
-    private Cursor mCursor;
+    private final int INDEX_CHARGE_STATE = 11;
+    private final int INDEX_AMPERAGE = 12;
+    private final int INDEX_POWER = 13;
+    private final int INDEX_VOLTAGE = 14;
+    private final int INDEX_RPM = 15;
 
     public CoordDBHelper(Context context) {
         super(context, DBNAME, null, VERSION);
@@ -71,28 +82,40 @@ public class CoordDBHelper extends SQLiteOpenHelper{
                 COORD_LAT + " real , " +
                 COORD_LNG + " real , " +
                 COORD_TIME_ELPSD + " real , " +
-                COORD_DIST_DIFF + " real , " +
                 COORD_DIST_TOTAL + " real ," +
-                COORD_BATT + " real , " +
-                COORD_MPG + " real, " +
-                COORD_VEL + " real " +
+                COORD_DIST_TO_EMPTY + " real ," +
+                COORD_MPKWH + " real, " +
+                COORD_ELECTRICITY_USED + " real, " +
+                COORD_VEL + " real, " +
+                COORD_CHARGE_STATE + " real, " +
+                COORD_AMPERAGE + " real, " +
+                COORD_POWER + " real, " +
+                COORD_VOLTAGE + " real, " +
+                COORD_RPM + " real " +
                 " ) ";
         db.execSQL(sql);
     }
 
-    public long insertCoord(String timestamp, int route, double lat, double lng, double time, double diff, double dist, double batt, double mpg, double vel) {
-        Log.d(TAG, "Coord insert " + route + ", " + lat + ", " + lng + ", " + time + ", " + diff + ", " + dist + ", " + batt + ", " + mpg + ", " + vel);
+    public long insertCoord(String timestamp, int route, double lat, double lng, double time,
+                            double dist, double distLeft, double mpkwh, double electricityUsed,
+                            double vel, double chargeState, double amperage, double power,
+                            double voltage, double rpm) {
         ContentValues cv = new ContentValues();
         cv.put(COORD_TIMESTAMP, timestamp);
         cv.put(COORD_ROUTE, route);
         cv.put(COORD_LAT, lat);
         cv.put(COORD_LNG, lng);
         cv.put(COORD_TIME_ELPSD, time);
-        cv.put(COORD_DIST_DIFF, diff);
         cv.put(COORD_DIST_TOTAL, dist);
-        cv.put(COORD_BATT, batt);
-        cv.put(COORD_MPG, mpg);
+        cv.put(COORD_DIST_TO_EMPTY, distLeft);
+        cv.put(COORD_MPKWH, mpkwh);
+        cv.put(COORD_ELECTRICITY_USED, electricityUsed);
         cv.put(COORD_VEL, vel);
+        cv.put(COORD_CHARGE_STATE, chargeState);
+        cv.put(COORD_AMPERAGE, amperage);
+        cv.put(COORD_POWER, power);
+        cv.put(COORD_VOLTAGE, voltage);
+        cv.put(COORD_RPM, rpm);
         return mDB.insert(TABLE_COORD, null, cv);
     }
 
@@ -106,13 +129,11 @@ public class CoordDBHelper extends SQLiteOpenHelper{
     //returns all coordinates from table
     public Cursor getAllData() {
         //Log.d(TAG, "Coord getAllData called");
-        return mDB.query(TABLE_COORD, COLUMNS, null, null, null, null, null);
+        return mDB.query(TABLE_COORD, null, null, null, null, null, null);
     }
 
-    //TODO FIX THIS
-    public Cursor getLastRow() {
-        String selectQuery = "SELECT * FROM " + TABLE_COORD + " ORDER BY " + COORD_ROUTE + " DESC, " + COORD_TIME_ELPSD + " DESC LIMIT 1";
-        return mDB.rawQuery(selectQuery, null);
+    public Cursor getLastEntry() {
+        return mDB.query(TABLE_COORD, null, null, null, null, null, COORD_ID + " DESC", "1");
     }
 
     // returns database
@@ -134,9 +155,12 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         cursor.moveToFirst();
         Log.d(TAG, "cursor moved to First");
         while (!cursor.isAfterLast()) {
-            DataPoint point = new DataPoint(cursor.getString(INDEX_TIMESTAMP), cursor.getInt(INDEX_ROUTE), cursor.getDouble(INDEX_LAT), cursor.getDouble(INDEX_LNG),
-                    cursor.getDouble(INDEX_TIME_ELPSD), cursor.getDouble(INDEX_DIST_DIFF), cursor.getDouble(INDEX_DIST_TOTAL), cursor.getDouble(INDEX_BATT),
-                    cursor.getDouble(INDEX_MPG), cursor.getDouble(INDEX_VEL));
+            DataPoint point = new DataPoint(cursor.getString(INDEX_TIMESTAMP), cursor.getInt(INDEX_ROUTE),
+                    cursor.getDouble(INDEX_LAT), cursor.getDouble(INDEX_LNG), cursor.getDouble(INDEX_TIME_ELPSD),
+                    cursor.getDouble(INDEX_DIST_TOTAL), cursor.getDouble(INDEX_DIST_TO_EMPTY), cursor.getDouble(INDEX_MPKWH),
+                    cursor.getDouble(INDEX_ELETRICITY_USED), cursor.getDouble(INDEX_VEL), cursor.getDouble(INDEX_CHARGE_STATE),
+                    cursor.getDouble(INDEX_AMPERAGE), cursor.getDouble(INDEX_POWER),
+                    cursor.getDouble(INDEX_VOLTAGE), cursor.getDouble(INDEX_RPM));
             points.add(point);
             Log.d(TAG, "point added");
             cursor.moveToNext();
@@ -202,8 +226,7 @@ public class CoordDBHelper extends SQLiteOpenHelper{
 
     public LatLng getLastLatLng() {
         Log.d(TAG, "getLastLatLng called");
-        Cursor cur = getAllData();
-        cur.moveToLast();
+        Cursor cur = getLastEntry();
         LatLng coord = new LatLng(cur.getDouble(INDEX_LAT), cur.getDouble(INDEX_LNG));
         cur.close();
         return coord;
@@ -253,53 +276,73 @@ public class CoordDBHelper extends SQLiteOpenHelper{
         return mDB.delete(TABLE_COORD, COORD_ROUTE + " = ?", whereArgs);
     }
 
-    public double getLastBatt() {
-        Cursor cur = getAllData();
-        int count = cur.getCount();
-        if (count > 0) {
-            cur.moveToLast();
-            double batt = cur.getDouble(INDEX_BATT);
+    public double getLastMPKWH() {
+        Cursor cur = getLastEntry();
+        if (cur.getCount() > 0) {
+            cur.moveToFirst();
+            double mpkwh = cur.getDouble(INDEX_MPKWH);
             cur.close();
-            return batt;
-        }
-        cur.close();
-        return -1;
-    }
-
-    public double getLastMPG() {
-        Cursor cur = getAllData();
-        int count = cur.getCount();
-        if (count > 0) {
-            cur.moveToLast();
-            double mpg = cur.getDouble(INDEX_MPG);
-            cur.close();
-            return mpg;
+            return mpkwh;
         }
         cur.close();
         return -1;
     }
 
     public double getLastDistTotal() {
-        Cursor cur = getAllData();
-        int count = cur.getCount();
-        if (count > 0) {
-            cur.moveToLast();
-            double dist = cur.getDouble(INDEX_DIST_TOTAL);
+        Cursor cur = getLastEntry();
+        if (cur.getCount() > 0) {
+            cur.moveToFirst();
+            double mpkwh = cur.getDouble(INDEX_DIST_TOTAL);
             cur.close();
-            return dist;
+            return mpkwh;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public double getLastDistToEmpty() {
+        Cursor cur = getLastEntry();
+        if (cur.getCount() > 0) {
+            cur.moveToFirst();
+            double mpkwh = cur.getDouble(INDEX_DIST_TO_EMPTY);
+            cur.close();
+            return mpkwh;
         }
         cur.close();
         return -1;
     }
 
     public double getLastVelocity() {
-        Cursor cur = getAllData();
-        int count = cur.getCount();
-        if (count > 0) {
-            cur.moveToLast();
-            double vel = cur.getDouble(INDEX_VEL);
+        Cursor cur = getLastEntry();
+        if (cur.getCount() > 0) {
+            cur.moveToFirst();
+            double mpkwh = cur.getDouble(INDEX_VEL);
             cur.close();
-            return vel;
+            return mpkwh;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public double getLastElectricityUsed() {
+        Cursor cur = getLastEntry();
+        if (cur.getCount() > 0) {
+            cur.moveToFirst();
+            double mpkwh = cur.getDouble(INDEX_ELETRICITY_USED);
+            cur.close();
+            return mpkwh;
+        }
+        cur.close();
+        return -1;
+    }
+
+    public double getLastTimeElapsed() {
+        Cursor cur = getLastEntry();
+        if (cur.getCount() > 0) {
+            cur.moveToFirst();
+            double mpkwh = cur.getDouble(INDEX_TIME_ELPSD);
+            cur.close();
+            return mpkwh;
         }
         cur.close();
         return -1;

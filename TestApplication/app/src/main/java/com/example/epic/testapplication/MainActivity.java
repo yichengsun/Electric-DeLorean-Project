@@ -20,7 +20,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputFilter;
 import android.view.Menu;
@@ -40,7 +39,6 @@ import com.parse.ParseObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.util.Set;
 import java.util.UUID;
 
@@ -63,9 +61,21 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     private boolean stopWorker;
     private int readBufferPosition;
     private byte[] readBuffer;
-    private static double mBatteryLevel = 9999.9;
     private int displayedRouteNum;
     private boolean mParseInitialized;
+
+    // Order of data coming in from pi
+    public static int MAIN_INDEX_CHARGE_STATE = 0;
+    public static int MAIN_INDEX_AMPERAGE = 1;
+    public static int MAIN_INDEX_POWER = 2;
+    public static int MAIN_INDEX_VOLTAGE = 3;
+    public static int MAIN_INDEX_RPM = 4;
+
+    private static double mChargeState = 0.0;
+    private static double mAmperage = 0.0;
+    private static double mPower = 0.0;
+    private static double mVoltage = 0.0;
+    private static double mRPM = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +110,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         super.onNewIntent(intent);
     }
 
+/*********** MENU/ACTION BAR METHODS ************/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "Main onCreateOptionsMenu called");
@@ -256,9 +267,22 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         }
     }
 
-    /**
-     * Defines callbacks for service binding, passed to bindService()
-     */
+    public static void updateDropdownValues(String[] names) {
+        mDropdownValues = names;
+    }
+
+    public void setActionBar() {
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, android.R.id.text1, mDropdownValues);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        actionBar.setListNavigationCallbacks(adapter, this);
+    }
+
+/************* SERVICE/TRIP RELATED METHODS *************/
+
+    // Defines callbacks for service binding, passed to bindService()
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -282,7 +306,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         nameInput.setLayoutParams(lp);
         alertDialog.setView(nameInput);
         alertDialog.setTitle("Name this route");
-        alertDialog.setMessage("Please enter a name for this trip (e.g. Belfast - Princeton)");
+        alertDialog.setMessage("Please enter a name for this trip (e.g. Queen's - Princeton)");
         alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -295,19 +319,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         alertDialog.show();
     }
 
-    public static void updateDropdownValues(String[] names) {
-        mDropdownValues = names;
-    }
 
-    public void setActionBar() {
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, android.R.id.text1, mDropdownValues);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        actionBar.setListNavigationCallbacks(adapter, this);
-    }
-
+/************* Notification Methods ***********/
     private void createNotification() {
         Intent intent = new Intent(this, MainActivity.class);
 
@@ -328,6 +341,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         notificationManager.cancel(0);
     }
 
+/******** PARSE METHODS *******/
     private void syncWithParse() {
         Log.d(TAG, "syncWithParse() called");
         if (!mParseInitialized) {
@@ -379,7 +393,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         Log.d(TAG, "setUploaded called");
     }
 
-/************** BLUETOOTH METHODS *************/
+/************** BLUETOOTH/BATTERY DATA METHODS *************/
     void findBT()
     {
         Log.d(TAG, "findBT() called");
@@ -408,7 +422,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                 }
             }
         }
-        //myLabel.setText("Bluetooth Device Found");
         Log.d(TAG, "Bluetooth device found");
     }
 
@@ -426,6 +439,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
             Log.d(TAG, "mmOutputStream set");
             mmInputStream = mmSocket.getInputStream();
             Log.d(TAG, "mmInputStream set");
+            Toast.makeText(this, "Bluetooth connection opened", Toast.LENGTH_LONG);
 
             beginListenForData();
 
@@ -457,16 +471,23 @@ public class MainActivity extends ActionBarActivity implements android.support.v
                                     byte[] encodedBytes = new byte[readBufferPosition];
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, "US-ASCII");
+                                    String[] splitData = data.split("_");
+
+                                    mChargeState = Double.parseDouble(splitData[MAIN_INDEX_CHARGE_STATE]);
+                                    mAmperage = Double.parseDouble(splitData[MAIN_INDEX_AMPERAGE]);
+                                    mPower = Double.parseDouble(splitData[MAIN_INDEX_POWER]);
+                                    mVoltage = Double.parseDouble(splitData[MAIN_INDEX_VOLTAGE]);
+                                    mRPM = Double.parseDouble(splitData[MAIN_INDEX_RPM]);
+
                                     readBufferPosition = 0;
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            Log.d(TAG, data);
-                                            //Update battery level
-                                            mBatteryLevel = Double.parseDouble(data);
-
-                                        }
-                                    });
+//                                    handler.post(new Runnable() {
+//                                        public void run() {
+//                                            Log.d(TAG, data);
+//                                            mChargeState = Double.parseDouble(data);
+//
+//                                        }
+//                                    });
                                 }
                                 else
                                 {
@@ -505,8 +526,24 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 //    }
 //
 
-    public static double getBatteryLevel() {
-        return mBatteryLevel;
+    public static double getChargeState() {
+        return mChargeState;
+    }
+
+    public static double getAmperage() {
+        return mAmperage;
+    }
+
+    public static double getPower() {
+        return mPower;
+    }
+
+    public static double getVoltage() {
+        return mVoltage;
+    }
+
+    public static double getRPM() {
+        return mRPM;
     }
 
 }

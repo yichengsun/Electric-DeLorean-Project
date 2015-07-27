@@ -1,17 +1,11 @@
 package com.example.epic.testapplication;
 
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -28,9 +22,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
-import com.parse.Parse;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -49,8 +40,11 @@ public class PollService extends Service implements
     private static final double MPS_TO_MPH = 3600;
     // nanoseconds to seconds
     private static final double NANO_TO_SECONDS = 1000000000.0;
-    // Divide this by Em to get eMPG
-    private static final double eMPG_CONVERSION = 33705.0;
+    // seconds to hours
+    private static final double SECONDS_TO_HOURS = 3600.0;
+    // TODO Capacity of battery pack
+    private static final double BATTERY_CAPACITY = 9999999999.9;
+    // zero
     private double ZERO = 0.0;
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
@@ -78,10 +72,20 @@ public class PollService extends Service implements
     protected double mTimeElapsed = 0.0;
     protected double mDistanceInterval = 0.0;
     protected double mTotalDistance = 0.0;
-    protected double mBatteryLevel = 0.0;
-    protected double mMPG = 0.0;
+    protected double mMPKwh = 0.0;
     protected double mVelocity = 0.0;
+
+    protected double mChargeState = 0.0;
+    protected double mAmperage = 0.0;
+    protected double mPower = 0.0;
+    protected double mAveragePower = 0.0;
+    protected double mElectricityUsed = 0.0;
+    protected double mVoltage = 0.0;
+    protected double mRPM = 0.0;
+    protected double mDistanceToEmpty = 0.0;
+
     private long mStartTime;
+    private int insertCount = 0;
 
     public class LocalBinder extends Binder {
         PollService getService() {
@@ -119,7 +123,8 @@ public class PollService extends Service implements
         Log.d(TAG, "onLocationChanged called");
         updateVariables(location);
         mCoordDBHelper.insertCoord(mTimestamp, mLastRouteId, mLastLat, mLastLng, mTimeElapsed,
-                mDistanceInterval, mTotalDistance, mBatteryLevel, mMPG, mVelocity);
+                mTotalDistance, mDistanceToEmpty, mMPKwh, mElectricityUsed, mVelocity, mChargeState,
+                mAmperage, mPower, mVoltage, mRPM);
         Toast.makeText(this, getResources().getString(R.string.location_updated),
                 Toast.LENGTH_SHORT).show();
     }
@@ -225,11 +230,19 @@ public class PollService extends Service implements
         mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
 
+        mChargeState = MainActivity.getChargeState();
+        mAmperage = MainActivity.getAmperage();
+        mPower = MainActivity.getPower();
+        mAveragePower = ((mAveragePower * insertCount) + mPower) / ++insertCount;
+        mElectricityUsed = mAveragePower * (mTimeElapsed / SECONDS_TO_HOURS);
+        mVoltage = MainActivity.getVoltage();
+        mRPM = MainActivity.getRPM();
+
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
         mTotalDistance += mDistanceInterval;
         mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
-        mBatteryLevel = MainActivity.getBatteryLevel();
-        mMPG = calculateMPG();
+        mMPKwh = mTotalDistance / mElectricityUsed;
+        mDistanceToEmpty = mChargeState * BATTERY_CAPACITY * mMPKwh;
     }
 
     // helper method to calculate distance between two points
@@ -237,13 +250,6 @@ public class PollService extends Service implements
         LatLng oldPoint = new LatLng(prevLat, prevLong);
         LatLng newPoint = new LatLng(newLat, newLong);
         return SphericalUtil.computeDistanceBetween(oldPoint, newPoint);
-    }
-
-    //eMPG = (Energy content per gallon of gasoline) / (wall-to-wheel electrical energy used per mile * energy per KWatt-hour of electricity)
-    //     = 33,705/(wall-to-wheel electrical energy used per mile (Wh/mile))
-    private double calculateMPG() {
-        double energyUsed = 1;
-        return eMPG_CONVERSION / energyUsed;
     }
 
     private void calculateLifetimeStats() {
