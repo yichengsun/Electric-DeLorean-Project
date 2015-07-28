@@ -9,7 +9,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
- * Created by Yicheng on 7/28/2015.
+ * Helper class to store public variable used in google maps and load electric vehicle charger
+ * points
  */
 public class MapHelper {
     //location of belfast city hall
@@ -30,7 +31,7 @@ public class MapHelper {
     //minimum zoom level
     public static final float MIN_ZOOM = 10.0f;
     //default zoom level
-    public static final float DEFAULT_ZOOM = 15f;
+    public static final float DEFAULT_ZOOM = 14f;
 
     //latitude and longitude of out of service rapid chargers
     public double[][] NI_Rapid_Out_of_Service = new double[][] {
@@ -52,7 +53,7 @@ public class MapHelper {
             { 54.9989, -7.32095 },
             { 54.0607, -6.0077 }
     };
-    //operation rapid chargers
+    //operational rapid chargers
     public double[][] NI_Rapid_Operational = new double[][] {
             { 55.200943, -6.642507 },
             { 54.995194, -7.306255 },
@@ -215,6 +216,10 @@ public class MapHelper {
             { 54.824472, -7.461848 }
     };
 
+    /**
+     * Creates a new MapHelper that loads and resize EV charger icons and delorean icons
+     * @param context current state of application to access resources
+     */
     public MapHelper(Context context) {
         //load bitmaps from drawables resources
         oos_bitmap = BitmapFactory.decodeResource(
@@ -241,31 +246,34 @@ public class MapHelper {
                 car_bitmap.getHeight() / CAR_RESIZE_FACTOR, false);
     }
 
+    /**
+     * Adds ev charger markers on google map
+     * @param map current google map
+     */
     public void updateMapChargers(GoogleMap map) {
-        for (int i = 0; i < NI_Fast_Out_of_Service.length; i++) {
+        for (double[] chargerLatLng : NI_Fast_Out_of_Service) {
             map.addMarker(new MarkerOptions()
-                    .position(new LatLng(NI_Fast_Out_of_Service[i][0], NI_Fast_Out_of_Service[i][1]))
+                    .position(new LatLng(chargerLatLng[0], chargerLatLng[1]))
                     .title("NI Fast (Out of Service)")
                     .icon(BitmapDescriptorFactory.fromBitmap(oos_bitmap)));
         }
-        for (int i = 0; i < NI_Fast_Operational.length; i++) {
+        for (double[] chargerLatLng : NI_Fast_Operational) {
             map.addMarker(new MarkerOptions()
-                    .position(new LatLng(NI_Fast_Operational[i][0], NI_Fast_Operational[i][1]))
+                    .position(new LatLng(chargerLatLng[0], chargerLatLng[1]))
                     .title("NI Fast (Operational)")
                     .icon(BitmapDescriptorFactory.fromBitmap(fast_bitmap)));
         }
-        for (int i = 0; i < NI_Rapid_Operational.length; i++) {
+        for (double[] chargerLatLng : NI_Rapid_Operational) {
             map.addMarker(new MarkerOptions()
-                    .position(new LatLng(NI_Rapid_Operational[i][0], NI_Rapid_Operational[i][1]))
+                    .position(new LatLng(chargerLatLng[0], chargerLatLng[1]))
                     .title("NI Rapid (Operational)")
                     .icon(BitmapDescriptorFactory.fromBitmap(rapid_bitmap)));
         }
-        for (int i = 0; i < NI_Rapid_Out_of_Service.length; i++) {
+        for (double[] chargerLatLng : NI_Rapid_Out_of_Service) {
             map.addMarker(new MarkerOptions()
-                    .position(new LatLng(NI_Rapid_Out_of_Service[i][0], NI_Rapid_Out_of_Service[i][1]))
+                    .position(new LatLng(chargerLatLng[0], chargerLatLng[1]))
                     .title("NI Rapid (Out of Service)")
                     .icon(BitmapDescriptorFactory.fromBitmap(oos_bitmap)));
         }
     }
-
 }
