@@ -1,58 +1,64 @@
 package com.example.epic.testapplication;
 
-import android.util.Log;
-
 import java.util.Date;
 
 /**
- * Created by Yicheng on 6/23/2015.
+ *
+ * Note that this class has no setter methods. mStartDate and mID can only be set once, as there
+ * is no need to change them after the  * route is created. mUploaded and mName only have accessor
+ * methods and no set() methods because  * this data is directly edited in the RouteDB when needed.
+ * The route class as a whole simply  * exists to make the insertRoute() function a bit cleaner by
+ * packaging everything together into one object.
  */
 public class Route {
-    public Date mStartDate;
-    private long mID;
-    private int mUploaded;
+    // Start time of route
+    private final Date mStartDate;
+    // id of route
+    private final long mID;
+    // Whether route has been uploaded (0 = no, 1 = yes), in int because SQLite doesn't take boolean
+    private int mUploaded = 0;
+    // Default name of route
     private String mName = "unnamed";
 
-    public Route() {
-        mID = -1;
-        mStartDate = new Date();
-    }
-
+    /**
+     * Creates a new route with given route number and starting time as current time
+     * @param routeNum Designated route number for oute
+     */
     public Route(int routeNum) {
         mID = routeNum;
         mStartDate = new Date();
     }
 
+    /**
+     * Accesses route id
+     * @return route id
+     */
     public long getmID() {
         return mID;
     }
 
-    public void setmID(long ID) {
-        this.mID = ID;
-    }
-
+    /**
+     * Accesses route start date
+     * @return start date for route
+     */
     public Date getStartDate() {
         return mStartDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.mStartDate = startDate;
-    }
-
+    /**
+     * Accesses whether the route has been uploaded to Parse
+     * @return 0 if not uploaded, 1 if uploaded
+     */
     public int getUploaded() {
         return mUploaded;
     }
 
-    public void setUploaded() {
-        mUploaded = 1;
-    }
-
+    /**
+     * Accesses route name
+     * @return name of route
+     */
     public String getName() {
         return mName;
-    }
-
-    public void setName(String name) {
-        mName = name;
     }
 
 }

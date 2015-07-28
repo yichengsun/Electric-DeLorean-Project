@@ -1,11 +1,8 @@
 package com.example.epic.testapplication;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -28,12 +25,51 @@ import java.util.Date;
 import android.os.Handler;
 
 /**
- * Created by henryshangguan on 6/22/15.
+ *
  */
 public class PollService extends Service implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener  {
-    //TAG
+    //TAG for log statements
     private static final String TAG = "PollService";
+    // Binder given to clients
+    private final IBinder mBinder = new LocalBinder();
+
+    // GoogleApiClient, used to obtain location through LocationServices API
+    protected GoogleApiClient mGoogleApiClient;
+    // LocationRequest for LocationServices
+    protected LocationRequest mLocationRequest;
+    // Whether PollService is still requesting location updates
+    protected boolean mRequestingLocationUpdates;
+
+    protected String mTimestamp; // time stamp of when data was recorded
+    protected int mLastRouteId; // Route id for most recent data point
+    protected Location mLastLocation; // Most recent measurement of location
+    protected double mLastLat, mLastLng; // Most recent measurement of latitude and longitude
+    protected double mTimeElapsed; // Most recent measurement of time elapsed (seconds)
+    protected double mDistanceInterval; // Linear distance from last data point location (miles)
+    protected double mTotalDistance; // Most recent measurement of total distance traveled on trip (miles)
+    protected double mMPKwh; // Most recent calculation of average miles per kilowatt hour
+    protected double mVelocity; // Most recent calculation of instantaneous velocity (mph)
+
+    protected double mChargeState; // Most recent reading of battery charge state, from BMS (0 to 5)
+    protected double mAmperage; // Most recent reading of instantaneous amperage, from BMS (Amp)
+    protected double mPower; // Most recent reading of Power, from motor controller (TODO units)
+    protected double mAveragePower; // Most recent calculation of average power on trip (TODO units)
+    protected double mElectricityUsed; // Most recent calculation of total electricity used on trip (Kwh)
+    protected double mVoltage; // Most recent reading of voltage, from motor controller (Volts)
+    protected double mRPM; // Most recent reading of RPM, from motor controller
+    protected double mDistanceToEmpty;// Most recent estimate of remaining range of battery (miles)
+
+    private long mStartTime; // Time PollService started recording data (start of trip)
+    private int insertCount = 0; // Number of data points inserted
+
+    // Refresh rate, in milliseconds
+    public static final long UPDATE_INTERVAL = 1000;
+    // Fastest refresh rate
+    public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
+    // TODO Capacity of battery pack
+    private static final double BATTERY_CAPACITY = 9999999999.9;
+
     // meters to miles conversion
     private static final double METERS_TO_MILES = 0.000621371192;
     // Miles per second to miles per hour
@@ -42,58 +78,21 @@ public class PollService extends Service implements
     private static final double NANO_TO_SECONDS = 1000000000.0;
     // seconds to hours
     private static final double SECONDS_TO_HOURS = 3600.0;
-    // TODO Capacity of battery pack
-    private static final double BATTERY_CAPACITY = 9999999999.9;
     // zero
     private double ZERO = 0.0;
-    // Binder given to clients
-    private final IBinder mBinder = new LocalBinder();
-    // requestCode parameter of onActivityResult() for bluetooth
-    private final int REQUEST_ENABLE_BT = 10;
 
-    public static final long UPDATE_INTERVAL = 1000;
-    public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
-
-    protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
-    protected final static String LOCATION_KEY = "location-key";
-    protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
-
-    protected GoogleApiClient mGoogleApiClient;
-    protected Location mLastLocation;
-    protected LocationRequest mLocationRequest;
-    protected boolean mRequestingLocationUpdates;
-
-    protected CoordDBHelper mCoordDBHelper;
-    protected RouteDBHelper mRouteDBHelper;
-    protected String mTimestamp;
-    protected int mLastRouteId = 0;
-    protected double mLastLat = 0.0;
-    protected double mLastLng = 0.0;
-    protected double mTimeElapsed = 0.0;
-    protected double mDistanceInterval = 0.0;
-    protected double mTotalDistance = 0.0;
-    protected double mMPKwh = 0.0;
-    protected double mVelocity = 0.0;
-
-    protected double mChargeState = 0.0;
-    protected double mAmperage = 0.0;
-    protected double mPower = 0.0;
-    protected double mAveragePower = 0.0;
-    protected double mElectricityUsed = 0.0;
-    protected double mVoltage = 0.0;
-    protected double mRPM = 0.0;
-    protected double mDistanceToEmpty = 0.0;
-
-    private long mStartTime;
-    private int insertCount = 0;
-
+    /**
+     * Return this instance of PollService so clients can call public methods
+     */
     public class LocalBinder extends Binder {
         PollService getService() {
-            // Return this instance of PollService so clients can call public methods
             return PollService.this;
         }
     }
 
+    /**
+     * Build Google Api Client with LocationServices API
+     */
     protected synchronized void buildGoogleApiClient() {
         Log.d(TAG, "buildingGoogleApiClient called");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -104,6 +103,9 @@ public class PollService extends Service implements
         createLocationRequest();
     }
 
+    /**
+     * Create location request with designated refresh rate
+     */
     protected void createLocationRequest() {
         Log.d(TAG, "createLocationRequest called");
         mLocationRequest = new LocationRequest()
@@ -112,23 +114,32 @@ public class PollService extends Service implements
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    /**
+     * Begin location updates from LocationServices
+     */
     protected void startLocationUpdates() {
         Log.d(TAG, "startLocationUpdates called");
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, (LocationListener) this);
     }
 
+    /**
+     * Updates all data variables and inserts a new data point into the database every time
+     * the device's location has changed.
+     * @param location most recent location
+     */
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged called");
         updateVariables(location);
-        mCoordDBHelper.insertCoord(mTimestamp, mLastRouteId, mLastLat, mLastLng, mTimeElapsed,
+        MainActivity.mDataDBHelper.insertDataPoint(mTimestamp, mLastRouteId, mLastLat, mLastLng, mTimeElapsed,
                 mTotalDistance, mDistanceToEmpty, mMPKwh, mElectricityUsed, mVelocity, mChargeState,
                 mAmperage, mPower, mVoltage, mRPM);
-        Toast.makeText(this, getResources().getString(R.string.location_updated),
-                Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * When connected, start requesting location updates
+     */
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d(TAG, "onConnected called");
@@ -145,23 +156,34 @@ public class PollService extends Service implements
         }
     }
 
+    /**
+     * If connection is suspended, reconnect to Google Api Client
+     * @param cause cause of suspsension
+     */
     @Override
     public void onConnectionSuspended(int cause) {
         Log.d(TAG, "onConnectionSuspended called");
         mGoogleApiClient.connect();
     }
 
+    /**
+     * If connection fails, provide log statement with error code
+     * @param result connection failure resuot
+     */
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
+    /**
+     * Callback upon binding the service, starts location updates and inserts a new route into
+     * the route database.
+     * @param intent intent binding the service
+     * @return successful completion of onBind()
+     */
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "PollService running");
-        mStartTime = System.nanoTime();
-        mCoordDBHelper = new CoordDBHelper(PollService.this);
-        mRouteDBHelper = new RouteDBHelper(PollService.this);
 
         Runnable mainR = new Runnable() {
             @Override
@@ -180,20 +202,27 @@ public class PollService extends Service implements
                     }
                 };
 
-                handler.postDelayed(r, 100);
+                handler.postDelayed(r, 100); // Delay to provide time for connecting to Google Api Client
             }
         };
 
         Thread t = new Thread(mainR);
         t.start();
-        mLastRouteId = mRouteDBHelper.getLastRouteId() + 1;
 
+        mStartTime = System.nanoTime();
+        mLastRouteId = MainActivity.mRouteDBHelper.getLastRouteId() + 1; // Increment from last route id
         Route route = new Route(mLastRouteId);
-        mRouteDBHelper.insertRoute(route);
+        MainActivity.mRouteDBHelper.insertRoute(route);
 
         return mBinder;
     }
 
+    /**
+     * Callback upon unbinding the service, terminates location updates, and calculates "lifetime" stats
+     * for the trip
+     * @param intent
+     * @return successful completion of onUnbind()
+     */
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "stopLocationUpdates called");
         LocationServices.FusedLocationApi.removeLocationUpdates(
@@ -201,20 +230,25 @@ public class PollService extends Service implements
         mGoogleApiClient.disconnect();
 
         calculateLifetimeStats();
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-//        if (mWifi.isConnected()) {
-//            DeLoreanApplication.uploadToParse(mLastRouteId);
-//        }
-        return false;
+        //TODO insert lifetime stats into route database
+
+        return true;
     }
 
-/************** Calculation methods ***************/
+/****************************** Calculation methods *******************************/
+    /**
+     * Performs calculations and updates all data variables
+     * @param location location of recorded data
+     */
     private void updateVariables(Location location) {
-        double mOldTimeElapsed = mTimeElapsed;
-        double mOldLat, mOldLng;
+        double mOldTimeElapsed = mTimeElapsed; // Most recent measurement before this data point
+        double mOldLat, mOldLng; // Most recent latitude and longitude before this location
 
-        mLastLocation = location;
+        mLastLocation = location; // Update most recent location
+        mLastLat = mLastLocation.getLatitude();
+        mLastLng = mLastLocation.getLongitude();
+
+        // If there are no other points in the data base, set mOldLat and mOldLng to this location
         if (Double.compare(ZERO, mLastLat) == 0 && Double.compare(ZERO, mLastLng) == 0)
         {
             mOldLat = mLastLocation.getLatitude();
@@ -224,34 +258,50 @@ public class PollService extends Service implements
             mOldLng = mLastLng;
         }
 
-        mLastLat = mLastLocation.getLatitude();
-        mLastLng = mLastLocation.getLongitude();
-
         mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
+        // Get time elapsed in nanoseconds, convert to seconds
         mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
 
         mChargeState = MainActivity.getChargeState();
         mAmperage = MainActivity.getAmperage();
-        mPower = MainActivity.getPower();
-        mAveragePower = ((mAveragePower * insertCount) + mPower) / ++insertCount;
-        mElectricityUsed = mAveragePower * (mTimeElapsed / SECONDS_TO_HOURS);
         mVoltage = MainActivity.getVoltage();
         mRPM = MainActivity.getRPM();
+        mPower = MainActivity.getPower();
 
+        // Calculate new average power by adding most recent power reading to old average
+        // and re-averaging for trip
+        mAveragePower = ((mAveragePower * insertCount) + mPower) / ++insertCount; // increment count
+        // Calculate new total for electricity used (avg. power * time), result is in kwh
+        mElectricityUsed = mAveragePower * (mTimeElapsed / SECONDS_TO_HOURS);
+        // method returns distance in meters, convert to miles
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
+        // new total distance = previous total distance + recently traveled distance
         mTotalDistance += mDistanceInterval;
+        // Convert speed from meters per second to miles per hour
         mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
+        // Efficiency = distance / power used
         mMPKwh = mTotalDistance / mElectricityUsed;
-        mDistanceToEmpty = mChargeState * BATTERY_CAPACITY * mMPKwh;
+        // Estimated remaining range = reminaing battery percentage * efficiency so far
+        mDistanceToEmpty = mChargeState * BATTERY_CAPACITY * mMPKwh; // TODO CONVERT BATTERY CHARGE STATE TO PERCENTAGE
     }
 
-    // helper method to calculate distance between two points
+    /**
+     * Helper method to calculate distance between two points on Earth
+     * @param prevLat latitude of "from" point
+     * @param prevLong longitude of "from" point
+     * @param newLat latitude of "to" point
+     * @param newLong longitude of "to" point
+     * @return distance between two points, in meters
+     */
     private double distanceBetweenTwo(double prevLat, double prevLong, double newLat, double newLong) {
         LatLng oldPoint = new LatLng(prevLat, prevLong);
         LatLng newPoint = new LatLng(newLat, newLong);
         return SphericalUtil.computeDistanceBetween(oldPoint, newPoint);
     }
 
+    /**
+     * TODO comment this
+     */
     private void calculateLifetimeStats() {
         //TODO calculations
         //TODO enter into routeDB

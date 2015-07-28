@@ -13,11 +13,11 @@
     <item android:id="@+id/trip_delete"
           android:title="@string/delete_trip"
           app:showAsAction="ifRoom" />
-    <item android:id="@+id/parse_push"
-          android:title="@string/push_to_parse"
-          app:showAsAction="never" />
     <item android:id="@+id/connect_to_pi"
           android:title="@string/connect_to_pi"
+          app:showAsAction="never" />
+    <item android:id="@+id/parse_push"
+          android:title="@string/push_to_parse"
           app:showAsAction="never" />
     <!--<item android:id="@+id/action_settings" android:title="@string/action_settings"-->
         <!--android:orderInCategory="100" app:showAsAction="never" />-->

@@ -36,7 +36,7 @@ public class MapFragmentTrip extends Fragment {
     protected PolylineOptions mPolyline;
     protected GoogleMap mMap;
     protected List<LatLng> mAllLatLng;
-    protected CoordDBHelper mCoordDBHelper;
+    protected DataDBHelper mDataPointDBHelper;
     private Handler mHandler;
     private Activity mActivity;
     private Runnable mRunnable;
@@ -84,7 +84,7 @@ public class MapFragmentTrip extends Fragment {
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
 
-        mCoordDBHelper = new CoordDBHelper(getActivity());
+        mDataPointDBHelper = new DataDBHelper(getActivity());
 
         Handler mHandlerInit = new Handler();
         mHandlerInit.postDelayed(new Runnable() {
@@ -92,7 +92,7 @@ public class MapFragmentTrip extends Fragment {
             public void run() {
                 Log.d(TAG, "first runnable called");
                 delorean = mMap.addMarker(new MarkerOptions()
-                        .position(mCoordDBHelper.getLastLatLng())
+                        .position(mDataPointDBHelper.getLastLatLng())
                         .title("DeLorean DMC-12")
                         .snippet("Roads? Where we're going, we don't need roads.")
                         .visible(true)
@@ -112,9 +112,9 @@ public class MapFragmentTrip extends Fragment {
                             @Override
                             public void run() {
                                 Log.d(TAG, "2nd runnable called");
-                                delorean.setPosition(mCoordDBHelper.getLastLatLng());
+                                delorean.setPosition(mDataPointDBHelper.getLastLatLng());
 
-                                mAllLatLng = mCoordDBHelper.getAllLatLng();
+                                mAllLatLng = mDataPointDBHelper.getAllLatLng();
                                 mPolyline = new PolylineOptions()
                                         .addAll(mAllLatLng)
                                         .width(15)

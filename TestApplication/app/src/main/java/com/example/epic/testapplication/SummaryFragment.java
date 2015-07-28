@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,12 +27,10 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import java.util.List;
 
 /**
- * Created by henryshangguan on 7/9/15.
+ *
  */
 public class SummaryFragment extends Fragment {
     private final String TAG = "StatsFragmentSummary";
-    private RouteDBHelper mRouteDBHelper;
-    private CoordDBHelper mCoordDBHelper;
     private Activity mActivity;
 
     private TextView mDistanceTraveledView;
@@ -60,10 +57,6 @@ public class SummaryFragment extends Fragment {
         Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
-
-        //initialize database helpers
-        mRouteDBHelper = new RouteDBHelper(mActivity);
-        mCoordDBHelper = new CoordDBHelper(mActivity);
 
         //load car bitmap file and resize
         car_full_bitmap = BitmapFactory.decodeResource(
@@ -97,14 +90,14 @@ public class SummaryFragment extends Fragment {
 
         //set delorean marker at route end location
         delorean = mMap.addMarker(new MarkerOptions()
-                .position(mCoordDBHelper.getRouteLastLng(sel_route))
+                .position(MainActivity.mDataDBHelper.getRouteLastLng(sel_route))
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
                 .visible(true)
                 .icon(BitmapDescriptorFactory.fromBitmap(car_resized_bitmap)));
 
         //get all points in route and draw polyline
-        mAllLatLng = mCoordDBHelper.getRouteAllLatLng(sel_route);
+        mAllLatLng = MainActivity.mDataDBHelper.getRouteAllLatLng(sel_route);
         mPolyline = new PolylineOptions()
                 .addAll(mAllLatLng)
                 .width(15)
