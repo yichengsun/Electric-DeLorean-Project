@@ -1,18 +1,12 @@
 package com.example.epic.testapplication;
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-
 import android.os.Bundle;
-
-
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -23,13 +17,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-
 import android.support.v4.app.Fragment;
 import android.widget.ImageButton;
-
 import java.util.List;
-import java.util.Map;
-
 
 public class MapFragmentTrip extends Fragment {
     protected static final String TAG = "MapFragmentTrip";

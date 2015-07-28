@@ -39,30 +39,19 @@ public class SummaryFragment extends Fragment {
     private TextView mAverageMPGView;
     private TextView mAverageCPMView;
 
-    private float maxZoom = 16.9f;
-    private float minZoom = 10.0f;
-    private float defaultZoom = 15f;
-
-    public static Bitmap car_full_bitmap;
-    public static Bitmap car_resized_bitmap;
-
     private PolylineOptions mPolyline;
     protected List<LatLng> mAllLatLng;
     private Marker delorean;
     private GoogleMap mMap;
     private int sel_route;
+    private MapHelper mMapHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
-
-        //load car bitmap file and resize
-        car_full_bitmap = BitmapFactory.decodeResource(
-                getResources(), R.drawable.rear);
-        car_resized_bitmap = Bitmap.createScaledBitmap(
-                car_full_bitmap, car_full_bitmap.getWidth() / 4, car_full_bitmap.getHeight() / 4, false);
+        mMapHelper = new MapHelper(mActivity);
 
         //get selected route number from bundle
         Bundle bundle = getArguments();
@@ -86,7 +75,7 @@ public class SummaryFragment extends Fragment {
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(defaultZoom));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(mMapHelper.DEFAULT_ZOOM));
 
         //set delorean marker at route end location
         delorean = mMap.addMarker(new MarkerOptions()
@@ -94,7 +83,7 @@ public class SummaryFragment extends Fragment {
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
                 .visible(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(car_resized_bitmap)));
+                .icon(BitmapDescriptorFactory.fromBitmap(mMapHelper.car_bitmap)));
 
         //get all points in route and draw polyline
         mAllLatLng = MainActivity.mDataDBHelper.getRouteAllLatLng(sel_route);
@@ -122,10 +111,12 @@ public class SummaryFragment extends Fragment {
         return new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                if (position.zoom > maxZoom)
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(), maxZoom));
-                else if (position.zoom < minZoom)
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(), minZoom));
+                if (position.zoom > mMapHelper.MAX_ZOOM)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(),
+                            mMapHelper.MAX_ZOOM));
+                else if (position.zoom < mMapHelper.MIN_ZOOM)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(),
+                            mMapHelper.MIN_ZOOM));
             }
         };
     }
