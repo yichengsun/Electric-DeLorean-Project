@@ -7,12 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.util.Date;
-
 /**
- * Created by Yicheng on 6/23/2015.
+ *
  */
 public class RouteDBHelper extends SQLiteOpenHelper {
+    // TAG for log statements
     private String TAG = "RouteDBHelper";
     private static String DBNAME = "routes.sqlite";
     private static int VERSION = 1;
@@ -158,7 +157,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     public String getTableAsString() {
         Log.d(TAG, "getTableAsString called");
         String tableString = String.format("Table %s:\n", TABLE_ROUTE);
-        Cursor allRows  = mDB.rawQuery("SELECT * FROM " + TABLE_ROUTE, null);
+        Cursor allRows = mDB.rawQuery("SELECT * FROM " + TABLE_ROUTE, null);
         if (allRows.moveToFirst() ){
             String[] columnNames = allRows.getColumnNames();
             do {
