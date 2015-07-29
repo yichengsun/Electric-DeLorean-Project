@@ -30,30 +30,240 @@
         android:layout_height="0dp"
         android:layout_weight="0.4">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/summary_dist_traveled"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/summary_avg_velocity"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/summary_energy_used"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/summary_avg_mpg"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView3"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_start_time_summary"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/summary_cpm"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/startSummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView7"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_end_time_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/endSummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView9"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_time_elapsed_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/timeSummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView11"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_distance_traveled_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/distanceSummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView13"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_avg_velocity_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/velocitySummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView15"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_avg_rpm_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/rpmSummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView17"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_electricity_used_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/electricityUsedSummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView19"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_avg_efficiency_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/efficiencySummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView21"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:text="@string/trip_avg_power_summary"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/powerSummaryData"
+                        android:layout_gravity="center_horizontal|bottom|top"
+                        android:textSize="40sp"
+                        android:layout_marginTop="30dp"/>
+                </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+
     </FrameLayout>
 
 </LinearLayout>

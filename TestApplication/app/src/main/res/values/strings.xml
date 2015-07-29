@@ -15,8 +15,8 @@
     <string name="push_to_parse">Upload Files</string>
     <string name="connect_to_pi">Connect to Pi</string>
 
-    <string name="trip_start_time">Trip Start Time: </string>
-    <string name="trip_time_elapsed">Time Elapsed: </string>
+    <string name="trip_start_time">Trip Start Time</string>
+    <string name="trip_time_elapsed">Time Elapsed</string>
     <string name="charge_state_label">Charge State</string>
     <string name="amperage_label">Amperage</string>
     <string name="velocity_label">Velocity</string>
@@ -28,6 +28,26 @@
     <string name="energy_label">Electricity Used</string>
     <string name="distance_to_empty_label">Distance To Empty</string>
     <string name="na_label">N/A</string>
+
+    <string name="trip_start_time_summary">Start Time</string>
+    <string name="trip_end_time_summary">End Time</string>
+    <string name="trip_time_elapsed_summary">Time Elapsed</string>
+    <string name="trip_distance_traveled_summary">Distance Traveled</string>
+    <string name="trip_avg_velocity_summary">Average Velocity</string>
+    <string name="trip_avg_rpm_summary">Average RPM</string>
+    <string name="trip_electricity_used_summary">Electricity Used</string>
+    <string name="trip_avg_efficiency_summary">Average Efficiency</string>
+    <string name="trip_avg_power_summary">Average Power</string>
+
+    <string name="hash_map_start">start_date</string>
+    <string name="hash_map_end">end_date</string>
+    <string name="hash_map_time">time_elapsed</string>
+    <string name="hash_map_distance">total_distance</string>
+    <string name="hash_map_velocity">average_velocity</string>
+    <string name="hash_map_rpm">average_rpm</string>
+    <string name="hash_map_energy">electricity_used</string>
+    <string name="hash_map_efficiency">average_efficiency</string>
+    <string name="hash_map_power">average_power</string>
 
     <string name="store_data">Store Data</string>
     <string name="data_saved">Data saved.</string>

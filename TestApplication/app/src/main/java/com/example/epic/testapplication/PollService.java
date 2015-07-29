@@ -22,6 +22,8 @@ import com.google.maps.android.SphericalUtil;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
+
 import android.os.Handler;
 
 /**
@@ -45,11 +47,12 @@ public class PollService extends Service implements
     protected int mLastRouteId; // Route id for most recent data point
     protected Location mLastLocation; // Most recent measurement of location
     protected double mLastLat, mLastLng; // Most recent measurement of latitude and longitude
-    protected double mTimeElapsed; // Most recent measurement of time elapsed (seconds)
+    protected double mTimeElapsed; // Most recent measurement of time elapsed (hours)
     protected double mDistanceInterval; // Linear distance from last data point location (miles)
     protected double mTotalDistance; // Most recent measurement of total distance traveled on trip (miles)
     protected double mMPKwh; // Most recent calculation of average miles per kilowatt hour
     protected double mVelocity; // Most recent calculation of instantaneous velocity (mph)
+    protected double mAverageVelocity; // Most recent calculation of average velocity (mph)
 
     protected double mChargeState; // Most recent reading of battery charge state, from BMS (0 to 5)
     protected double mAmperage; // Most recent reading of instantaneous amperage, from BMS (Amp)
@@ -58,10 +61,11 @@ public class PollService extends Service implements
     protected double mElectricityUsed; // Most recent calculation of total electricity used on trip (Kwh)
     protected double mVoltage; // Most recent reading of voltage, from motor controller (Volts)
     protected double mRPM; // Most recent reading of RPM, from motor controller
+    protected double mAverageRPM; // Most recent calculation of average RPM
     protected double mDistanceToEmpty;// Most recent estimate of remaining range of battery (miles)
 
-    private long mStartTime; // Time PollService started recording data (start of trip)
-    private int insertCount = 0; // Number of data points inserted
+    private long mStartDate; // Time PollService started recording data (start of trip)
+    private long mEndDate;
 
     // Refresh rate, in milliseconds
     public static final long UPDATE_INTERVAL = 1000;
@@ -74,10 +78,8 @@ public class PollService extends Service implements
     private static final double METERS_TO_MILES = 0.000621371192;
     // Miles per second to miles per hour
     private static final double MPS_TO_MPH = 3600;
-    // nanoseconds to seconds
-    private static final double NANO_TO_SECONDS = 1000000000.0;
-    // seconds to hours
-    private static final double SECONDS_TO_HOURS = 3600.0;
+    // nanoseconds to hours
+    private static final double NANO_TO_HOURS = 3600000000000.0;
     // zero
     private double ZERO = 0.0;
 
@@ -135,6 +137,7 @@ public class PollService extends Service implements
         MainActivity.mDataDBHelper.insertDataPoint(mTimestamp, mLastRouteId, mLastLat, mLastLng, mTimeElapsed,
                 mTotalDistance, mDistanceToEmpty, mMPKwh, mElectricityUsed, mVelocity, mChargeState,
                 mAmperage, mPower, mVoltage, mRPM);
+        Toast.makeText(this, "Location updated", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -209,7 +212,7 @@ public class PollService extends Service implements
         Thread t = new Thread(mainR);
         t.start();
 
-        mStartTime = System.nanoTime();
+        mStartDate = System.nanoTime();
         mLastRouteId = MainActivity.mRouteDBHelper.getLastRouteId() + 1; // Increment from last route id
         Route route = new Route(mLastRouteId);
         MainActivity.mRouteDBHelper.insertRoute(route);
@@ -229,19 +232,18 @@ public class PollService extends Service implements
                 mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
 
+        mEndDate = System.nanoTime();
         calculateLifetimeStats();
-        //TODO insert lifetime stats into route database
 
         return true;
     }
 
-/****************************** Calculation methods *******************************/
+/****************************** CALCULATION METHODS *******************************/
     /**
      * Performs calculations and updates all data variables
      * @param location location of recorded data
      */
     private void updateVariables(Location location) {
-        double mOldTimeElapsed = mTimeElapsed; // Most recent measurement before this data point
         double mOldLat, mOldLng; // Most recent latitude and longitude before this location
 
         mLastLocation = location; // Update most recent location
@@ -259,8 +261,10 @@ public class PollService extends Service implements
         }
 
         mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
-        // Get time elapsed in nanoseconds, convert to seconds
-        mTimeElapsed = (System.nanoTime() - mStartTime) / NANO_TO_SECONDS;
+        double mOldTimeElapsed = mTimeElapsed;
+        // Get time elapsed in nanoseconds, convert to hours
+        mTimeElapsed = (System.nanoTime() - mStartDate) / NANO_TO_HOURS;
+        double mTimeInterval = mTimeElapsed - mOldTimeElapsed;
 
         mChargeState = MainActivity.getChargeState();
         mAmperage = MainActivity.getAmperage();
@@ -268,21 +272,28 @@ public class PollService extends Service implements
         mRPM = MainActivity.getRPM();
         mPower = MainActivity.getPower();
 
-        // Calculate new average power by adding most recent power reading to old average
-        // and re-averaging for trip
-        mAveragePower = ((mAveragePower * insertCount) + mPower) / ++insertCount; // increment count
-        // Calculate new total for electricity used (avg. power * time), result is in kwh
-        mElectricityUsed = mAveragePower * (mTimeElapsed / SECONDS_TO_HOURS);
         // method returns distance in meters, convert to miles
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
         // new total distance = previous total distance + recently traveled distance
         mTotalDistance += mDistanceInterval;
         // Convert speed from meters per second to miles per hour
-        mVelocity = (mDistanceInterval/(mTimeElapsed - mOldTimeElapsed)) * MPS_TO_MPH;
+        mVelocity = (mDistanceInterval/(mTimeInterval));
         // Efficiency = distance / power used
         mMPKwh = mTotalDistance / mElectricityUsed;
         // Estimated remaining range = reminaing battery percentage * efficiency so far
         mDistanceToEmpty = mChargeState * BATTERY_CAPACITY * mMPKwh; // TODO CONVERT BATTERY CHARGE STATE TO PERCENTAGE
+
+        // Calculate new averages by adding most recent reading to old average
+        // and re-averaging for trip. mAverageVelocity and mAverageRPM are only used at the
+        // end of the trip, so they could be removed here and only calculated at
+        // the end (may speed up the app marginally during trip), however keeping it here makes
+        // it easy if you decide you want to display them during trip.
+        mAveragePower = ((mAveragePower * mOldTimeElapsed) + (mPower * mTimeInterval)) / mTimeElapsed;
+        mAverageVelocity = ((mAverageVelocity * mOldTimeElapsed) + (mVelocity * mTimeInterval)) / mTimeElapsed;
+        mAverageRPM = ((mAverageRPM * mOldTimeElapsed) + (mRPM * mTimeInterval)) / mTimeElapsed;
+
+        // Calculate new total for electricity used (avg. power * time), result is in kwh
+        mElectricityUsed = mAveragePower * (mTimeElapsed);
     }
 
     /**
@@ -303,8 +314,17 @@ public class PollService extends Service implements
      * TODO comment this
      */
     private void calculateLifetimeStats() {
-        //TODO calculations
-        //TODO enter into routeDB
+        HashMap<String, Object> endOfTripData = new HashMap<String, Object>();
+        endOfTripData.put(getString(R.string.hash_map_time), mTimeElapsed);
+        endOfTripData.put(getString(R.string.hash_map_velocity), mAverageVelocity);
+        endOfTripData.put(getString(R.string.hash_map_rpm), mAverageRPM);
+        endOfTripData.put(getString(R.string.hash_map_power), mAveragePower);
+        endOfTripData.put(getString(R.string.hash_map_efficiency), mAverageRPM);
+        endOfTripData.put(getString(R.string.hash_map_energy), mElectricityUsed);
+        endOfTripData.put(getString(R.string.hash_map_distance), mTotalDistance);
+        endOfTripData.put(getString(R.string.hash_map_end), mEndDate);
+
+        MainActivity.mRouteDBHelper.updateEndOfTrip(endOfTripData, mLastRouteId);
     }
 
 }

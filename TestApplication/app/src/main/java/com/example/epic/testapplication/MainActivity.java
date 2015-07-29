@@ -548,7 +548,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         DeLoreanRouteObject.put("File", stored);
         DeLoreanRouteObject.saveInBackground();
 
-        mRouteDBHelper.setUploaded(routeNum);
+        mRouteDBHelper.updateUploaded(routeNum);
     }
 
 /************************* BLUETOOTH & BATTERY DATA METHODS *************************/

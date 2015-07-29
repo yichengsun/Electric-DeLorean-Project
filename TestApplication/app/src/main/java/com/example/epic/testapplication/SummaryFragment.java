@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 
+import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,11 +35,15 @@ public class SummaryFragment extends Fragment {
     private final String TAG = "StatsFragmentSummary";
     private Activity mActivity;
 
+    private TextView mStartTimeView;
+    private TextView mEndTimeView;
+    private TextView mTimeElapsedView;
     private TextView mDistanceTraveledView;
+    private TextView mAverageRPMView;
     private TextView mAverageVelocityView;
     private TextView mEnergyUsedView;
-    private TextView mAverageMPGView;
-    private TextView mAverageCPMView;
+    private TextView mAverageMPKWHView;
+    private TextView mAveragePowerView;
 
     private PolylineOptions mPolyline;
     protected List<LatLng> mAllLatLng;
@@ -63,11 +69,15 @@ public class SummaryFragment extends Fragment {
         Log.d(TAG, "onCreateView called");
         View v = inflater.inflate(R.layout.fragment_summary, parent, false);
 
-        mDistanceTraveledView = (TextView) v.findViewById(R.id.summary_dist_traveled);
-        mAverageVelocityView = (TextView) v.findViewById(R.id.summary_avg_velocity);
-        mEnergyUsedView = (TextView) v.findViewById(R.id.summary_energy_used);
-        mAverageMPGView = (TextView) v.findViewById(R.id.summary_avg_mpg);
-        mAverageCPMView = (TextView) v.findViewById(R.id.summary_cpm);
+        mStartTimeView = (TextView) v.findViewById(R.id.startSummaryData);
+        mEndTimeView = (TextView) v.findViewById(R.id.endSummaryData);
+        mTimeElapsedView = (TextView) v.findViewById(R.id.timeSummaryData);
+        mDistanceTraveledView = (TextView) v.findViewById(R.id.distanceSummaryData);
+        mAverageVelocityView = (TextView) v.findViewById(R.id.velocitySummaryData);
+        mAverageRPMView = (TextView) v.findViewById(R.id.rpmSummaryData);
+        mEnergyUsedView = (TextView) v.findViewById(R.id.electricityUsedSummaryData);
+        mAverageMPKWHView = (TextView) v.findViewById(R.id.efficiencySummaryData);
+        mAveragePowerView = (TextView) v.findViewById(R.id.powerSummaryData);
 
         //initialize open street map overlay
         mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
@@ -104,6 +114,9 @@ public class SummaryFragment extends Fragment {
 
         //set camera to prevent zooming in/out beyond bounds
         mMap.setOnCameraChangeListener(getCameraChangeListener());
+
+        // Set statistics data fields
+        setData(sel_route);
         return v;
     }
 
@@ -121,37 +134,17 @@ public class SummaryFragment extends Fragment {
         };
     }
 
-    public void setData(String[] data){
-        mDistanceTraveledView.setText("" + getDistanceTraveled());
-        mAverageVelocityView.setText("" + getAverageVelocity());
-        mEnergyUsedView.setText("" + getEnergyUsed());
-        mAverageMPGView.setText("" + getAverageMPG());
-        mAverageCPMView.setText("" + getAverageCPM());
-    }
+    public void setData(int selectedRoute){
+        HashMap<String, Object> endOfTripData = MainActivity.mRouteDBHelper.provideEndOfTripData(selectedRoute);
 
-    //TODO all of these methods
-    public double getDistanceTraveled() {
-
-        return 1.0;
-    }
-
-    public double getAverageVelocity() {
-
-        return 2.0;
-    }
-
-    public double getEnergyUsed() {
-
-        return 3.0;
-    }
-
-    public double getAverageMPG() {
-
-        return 4.0;
-    }
-
-    public double getAverageCPM() {
-
-        return 5.0;
+        mStartTimeView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_start))));
+        mEndTimeView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_end))));
+        mTimeElapsedView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_time))));
+        mDistanceTraveledView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_distance))));
+        mAverageVelocityView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_velocity))));
+        mAverageRPMView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_rpm))));
+        mEnergyUsedView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_energy))));
+        mAverageMPKWHView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_efficiency))));
+        mAveragePowerView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_power))));
     }
 }
