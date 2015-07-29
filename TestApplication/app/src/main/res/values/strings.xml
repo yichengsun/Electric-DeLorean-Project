@@ -16,15 +16,15 @@
     <string name="connect_to_pi">Connect to Pi</string>
 
     <string name="trip_start_time">Trip Start Time</string>
-    <string name="trip_time_elapsed">Elapsed</string>
+    <string name="trip_time_elapsed">Time Elapsed</string>
     <string name="charge_state_label">Charge State</string>
     <string name="amperage_label">Amperage</string>
     <string name="velocity_label">Velocity</string>
     <string name="mpg_label">Average Efficiency</string>
     <string name="power_label">Power</string>
     <string name="voltage_label">Voltage</string>
-    <string name="rpm_label">RPM</string>
-    <string name="distance_label">Traveled</string>
+    <string name="rpm_label">Rotational Speed</string>
+    <string name="distance_label">Distance Traveled</string>
     <string name="energy_label">Electricity Used</string>
     <string name="distance_to_empty_label">Remaining range</string>
     <string name="na_label">N/A</string>

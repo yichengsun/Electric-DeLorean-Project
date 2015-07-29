@@ -9,13 +9,14 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.33333">
+        android:layout_weight="0.275">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/layout_border">
+            android:background="@drawable/layout_border"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -23,7 +24,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/chargeStateData"
                 android:layout_weight="0.125"
-                android:textSize="40sp"
+                android:textSize="100sp"
                 android:layout_gravity="center"/>
 
             <TextView
@@ -32,7 +33,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/charge_state_label"
                 android:id="@+id/chargeStateLabel"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_weight="0.125"/>
         </FrameLayout>
@@ -41,7 +42,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.45">
+        android:layout_weight="0.375">
 
         <ImageView
             android:layout_width="fill_parent"
@@ -54,7 +55,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.125">
+        android:layout_weight="0.175">
 
         <FrameLayout
             android:layout_width="0dp"
@@ -69,7 +70,7 @@
                 android:id="@+id/voltageData"
                 android:paddingTop="0dp"
                 android:layout_marginTop="0dp"
-                android:textSize="40sp"
+                android:textSize="45sp"
                 android:textIsSelectable="false"
                 android:layout_gravity="center"/>
 
@@ -95,7 +96,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/powerData"
                 android:layout_gravity="center"
-                android:textSize="40sp"/>
+                android:textSize="45sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -112,7 +113,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.125">
+        android:layout_weight="0.175">
 
         <FrameLayout
             android:layout_width="0dp"
@@ -127,7 +128,7 @@
                 android:layout_gravity="center"
                 android:phoneNumber="true"
                 android:layout_weight="0.125"
-                android:textSize="40sp"/>
+                android:textSize="45sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -152,7 +153,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/rpmData"
                 android:layout_gravity="center"
-                android:textSize="40sp"/>
+                android:textSize="45sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -181,7 +182,8 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="50dp"
+            android:background="@drawable/layout_border">
 
             <LinearLayout
                 android:orientation="horizontal"

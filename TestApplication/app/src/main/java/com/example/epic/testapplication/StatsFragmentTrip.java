@@ -102,7 +102,7 @@ public class StatsFragmentTrip extends Fragment {
                 });
             }
         };
-        mHandler.postDelayed(mRunnable, 1000); // 1000 milisecond delay while data enters into database
+        mHandler.postDelayed(mRunnable, 1000); // 1000 millisecond delay while data enters into database
 
         return v;
     }
@@ -129,24 +129,22 @@ public class StatsFragmentTrip extends Fragment {
      * Updates all BMS and motor controller related fields
      */
     private void displayBatteryData() {
-        double chargeState = MainActivity.getChargeState();
-        double chargeStatePercentage = (chargeState / 5.0) * 100;
-        mChargeStateData.setText(new DecimalFormat("##").format(chargeStatePercentage) + "%");
+        mChargeStateData.setText(new DecimalFormat("##").format(MainActivity.getChargeState()));
         mAmperageData.setText(new DecimalFormat("##.##").format(MainActivity.getAmperage()));
         mPowerData.setText(new DecimalFormat("##.##").format(MainActivity.getPower()));
         mVoltageData.setText(new DecimalFormat("##.##").format(MainActivity.getVoltage()));
-        mRPMData.setText(new DecimalFormat("##.##").format(MainActivity.getRPM()));
+        mRPMData.setText(new DecimalFormat("####").format(MainActivity.getRPM()));
     }
 
     /**
      * Updates all location and trip calculation related fields
      */
     private void displayTripData() {
-        mDistanceData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastDistTotal()) + " mi.");
-        mDistanceToEmptyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastDistToEmpty()) + " mi.");
-        mMPGData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastMPKWH()) + " MPKwh");
-        mEnergyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastElectricityUsed()) + " Kwh");
-        mVelocityData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastVelocity()) + " MPH");
+        mDistanceData.setText(new DecimalFormat("###.##").format(MainActivity.mDataDBHelper.getLastDistTotal()) + " mi.");
+        mDistanceToEmptyData.setText(new DecimalFormat("###").format(MainActivity.mDataDBHelper.getLastDistToEmpty()) + " mi.");
+        mMPGData.setText(new DecimalFormat("##.#").format(MainActivity.mDataDBHelper.getLastMPKWH()) + " mpkWh");
+        mEnergyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastElectricityUsed()) + " kWh");
+        mVelocityData.setText(new DecimalFormat("##.#").format(MainActivity.mDataDBHelper.getLastVelocity()) + " mph");
 
         double timeInHours = (double) MainActivity.mDataDBHelper.getLastTimeElapsed();
         int hours = (int) timeInHours;

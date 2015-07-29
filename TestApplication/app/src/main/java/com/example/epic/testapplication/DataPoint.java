@@ -19,7 +19,7 @@ public class DataPoint {
     private double distance_to_empty_miles; // Estimated remaining range of battery
     private double velocity_mph; // Instantaneous velocity
     private double average_mpkwh; // Average miles per kilowatt hour since start of trip
-    private double charge_state_0_to_5; // Charge state of battery, from BMS
+    private double charge_state; // Charge state of battery, from BMS
     private double amperage; // Instantaneous amperage, from BMS
     private double power; // Power, from motor controller
     private double voltage; // Voltage, from motor controller
@@ -55,9 +55,9 @@ public class DataPoint {
         this.electricity_used_kilowatthours = electricityUsed;
         this.average_mpkwh = mpkwh;
         this.velocity_mph = vel;
-        this.charge_state_0_to_5 = chargeState;
+        this.charge_state = chargeState;
         this.amperage = amperage;
-        this.power = power;
+        this.power= power;
         this.voltage = voltage;
         this.rpm = rpm;
     }
