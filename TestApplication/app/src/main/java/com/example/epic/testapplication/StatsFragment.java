@@ -12,17 +12,28 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 
+/**
+ * Displays statistics when not on a trip
+ */
 public class StatsFragment extends Fragment {
+    //debug tag
     private static final String TAG = "StatsFragment";
+    //data textviews
     private TextView mPowerData;
     private TextView mVoltageData;
     private TextView mRPMData;
     private TextView mChargeStateData;
     private TextView mAmperageData;
+    //handler for runnable
     private Handler mHandler;
+    //runnable for delaying battery display
     private Runnable mRunnable;
     private Activity mActivity;
 
+    /**
+     * Creates fragment from savedInstanceState
+     * @param savedInstanceState the saved instance state
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "Stats onCreate called");
@@ -30,6 +41,13 @@ public class StatsFragment extends Fragment {
         mActivity = getActivity();
     }
 
+    /**
+     * Initializes all text views and starts runnable which regularly refreshes textviews
+     * @param inflater LayoutInflater used to inflate view
+     * @param parent ViewGroup this view will be in
+     * @param savedInstanceState the saved instance state
+     * @return View of fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "Stats onCreateView called");
