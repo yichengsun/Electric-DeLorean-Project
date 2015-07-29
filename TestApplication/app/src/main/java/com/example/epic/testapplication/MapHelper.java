@@ -29,7 +29,7 @@ public class MapHelper {
     //maximum zoom level as Open Street Map tiles will load blank tiles if tiles at level are missing
     public static final float MAX_ZOOM = 16.9f;
     //minimum zoom level
-    public static final float MIN_ZOOM = 10.0f;
+    public static final float MIN_ZOOM = 7.9f;
     //default zoom level
     public static final float DEFAULT_ZOOM = 14f;
 
