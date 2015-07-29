@@ -151,10 +151,10 @@ public class SummaryFragment extends Fragment {
         mTimeElapsedView.setText(timeString);
 
         mDistanceTraveledView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_distance))) + " mi.");
-        mAverageVelocityView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_velocity))) + " MPH");
-        mAverageRPMView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_rpm))) + " RPM");
+        mAverageVelocityView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_velocity))) + " mph");
+        mAverageRPMView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_rpm))) + " rpm");
         mEnergyUsedView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_energy))) + " kWh");
-        mAverageMPKWHView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_efficiency))) + " MPKWh");
+        mAverageMPKWHView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_efficiency))) + " mpkWh");
         mAveragePowerView.setText(new DecimalFormat("##.##").format(endOfTripData.get(getString(R.string.hash_map_power))) + " kW");
     }
 }

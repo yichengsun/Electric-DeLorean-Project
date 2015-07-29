@@ -112,9 +112,10 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         cv.put(ROUTE_NAME, route.getName());
         cv.put(ROUTE_UPLOADED, route.getUploaded());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyyhh:mm:ss");
         String startDate = sdf.format(route.getStartDate());
-        cv.put(ROUTE_START_DATE, startDate);
+        String startDateFormated = startDate.substring(0, 10) + "\n" + startDate.substring(10, 18);
+        cv.put(ROUTE_START_DATE, startDateFormated);
 
         return mDB.insert(TABLE_ROUTE, null, cv);
     }

@@ -324,9 +324,10 @@ public class PollService extends Service implements
         endOfTripData.put(getString(R.string.hash_map_energy), mElectricityUsed);
         endOfTripData.put(getString(R.string.hash_map_distance), mTotalDistance);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyyhh:mm:ss");
         String endDate = sdf.format(mEndDate);
-        endOfTripData.put(getString(R.string.hash_map_end), endDate);
+        String endDateFormated = endDate.substring(0, 10) + "\n" + endDate.substring(10, 18);
+        endOfTripData.put(getString(R.string.hash_map_end), endDateFormated);
 
         MainActivity.mRouteDBHelper.updateEndOfTrip(endOfTripData, mLastRouteId);
     }

@@ -65,11 +65,11 @@ public class StatsFragment extends Fragment {
      * Updates all BMS and motor controller related fields
      */
     private void displayBatteryData() {
-        mChargeStateData.setText(new DecimalFormat("##").format(MainActivity.getChargeState()));
+        mChargeStateData.setText(new DecimalFormat("##.##").format(MainActivity.getChargeState()));
         mAmperageData.setText(new DecimalFormat("##.##").format(MainActivity.getAmperage()));
         mPowerData.setText(new DecimalFormat("##.##").format(MainActivity.getPower()));
         mVoltageData.setText(new DecimalFormat("##.##").format(MainActivity.getVoltage()));
-        mRPMData.setText(new DecimalFormat("####").format(MainActivity.getRPM()));
+        mRPMData.setText(new DecimalFormat("##.##").format(MainActivity.getRPM()));
     }
 
     @Override

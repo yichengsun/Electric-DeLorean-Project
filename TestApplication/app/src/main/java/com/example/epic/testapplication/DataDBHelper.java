@@ -44,7 +44,6 @@ public class DataDBHelper extends SQLiteOpenHelper{
     public static final String DATA_MPKWH = "average_mpkwh";
     public static final String DATA_ELECTRICITY_USED_KWH = "electricity_used";
     public static final String DATA_INSTANTANEOUS_VEL_MPH = "velocity";
-    // todo UNITS FOR THESE
     public static final String DATA_CHARGE_STATE = "charge_state";
     public static final String DATA_AMPERAGE = "amperage";
     public static final String DATA_POWER = "power";
