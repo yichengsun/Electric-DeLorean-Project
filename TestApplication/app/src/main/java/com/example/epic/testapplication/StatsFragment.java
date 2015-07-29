@@ -30,8 +30,8 @@ public class StatsFragment extends Fragment {
         Log.d(TAG, "Stats onCreateView called");
         View v = inflater.inflate(R.layout.fragment_stats, parent, false);
 
-        mBatteryData = (TextView) v.findViewById(R.id.batteryData);
-        mDistToEmptyData = (TextView) v.findViewById(R.id.distToEmpty);
+        //mBatteryData = (TextView) v.findViewById(R.id.batteryData);
+        //mDistToEmptyData = (TextView) v.findViewById(R.id.distToEmpty);
 
         mHandler = new Handler();
         mRunnable = new Runnable() {
@@ -40,8 +40,8 @@ public class StatsFragment extends Fragment {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mBatteryData.setText("TODO");
-                        mDistToEmptyData.setText("TODO");
+                        //mBatteryData.setText("TODO");
+                        //mDistToEmptyData.setText("TODO");
                         mHandler.postDelayed(this, 1000);
                     }
                 });

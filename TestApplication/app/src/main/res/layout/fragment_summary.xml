@@ -60,7 +60,7 @@
                         android:text="New Text"
                         android:id="@+id/startSummaryData"
                         android:layout_gravity="center_horizontal|bottom|top"
-                        android:textSize="40sp"
+                        android:textSize="30sp"
                         android:layout_marginTop="30dp"/>
                 </FrameLayout>
 
@@ -83,7 +83,7 @@
                         android:text="New Text"
                         android:id="@+id/endSummaryData"
                         android:layout_gravity="center_horizontal|bottom|top"
-                        android:textSize="40sp"
+                        android:textSize="30sp"
                         android:layout_marginTop="30dp"/>
                 </FrameLayout>
 

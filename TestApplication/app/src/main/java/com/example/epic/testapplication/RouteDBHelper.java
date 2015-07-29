@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -66,8 +67,8 @@ public class RouteDBHelper extends SQLiteOpenHelper {
                 ROUTE_ID + " integer primary key autoincrement , " +
                 ROUTE_NUM + " integer , " +
                 ROUTE_NAME + " string , " +
-                ROUTE_START_DATE + " real , " +
-                ROUTE_END_DATE + " real , " +
+                ROUTE_START_DATE + " string , " +
+                ROUTE_END_DATE + " string , " +
                 ROUTE_TIME_ELAPSED_SECONDS + " real , " +
                 ROUTE_AVG_VELOCITY_MPH + " real , " +
                 ROUTE_AVG_RPM + " real , " +
@@ -87,8 +88,11 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(ROUTE_NUM, route.getmID());
         cv.put(ROUTE_NAME, route.getName());
-        cv.put(ROUTE_START_DATE, route.getStartDate().getTime());
         cv.put(ROUTE_UPLOADED, route.getUploaded());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        String startDate = sdf.format(route.getStartDate());
+        cv.put(ROUTE_START_DATE, startDate);
 
         return getWritableDatabase().insert(TABLE_ROUTE, null, cv);
     }
@@ -133,7 +137,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         double time = (double) endOfTripData.get(mContext.getResources().getString(R.string.hash_map_time));
         cv.put(ROUTE_TIME_ELAPSED_SECONDS, time);
 
-        Long endDate = (long) endOfTripData.get(mContext.getResources().getString(R.string.hash_map_end));
+        String endDate = (String) endOfTripData.get(mContext.getResources().getString(R.string.hash_map_end));
         cv.put(ROUTE_END_DATE, endDate);
 
         double velocityInMPH = (double) endOfTripData.get(mContext.getResources().getString(R.string.hash_map_velocity));
@@ -162,8 +166,8 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         Cursor cur = getRowEntry(routeNum);
         cur.moveToFirst();
 
-        endOfTripData.put(mContext.getResources().getString(R.string.hash_map_start), cur.getDouble(INDEX_START_DATE));
-        endOfTripData.put(mContext.getResources().getString(R.string.hash_map_end), cur.getDouble(INDEX_END_DATE));
+        endOfTripData.put(mContext.getResources().getString(R.string.hash_map_start), cur.getString(INDEX_START_DATE));
+        endOfTripData.put(mContext.getResources().getString(R.string.hash_map_end), cur.getString(INDEX_END_DATE));
         endOfTripData.put(mContext.getResources().getString(R.string.hash_map_time), cur.getDouble(INDEX_TIME_ELAPSED));
         endOfTripData.put(mContext.getResources().getString(R.string.hash_map_velocity), cur.getDouble(INDEX_AVG_VELOCITY));
         endOfTripData.put(mContext.getResources().getString(R.string.hash_map_rpm), cur.getDouble(INDEX_AVG_RPM));

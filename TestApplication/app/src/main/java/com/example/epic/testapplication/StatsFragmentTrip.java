@@ -146,12 +146,14 @@ public class StatsFragmentTrip extends Fragment {
         mEnergyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastElectricityUsed()) + " Kwh");
         mVelocityData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastVelocity()) + " MPH");
 
-        long hours = (long) MainActivity.mDataDBHelper.getLastTimeElapsed();
-        String timeElapsed = String.format("%02d:%02d:%02d",
-                TimeUnit.HOURS.toHours(hours), TimeUnit.HOURS.toMinutes(hours)
-                        - TimeUnit.HOURS.toMinutes(TimeUnit.HOURS.toHours(hours)),
-                TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(TimeUnit.HOURS.toMinutes(hours)));
+        double timeInHours = (double) MainActivity.mDataDBHelper.getLastTimeElapsed();
+        int hours = (int) timeInHours;
+        double extraTimeInMinutes = (timeInHours - hours) * 60;
+        int minutes = (int) extraTimeInMinutes;
+        int seconds = (int) ((extraTimeInMinutes - minutes) * 60);
 
-        mTimeElapsedData.setText(timeElapsed);
+        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        mTimeElapsedData.setText(timeString);
     }
 }

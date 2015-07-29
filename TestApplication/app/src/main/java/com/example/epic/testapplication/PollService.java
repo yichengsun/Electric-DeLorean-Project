@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -65,14 +66,14 @@ public class PollService extends Service implements
     protected double mDistanceToEmpty;// Most recent estimate of remaining range of battery (miles)
 
     private long mStartDate; // Time PollService started recording data (start of trip)
-    private long mEndDate;
+    private Date mEndDate;
 
     // Refresh rate, in milliseconds
     public static final long UPDATE_INTERVAL = 1000;
     // Fastest refresh rate
     public static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
-    // TODO Capacity of battery pack
-    private static final double BATTERY_CAPACITY = 9999999999.9;
+    // total capacity of battery pack = 27 kwWh
+    private static final double BATTERY_CAPACITY = 27;
 
     // meters to miles conversion
     private static final double METERS_TO_MILES = 0.000621371192;
@@ -232,7 +233,7 @@ public class PollService extends Service implements
                 mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
 
-        mEndDate = System.nanoTime();
+        mEndDate = new Date();
         calculateLifetimeStats();
 
         return true;
@@ -274,6 +275,7 @@ public class PollService extends Service implements
 
         // method returns distance in meters, convert to miles
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
+        Log.d(TAG, "distance interval" + mDistanceInterval);
         // new total distance = previous total distance + recently traveled distance
         mTotalDistance += mDistanceInterval;
         // Convert speed from meters per second to miles per hour
@@ -281,7 +283,7 @@ public class PollService extends Service implements
         // Efficiency = distance / power used
         mMPKwh = mTotalDistance / mElectricityUsed;
         // Estimated remaining range = reminaing battery percentage * efficiency so far
-        mDistanceToEmpty = mChargeState * BATTERY_CAPACITY * mMPKwh; // TODO CONVERT BATTERY CHARGE STATE TO PERCENTAGE
+        mDistanceToEmpty = (mChargeState / 5.0) * BATTERY_CAPACITY * mMPKwh; // TODO CONVERT BATTERY CHARGE STATE TO PERCENTAGE
 
         // Calculate new averages by adding most recent reading to old average
         // and re-averaging for trip. mAverageVelocity and mAverageRPM are only used at the
@@ -322,7 +324,10 @@ public class PollService extends Service implements
         endOfTripData.put(getString(R.string.hash_map_efficiency), mAverageRPM);
         endOfTripData.put(getString(R.string.hash_map_energy), mElectricityUsed);
         endOfTripData.put(getString(R.string.hash_map_distance), mTotalDistance);
-        endOfTripData.put(getString(R.string.hash_map_end), mEndDate);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        String endDate = sdf.format(mEndDate);
+        endOfTripData.put(getString(R.string.hash_map_end), endDate);
 
         MainActivity.mRouteDBHelper.updateEndOfTrip(endOfTripData, mLastRouteId);
     }
