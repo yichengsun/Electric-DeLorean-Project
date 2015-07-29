@@ -129,7 +129,9 @@ public class StatsFragmentTrip extends Fragment {
      * Updates all BMS and motor controller related fields
      */
     private void displayBatteryData() {
-        mChargeStateData.setText(new DecimalFormat("##.##").format(MainActivity.getChargeState()));
+        double chargeState = MainActivity.getChargeState();
+        double chargeStatePercentage = chargeState / 5.0;
+        mChargeStateData.setText(new DecimalFormat("##").format(chargeStatePercentage) + "%");
         mAmperageData.setText(new DecimalFormat("##.##").format(MainActivity.getAmperage()));
         mPowerData.setText(new DecimalFormat("##.##").format(MainActivity.getPower()));
         mVoltageData.setText(new DecimalFormat("##.##").format(MainActivity.getVoltage()));
