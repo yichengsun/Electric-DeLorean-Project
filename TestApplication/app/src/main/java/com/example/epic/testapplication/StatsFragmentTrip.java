@@ -140,11 +140,11 @@ public class StatsFragmentTrip extends Fragment {
      * Updates all location and trip calculation related fields
      */
     private void displayTripData() {
-        mDistanceData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastDistTotal()));
-        mDistanceToEmptyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastDistToEmpty()));
-        mMPGData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastMPKWH()));
-        mEnergyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastElectricityUsed()));
-        mVelocityData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastVelocity()));
+        mDistanceData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastDistTotal()) + " mi.");
+        mDistanceToEmptyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastDistToEmpty()) + " mi.");
+        mMPGData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastMPKWH()) + " MPKwh");
+        mEnergyData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastElectricityUsed()) + " Kwh");
+        mVelocityData.setText(new DecimalFormat("##.##").format(MainActivity.mDataDBHelper.getLastVelocity()) + " MPH");
 
         long hours = (long) MainActivity.mDataDBHelper.getLastTimeElapsed();
         String timeElapsed = String.format("%02d:%02d:%02d",
