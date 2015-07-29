@@ -63,7 +63,7 @@ public class SummaryFragment extends Fragment {
         Bundle bundle = getArguments();
         sel_route = bundle.getInt("sel_route");
     }
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView called");
