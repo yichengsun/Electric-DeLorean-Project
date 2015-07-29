@@ -66,7 +66,8 @@ public class StatsFragment extends Fragment {
      */
     private void displayBatteryData() {
         double chargeState = MainActivity.getChargeState();
-        double chargeStatePercentage = chargeState / 5.0;
+        Log.d(TAG, "" + chargeState);
+        double chargeStatePercentage = (chargeState / 5.0) * 100;
         mChargeStateData.setText(new DecimalFormat("##").format(chargeStatePercentage) + "%");
         mAmperageData.setText(new DecimalFormat("##.##").format(MainActivity.getAmperage()));
         mPowerData.setText(new DecimalFormat("##.##").format(MainActivity.getPower()));
