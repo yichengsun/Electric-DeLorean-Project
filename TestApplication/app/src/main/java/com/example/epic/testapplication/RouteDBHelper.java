@@ -116,7 +116,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         String startDate = sdf.format(route.getStartDate());
         cv.put(ROUTE_START_DATE, startDate);
 
-        return getWritableDatabase().insert(TABLE_ROUTE, null, cv);
+        return mDB.insert(TABLE_ROUTE, null, cv);
     }
 
     /**

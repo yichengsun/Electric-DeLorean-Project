@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Database helper for sqlitedatabase that stores DataPoints and relevant information
  */
 public class DataDBHelper extends SQLiteOpenHelper{
     // TAG for log statements
@@ -123,7 +123,7 @@ public class DataDBHelper extends SQLiteOpenHelper{
      * @param power Most recent power reading from motor controller
      * @param voltage Most recent voltage reading from motor controller
      * @param rpm Most recent RPM reading form motor controller
-     * @return //TODO THIS
+     * @return row id
      */
     public long insertDataPoint(String timestamp, int route, double lat, double lng, double time,
                                 double dist, double distLeft, double mpkwh, double electricityUsed,
@@ -150,7 +150,8 @@ public class DataDBHelper extends SQLiteOpenHelper{
 
     /**
      * Deletes all coordinates from table
-     * @return //TODO THIS
+     * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all
+     * rows and get a count pass "1" as the whereClause.
      */
     public int del() {
         Log.d(TAG, "Coord delete called");
