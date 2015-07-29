@@ -246,8 +246,6 @@ public class PollService extends Service implements
         double mOldLat, mOldLng; // Most recent latitude and longitude before this location
 
         mLastLocation = location; // Update most recent location
-        mLastLat = mLastLocation.getLatitude();
-        mLastLng = mLastLocation.getLongitude();
 
         // If there are no other points in the data base, set mOldLat and mOldLng to this location
         if (Double.compare(ZERO, mLastLat) == 0 && Double.compare(ZERO, mLastLng) == 0)
@@ -259,12 +257,16 @@ public class PollService extends Service implements
             mOldLng = mLastLng;
         }
 
+        mLastLat = mLastLocation.getLatitude();
+        mLastLng = mLastLocation.getLongitude();
+
         mTimestamp = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         double mOldTimeElapsed = mTimeElapsed;
         // Get time elapsed in nanoseconds, convert to hours
         mTimeElapsed = (System.nanoTime() - mStartDate) / NANO_TO_HOURS;
         double mTimeInterval = mTimeElapsed - mOldTimeElapsed;
 
+        // TODO convert these values to something meaningful
         mChargeState = MainActivity.getChargeState();
         mAmperage = MainActivity.getAmperage();
         mVoltage = MainActivity.getVoltage();
@@ -273,7 +275,6 @@ public class PollService extends Service implements
 
         // method returns distance in meters, convert to miles
         mDistanceInterval = distanceBetweenTwo(mOldLat, mOldLng, mLastLat, mLastLng) * METERS_TO_MILES;
-        Log.d(TAG, "distance interval" + mDistanceInterval);
         // new total distance = previous total distance + recently traveled distance
         mTotalDistance += mDistanceInterval;
         // Convert speed from meters per second to miles per hour
