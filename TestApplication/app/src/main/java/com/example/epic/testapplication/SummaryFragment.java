@@ -85,7 +85,7 @@ public class SummaryFragment extends Fragment {
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         mMap.addTileOverlay(new TileOverlayOptions().tileProvider(
                 new OSMTileProvider(getResources().getAssets())));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(mMapHelper.DEFAULT_ZOOM));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(MapHelper.DEFAULT_ZOOM));
 
         //set delorean marker at route end location
         delorean = mMap.addMarker(new MarkerOptions()
@@ -93,7 +93,7 @@ public class SummaryFragment extends Fragment {
                 .title("DeLorean DMC-12")
                 .snippet("Roads? Where we're going, we don't need roads.")
                 .visible(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(mMapHelper.car_bitmap)));
+                .icon(BitmapDescriptorFactory.fromBitmap(MapHelper.car_bitmap)));
 
         //get all points in route and draw polyline
         mAllLatLng = MainActivity.mDataDBHelper.getRouteAllLatLng(sel_route);
@@ -124,12 +124,12 @@ public class SummaryFragment extends Fragment {
         return new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                if (position.zoom > mMapHelper.MAX_ZOOM)
+                if (position.zoom > MapHelper.MAX_ZOOM)
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(),
-                            mMapHelper.MAX_ZOOM));
-                else if (position.zoom < mMapHelper.MIN_ZOOM)
+                            MapHelper.MAX_ZOOM));
+                else if (position.zoom < MapHelper.MIN_ZOOM)
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delorean.getPosition(),
-                            mMapHelper.MIN_ZOOM));
+                            MapHelper.MIN_ZOOM));
             }
         };
     }

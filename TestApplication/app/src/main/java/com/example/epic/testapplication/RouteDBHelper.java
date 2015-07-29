@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
- *
+ * Database helper for sqlitedatabase that stores completed routes and relevant data
  */
 public class RouteDBHelper extends SQLiteOpenHelper {
     // TAG for log statements
@@ -35,6 +35,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     public static final String ROUTE_TOTAL_DISTANCE = "total_distance";
     public static final String ROUTE_UPLOADED = "uploaded_to_parse";
 
+    //index of each category in table
     public final int INDEX_NUM = 1;
     public final int INDEX_NAME = 2;
     public final int INDEX_START_DATE = 3;
@@ -48,19 +49,29 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     public final int INDEX_TOTAL_DISTANCE = 11;
     public final int INDEX_UPLOADED = 12;
 
+    //current context
     private final Context mContext;
 
-
+    //table name
     private static final String TABLE_ROUTE = "Routes_Data";
 
+    //sqlitedatabase instance
     private SQLiteDatabase mDB;
 
+    /**
+     * Initializes database helper
+     * @param context Application context
+     */
     public RouteDBHelper(Context context) {
         super(context, DBNAME, null, VERSION);
         mDB = getWritableDatabase();
         mContext = context;
     }
 
+    /**
+     * Creates database with sql query
+     * @param db sqlite database
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sql = "create table " + TABLE_ROUTE + " ( " +
@@ -80,10 +91,21 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         db.execSQL(sql);
     }
 
+    /**
+     * Unused. In case the database needs to be updated
+     * @param db database
+     * @param oldVersion old version number
+     * @param newVersion new version number
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
+    /**
+     * Insert new row with Route object parameters into database
+     * @param route Route number
+     * @return row ID of newly inserted row
+     */
     public long insertRoute(Route route) {
         ContentValues cv = new ContentValues();
         cv.put(ROUTE_NUM, route.getmID());
@@ -97,33 +119,57 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return getWritableDatabase().insert(TABLE_ROUTE, null, cv);
     }
 
+    /**
+     * Removes row in database
+     * @param routeNum
+     * @return boolean of deletion success
+     */
     public boolean deleteRoute(int routeNum) {
         return mDB.delete(TABLE_ROUTE, ROUTE_NUM + " = " + routeNum, null) > 0;
     }
 
-    //returns all routes from table
+    /**
+     * Gets all column in database
+     * @return Pointer to queried row
+     */
     public Cursor getAllData() {
         //Log.d(TAG, "Coord getAllData called");
         return mDB.query(TABLE_ROUTE, null, null, null, null, null, null);
     }
 
+    /**
+     * Get the last route in database
+     * @return Pointer to queried row
+     */
     public Cursor getLastEntry() {
         return mDB.query(TABLE_ROUTE, null, null, null, null, null, ROUTE_ID + " DESC", "1");
     }
 
+    /**
+     * Get the row of input route
+     * @param routeNum route number
+     * @return Pointer to queried row
+     */
     public Cursor getRowEntry(int routeNum) {
         return mDB.query(TABLE_ROUTE, null, ROUTE_NUM + "=?", new String[]{"" + routeNum}, null, null, null);
     }
 
-    // updates database row to mark as uploaded to parse
-    public void updateUploaded(int row) {
+    /**
+     * updates database row to mark as uploaded to parse
+     * @param row selected row
+     */
+     public void updateUploaded(int row) {
         ContentValues cv = new ContentValues();
         cv.put(ROUTE_UPLOADED, 1);
         String sRow = "" + row;
         mDB.update(TABLE_ROUTE, cv, ROUTE_NUM + " = ?", new String[]{sRow});
     }
 
-    // updates route name
+    /**
+     * Update route name
+     * @param name String name
+     * @param routeNum Route number
+     */
     public void updateName(String name, int routeNum) {
         ContentValues cv = new ContentValues();
         cv.put(ROUTE_NAME, name);
@@ -131,6 +177,11 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         mDB.update(TABLE_ROUTE, cv, ROUTE_NUM + " = ?", new String[]{sRow});
     }
 
+    /**
+     * Adds new Route at end of trip with data in endOfTripData hashmap
+     * @param endOfTripData hashmap
+     * @param routeNum route number
+     */
     public void updateEndOfTrip(HashMap<String, Object> endOfTripData, int routeNum) {
         ContentValues cv = new ContentValues();
 
@@ -161,6 +212,11 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         mDB.update(TABLE_ROUTE, cv, ROUTE_NUM + " = ?", new String[]{"" + routeNum});
     }
 
+    /**
+     * Hashmap to store route data
+     * @param routeNum route number
+     * @return hashmap
+     */
     public HashMap<String, Object> provideEndOfTripData(int routeNum) {
         HashMap<String, Object> endOfTripData = new HashMap<String, Object>();
         Cursor cur = getRowEntry(routeNum);
@@ -180,7 +236,11 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return endOfTripData;
     }
 
-    // returns whether the route has been uploaded to parse or not
+    /**
+     * returns whether the route has been uploaded to parse or not
+     * @param routeNum route number
+     * @return upload success boolean
+     */
     public boolean isUploaded(int routeNum) {
         Cursor cur = getRowEntry(routeNum);
         Log.d(TAG, "" + cur.getCount());
@@ -190,10 +250,19 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return uploaded == 1;
     }
 
+    /**
+     * queries for unuploaded routes
+     * @return Pointer to rows
+     */
     public Cursor getUnuploadedRoutes() {
         return mDB.query(TABLE_ROUTE, null, ROUTE_UPLOADED + "=?", new String[]{"0"}, null, null, null);
     }
 
+    /**
+     * Get the name of the route number
+     * @param routeNum route number
+     * @return String name
+     */
     public String getRowName(int routeNum) {
         Cursor cur = getRowEntry(routeNum);
         cur.moveToFirst();
@@ -203,6 +272,11 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return name;
     }
 
+    /**
+     * Get route number from route name
+     * @param name route name
+     * @return route number
+     */
     public int getRouteNum(String name) {
         Cursor cur = mDB.query(TABLE_ROUTE, null, ROUTE_NAME + "=?", new String[]{name}, null, null, null);
         cur.moveToFirst();
@@ -211,6 +285,10 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return num;
     }
 
+    /**
+     * Get ID of the last row
+     * @return last row int
+     */
     public int getLastRouteId() {
         Cursor cur = getLastEntry();
         if (cur.getCount() > 0) {
@@ -223,6 +301,10 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         return -1;
     }
 
+    /**
+     * Get string array of all route names
+     * @return string array of route names
+     */
     public String[] getAllRouteNames() {
         Cursor cur = getAllData();
         if (cur.getCount() > 0) {
@@ -242,6 +324,10 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Get entire table as a string
+     * @return table string
+     */
     public String getTableAsString() {
         Log.d(TAG, "getTableAsString called");
         String tableString = String.format("Table %s:\n", TABLE_ROUTE);
@@ -262,5 +348,4 @@ public class RouteDBHelper extends SQLiteOpenHelper {
         }
         return tableString;
     }
-
 }
