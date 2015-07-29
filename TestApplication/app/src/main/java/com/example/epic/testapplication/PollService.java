@@ -77,8 +77,6 @@ public class PollService extends Service implements
 
     // meters to miles conversion
     private static final double METERS_TO_MILES = 0.000621371192;
-    // Miles per second to miles per hour
-    private static final double MPS_TO_MPH = 3600;
     // nanoseconds to hours
     private static final double NANO_TO_HOURS = 3600000000000.0;
     // zero
@@ -283,7 +281,7 @@ public class PollService extends Service implements
         // Efficiency = distance / power used
         mMPKwh = mTotalDistance / mElectricityUsed;
         // Estimated remaining range = reminaing battery percentage * efficiency so far
-        mDistanceToEmpty = (mChargeState / 5.0) * BATTERY_CAPACITY * mMPKwh; // TODO CONVERT BATTERY CHARGE STATE TO PERCENTAGE
+        mDistanceToEmpty = (mChargeState / 5.0) * BATTERY_CAPACITY * mMPKwh;
 
         // Calculate new averages by adding most recent reading to old average
         // and re-averaging for trip. mAverageVelocity and mAverageRPM are only used at the
