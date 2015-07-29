@@ -14,7 +14,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/layout_border">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -41,6 +42,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.45">
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/delorean_transparent"/>
     </FrameLayout>
 
     <LinearLayout
@@ -52,7 +59,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/layout_border">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -78,7 +86,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/layout_border">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -109,7 +118,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            >
+            android:background="@drawable/layout_border">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -134,7 +143,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/layout_border">
 
             <TextView
                 android:layout_width="wrap_content"
