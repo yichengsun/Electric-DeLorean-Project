@@ -1,6 +1,5 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -20,7 +18,7 @@ public class RouteDBHelper extends SQLiteOpenHelper {
     private String TAG = "RouteDBHelper";
     private static String DBNAME = "routes.sqlite";
     private static int VERSION = 1;
-//todo some of the units
+
     public static final String ROUTE_ID = "_id";
     public static final String ROUTE_NUM = "route_number";
     public static final String ROUTE_NAME = "route_name";

@@ -1,8 +1,6 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,9 +30,11 @@ import java.util.List;
  *
  */
 public class SummaryFragment extends Fragment {
+    // TAG for log statements
     private final String TAG = "StatsFragmentSummary";
+    // Activity to store context
     private Activity mActivity;
-
+    // TextViews for updatable data fields
     private TextView mStartTimeView;
     private TextView mEndTimeView;
     private TextView mTimeElapsedView;
@@ -44,26 +44,41 @@ public class SummaryFragment extends Fragment {
     private TextView mEnergyUsedView;
     private TextView mAverageMPKWHView;
     private TextView mAveragePowerView;
-
+    // Polyline to display route traveled on map
     private PolylineOptions mPolyline;
+    // List of all LatLng positions on route
     protected List<LatLng> mAllLatLng;
+    // Image of DeLorean for map
     private Marker delorean;
+    // Map to display route
     private GoogleMap mMap;
+    // Route number of route being displayed
     private int sel_route;
     private MapHelper mMapHelper;
 
+    /**
+     * Retrieves number of selected route from savedInstanceState bundle
+     * @param savedInstanceState bundle of saved instance state
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
-        mMapHelper = new MapHelper(mActivity);
 
         //get selected route number from bundle
         Bundle bundle = getArguments();
         sel_route = bundle.getInt("sel_route");
     }
-    
+
+    /**
+     * Initializes updatable text views, displays DeLorean and route taken on map, and
+     * displays summary statistics for trip
+     * @param inflater LayoutInflater to inflate view
+     * @param parent ViewGroup to be inflated in
+     * @param savedInstanceState Saved instance state
+     * @return Newly created View of the fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView called");
@@ -120,6 +135,10 @@ public class SummaryFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Listener to listen for changes in map focus or zoom
+     * @return listener
+     */
     public GoogleMap.OnCameraChangeListener getCameraChangeListener() {
         return new GoogleMap.OnCameraChangeListener() {
             @Override
@@ -134,19 +153,23 @@ public class SummaryFragment extends Fragment {
         };
     }
 
+    /**
+     * Obtain end-of-trip summary data from RouteDBHelper and set the relevant TextViews to display
+     * thsi information.
+     * @param selectedRoute Route number of the trip to be displayed
+     */
     public void setData(int selectedRoute){
         HashMap<String, Object> endOfTripData = MainActivity.mRouteDBHelper.provideEndOfTripData(selectedRoute);
-
 
         mStartTimeView.setText((String) endOfTripData.get(getString(R.string.hash_map_start)));
         mEndTimeView.setText((String) endOfTripData.get(getString(R.string.hash_map_end)));
 
+        // Convert hours to 00:00:00 form
         double timeInHours = Double.parseDouble(("" + endOfTripData.get(getString(R.string.hash_map_time))));
         int hours = (int) timeInHours;
         double extraTimeInMinutes = (timeInHours - hours) * 60;
         int minutes = (int) extraTimeInMinutes;
         int seconds = (int) ((extraTimeInMinutes - minutes) * 60);
-
         String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
         mTimeElapsedView.setText(timeString);
 

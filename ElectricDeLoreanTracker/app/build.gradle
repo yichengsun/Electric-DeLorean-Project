@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.example.epic.testapplication"
+        applicationId "com.example.epic.deloreantracker"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1

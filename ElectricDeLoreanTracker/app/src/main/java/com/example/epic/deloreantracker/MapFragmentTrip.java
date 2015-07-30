@@ -1,4 +1,4 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;

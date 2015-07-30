@@ -1,4 +1,4 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 
 import android.content.res.AssetManager;
 import com.google.android.gms.maps.model.Tile;

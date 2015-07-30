@@ -1,4 +1,4 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,7 +12,6 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  *

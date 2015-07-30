@@ -1,4 +1,4 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 
 import android.app.Service;
 import android.content.Intent;
@@ -56,11 +56,11 @@ public class PollService extends Service implements
     protected double mAverageVelocity; // Most recent calculation of average velocity (mph)
 
     protected double mChargeState; // Most recent reading of battery charge state, from BMS (0 to 5)
-    protected double mAmperage; // Most recent reading of instantaneous amperage, from BMS (Amp)
-    protected double mPower; // Most recent reading of Power, from motor controller (TODO units)
-    protected double mAveragePower; // Most recent calculation of average power on trip (TODO units)
-    protected double mElectricityUsed; // Most recent calculation of total electricity used on trip (Kwh)
-    protected double mVoltage; // Most recent reading of voltage, from motor controller (Volts)
+    protected double mAmperage; // Most recent reading of instantaneous amperage, from BMS (0 to 5)
+    protected double mPower; // Most recent reading of Power, from motor controller (0 to 5)
+    protected double mAveragePower; // Most recent calculation of average power on trip
+    protected double mElectricityUsed; // Most recent calculation of total electricity used on trip
+    protected double mVoltage; // Most recent reading of voltage, from motor controller (0 to 5)
     protected double mRPM; // Most recent reading of RPM, from motor controller
     protected double mAverageRPM; // Most recent calculation of average RPM
     protected double mDistanceToEmpty;// Most recent estimate of remaining range of battery (miles)
@@ -312,7 +312,8 @@ public class PollService extends Service implements
     }
 
     /**
-     * TODO comment this
+     * Calculates "Lifetime stats" for trip and puts calls RouteDBHelper.updateEndOfTrip to
+     * save them
      */
     private void calculateLifetimeStats() {
         HashMap<String, Object> endOfTripData = new HashMap<String, Object>();

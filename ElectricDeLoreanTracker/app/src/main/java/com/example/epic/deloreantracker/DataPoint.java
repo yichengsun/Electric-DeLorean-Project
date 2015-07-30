@@ -1,15 +1,12 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 
 import com.google.maps.android.geometry.Point;
-
-import java.text.DateFormat;
 
 /**
  * Class to represent one logged data point.
  */
 public class DataPoint {
     // All recorded data categories
-    //TODO ADD UNITS TO BMS/MOTOR CONTROLLER DATA
     private String timestamp; // Time data was recorded
     private int route; // Route number for trip this data point belongs to
     private Point coordinates; // Point containing latitude and longitude data

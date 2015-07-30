@@ -1,4 +1,4 @@
-package com.example.epic.testapplication;
+package com.example.epic.deloreantracker;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -233,7 +233,6 @@ public class DataDBHelper extends SQLiteOpenHelper{
      * @return database in string form
      */
     public String getTableAsString() {
-        //TODO COMMENT ALL OF THIS (from here downward)
         Log.d(TAG, "getTableAsString called");
         String tableString = String.format("Table %s:\n", TABLE_DATA);
         Cursor allRows  = mDB.rawQuery("SELECT * FROM " + TABLE_DATA, null);
@@ -254,6 +253,10 @@ public class DataDBHelper extends SQLiteOpenHelper{
         return tableString;
     }
 
+    /**
+     * Method to get all LatLng coordinates as an ArrayList
+     * @return all LatLng coordinates in database as an ArrayList
+     */
     public List<LatLng> getAllLatLng() {
         Log.d(TAG, "getAllLatLng called");
         List latLngArrayList = null;
@@ -279,6 +282,10 @@ public class DataDBHelper extends SQLiteOpenHelper{
         return latLngArrayList;
     }
 
+    /**
+     * Method to access last LatLng coordinate
+     * @return the most recent LatLng entry in the database
+     */
     public LatLng getLastLatLng() {
         Log.d(TAG, "getLastLatLng called");
         Cursor cur = getLastEntry();
@@ -288,6 +295,11 @@ public class DataDBHelper extends SQLiteOpenHelper{
         return coord;
     }
 
+    /**
+     * Method to access last longitude value for a given route
+     * @param sel_route route number of desired route
+     * @return last longitude value recorded for given route
+     */
     public LatLng getRouteLastLng(int sel_route) {
         Log.d(TAG, "getRouteLastLatLng called");
         Cursor cur = getReadableDatabase().query(TABLE_DATA,
@@ -305,6 +317,11 @@ public class DataDBHelper extends SQLiteOpenHelper{
         return coord;
     }
 
+    /**
+     * Method to access last latitude value for a given route
+     * @param sel_route route number of desired route
+     * @return last latitude value recorded for given route
+     */
     public List<LatLng> getRouteAllLatLng(int sel_route) {
         Log.d(TAG, "getRouteAllLatLng called");
         List routeLatLngArrayList = new ArrayList<LatLng>();
@@ -329,7 +346,7 @@ public class DataDBHelper extends SQLiteOpenHelper{
     /**
      * Deletes all data points for the designated route
      * @param routeNum the number of the route to be deleted
-     * @return //TODO THIS
+     * @return the number of rows affected
      */
     public int deleteDataForRoute(int routeNum) {
         Log.d(TAG, "deleteDataForRoute called");
