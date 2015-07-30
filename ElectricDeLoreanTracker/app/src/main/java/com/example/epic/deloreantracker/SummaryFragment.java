@@ -65,7 +65,7 @@ public class SummaryFragment extends Fragment {
         Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
-
+        mMapHelper = new MapHelper(mActivity);
         //get selected route number from bundle
         Bundle bundle = getArguments();
         sel_route = bundle.getInt("sel_route");
@@ -129,7 +129,7 @@ public class SummaryFragment extends Fragment {
 
         //set camera to prevent zooming in/out beyond bounds
         mMap.setOnCameraChangeListener(getCameraChangeListener());
-
+        mMapHelper.updateMapChargers(mMap);
         // Set statistics data fields
         setData(sel_route);
         return v;

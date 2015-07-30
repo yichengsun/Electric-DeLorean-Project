@@ -455,7 +455,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         // Configure alert
         alertDialog.setView(nameInput);
         alertDialog.setTitle("Name this route");
-        alertDialog.setMessage("Please enter a name for this trip (e.g. Queen's - Princeton)");
+        alertDialog.setMessage("Please enter a unique name for this trip (e.g. Queen's - Princeton)");
         alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
