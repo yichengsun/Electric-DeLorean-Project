@@ -170,7 +170,7 @@ public class PollService extends Service implements
 
     /**
      * If connection fails, provide log statement with error code
-     * @param result connection failure resuot
+     * @param result connection failure result
      */
     @Override
     public void onConnectionFailed(ConnectionResult result) {
