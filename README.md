@@ -31,6 +31,7 @@ Detailed user manual with pictures can be found in this **[Google document](http
 
 #### Android Dashboard and Tracker
 Development was done using Android Studio on a Lenovo Tablet S8-50f running KitKat 4.4.2. Eclipse and other Android IDEs should work but may require creating a new package structure and copying the source files.
+
 1. Clone 'ElectricDeLoreanTracker'
 2. Open Android Studio and import project, selecting the build.gradle file in 'ElectricDeLoreanTracker'
 2. Build project
