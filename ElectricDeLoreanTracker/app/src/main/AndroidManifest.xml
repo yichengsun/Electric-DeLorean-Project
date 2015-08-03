@@ -46,6 +46,12 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCU0NlgEiCF2Yq42eYN0tNnwbN6YIJRVcA" />
+
+        <!--Yicheng's and Henry's SHA1 developer certificate fingerprint and package name. Current
+        Google API services will accept requests from any Android application.
+        72:C2:E5:8C:05:D0:42:D1:41:BA:73:8C:30:4E:AB:37:82:CD:83:F6;com.example.epic.deloreantracker
+        D4:7F:79:2D:7C:6C:57:A8:19:8B:C3:A6:F3:B9:CC:21:5F:EE:EF:D2;com.example.epic.deloreantracker
+        -->
     </application>
 
 </manifest>
