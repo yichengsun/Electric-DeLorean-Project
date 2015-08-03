@@ -41,7 +41,7 @@ Development was done on a Raspberry Pi 2 (Model B 1 GB) with a Cambridge Silicon
 
 1. Install bluetooth packages, [instructions](http://www.modmypi.com/blog/installing-the-raspberry-pi-nano-bluetooth-dongle)
 2. Clone 'Raspberry Pi ADC Sampler' onto Pi board
-3. Set data.py to execute on boot, [instructions](http://raspberrypi.stackexchange.com/questions/8734/execute-script-on-start-up)
+3. Set btminder to execute on boot, [instructions](http://raspberrypi.stackexchange.com/questions/8734/execute-script-on-start-up)
 
 ## Third Party Libraries
 
