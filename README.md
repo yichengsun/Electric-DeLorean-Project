@@ -38,11 +38,13 @@ Development was done using Android Studio on a Lenovo Tablet S8-50f running KitK
 
 #### Raspberry Pi Data Sampler
 Development was done on a Raspberry Pi 2 (Model B 1 GB) with a Cambridge Silicon Radio bluetooth dongle and a 8 channel 17 bit ADC expansion board from [ABElectronics](https://www.abelectronics.co.uk/products/3/Raspberry-Pi-Model-A-and-B/17/ADC-Pi-V2---Raspberry-Pi-Analogue-to-Digital-converter)
+
 1. Install bluetooth packages, [instructions](http://www.modmypi.com/blog/installing-the-raspberry-pi-nano-bluetooth-dongle)
 2. Clone 'Raspberry Pi ADC Sampler' onto Pi board
 3. Set data.py to execute on boot, [instructions](http://raspberrypi.stackexchange.com/questions/8734/execute-script-on-start-up)
 
 ## Third Party Libraries
+
 1. [Parse Android SDK](https://parse.com/docs/downloads) for backend support
 2. [ADC Pi Python LIbrary](https://github.com/abelectronicsuk/ABElectronics_Python_Libraries/tree/master/ADCPi) from ABElectronics 
 
