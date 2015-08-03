@@ -5,7 +5,7 @@
 * [Team Members](#team-members)
 * [Introduction](#introduction)
 * [Installation](#installation)
-* [Third Party Libriries](#third-party-libraries)
+* [Third Party Libraries](#third-party-libraries)
 * [Credits](#credits)
 
 ## Team Members
@@ -23,7 +23,7 @@ This repository contains all the software for an in-car dashboard system and rou
 
 The Raspberry Pi interfaces with the Orion battery management system and Soliton motor controller in order to track battery levels (charge state, current) and engine performance (RPM, Power). All data is transmitted to the dashboard application via bluetooth and uploaded to the cloud via Parse.
 
-The Android-based dashboard serves the dual purpose of displaying driving data (velocity, distance to empty, efficiency, and more) and a multiple route tracker with nearest eletric vehicle charging stations.
+The Android-based dashboard serves the dual purpose of displaying driving data (velocity, distance to empty, efficiency, and more) and a multiple route tracker with nearest electric vehicle charging stations.
 
 
 ## Installation
@@ -49,4 +49,4 @@ Development was done on a Raspberry Pi 2 (Model B 1 GB) with a Cambridge Silicon
 2. [ADC Pi Python LIbrary](https://github.com/abelectronicsuk/ABElectronics_Python_Libraries/tree/master/ADCPi) from ABElectronics 
 
 ## Credits
-Special thanks to Dr. David Laverty and the rest of the QUB Energy, Power, and Intelligent Control research cluster for guidance and to Queen's Univeristy Belfast, Princeton University, and Northern Ireland Electricity for funding.
+Special thanks to Dr. David Laverty and the rest of the QUB Energy, Power, and Intelligent Control research cluster for guidance and to Queen's University Belfast, Princeton University, and Northern Ireland Electricity for funding.
