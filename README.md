@@ -4,6 +4,7 @@
 
 * [Team Members](#team-members)
 * [Introduction](#introduction)
+* [User Manual and Pictures](#user-manual-and-pictures)
 * [Installation](#installation)
 * [Third Party Libraries](#third-party-libraries)
 * [Credits](#credits)
@@ -25,10 +26,10 @@ The Raspberry Pi interfaces with the Orion battery management system and Soliton
 
 The Android-based dashboard serves the dual purpose of displaying driving data (velocity, distance to empty, efficiency, and more) and a multiple route tracker with nearest electric vehicle charging stations.
 
-
-## Installation
+## User Manual and Pictures
 Detailed user manual with pictures can be found in this **[Google document](https://docs.google.com/document/d/1CpdqsstL3xIvifqvO7MZdxyz_jfw7N-QEhuCiqaaNv4/edit?usp=sharing)**. 
 
+## Installation
 #### Android Dashboard and Tracker
 Development was done using Android Studio on a Lenovo Tablet S8-50f running KitKat 4.4.2. Eclipse and other Android IDEs should work but may require creating a new package structure and copying the source files.
 
