@@ -18,7 +18,7 @@
 >
 >--Dr. Emmett Brown
 
-The Electric Delorean Project is a partnership between Queen's University Belfast and Northern Ireland Electric to build a fully functional electric-powered Delorean DMC-12. The car has a 270 horsepower AC motor and can do 0-60 in 8 seconds. The completed vehicle will debut at the 30th Anniversary celebration of the *Back to the Future* franchise on October 21, 2015 in Belfast, Northern Ireland. 
+The Electric Delorean Project is a partnership between Queen's University Belfast and Northern Ireland Electric to build a fully functional electric-powered Delorean DMC-12. The car has a 270 horsepower DC motor and can do 0-60 in 8 seconds. The completed vehicle will debut at the 30th Anniversary celebration of the *Back to the Future* franchise on October 21, 2015 in Belfast, Northern Ireland. 
 
 This repository contains all the software for an in-car dashboard system and route tracker.
 
